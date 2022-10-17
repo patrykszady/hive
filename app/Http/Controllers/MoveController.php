@@ -41,41 +41,41 @@ class MoveController extends Controller
         
         //NEED TO BE LOGGED IN FOR [BIDS TYPE, PROJECT STATUS COMBINE]
         //BIDS TYPE
-    //   $bids = Bid::withoutGlobalScopes()->orderBy('created_at', 'ASC')->get();
+      $bids = Bid::withoutGlobalScopes()->orderBy('created_at', 'ASC')->get();
         
-    //   foreach($bids->groupBy('project_id') as $bids_project){
-    //     foreach($bids_project->groupBy('vendor_id') as $bids_project_vendor){
-    //         foreach($bids_project_vendor as $key => $bid){
-    //             if($key == 0){
-    //                 //nothing, BID TYPE already = 1
-    //             }else{
-    //                 if($bid->amount == "0.00" || $bid->amount == "0.0"){
-    //                     //destroy record
-    //                     $bid->delete();
-    //                 }else{
-    //                     $bid->type = 2; //change order
-    //                     $bid->save();
-    //                 }
-    //             }
-    //         }
-    //     }
-    //   }
+      foreach($bids->groupBy('project_id') as $bids_project){
+        foreach($bids_project->groupBy('vendor_id') as $bids_project_vendor){
+            foreach($bids_project_vendor as $key => $bid){
+                if($key == 0){
+                    //nothing, BID TYPE already = 1
+                }else{
+                    if($bid->amount == "0.00" || $bid->amount == "0.0"){
+                        //destroy record
+                        $bid->delete();
+                    }else{
+                        $bid->type = 2; //change order
+                        $bid->save();
+                    }
+                }
+            }
+        }
+      }
 
     //   dd('past bids type');
 
       //PROJECT STATUS COMBINE ..ONLY DO UNDER LOGGED IN USER FOR VENDOR_ID 1 / GS CONSTRUCTION
-    //   $project_statuses = ProjectStatus::withoutGlobalScopes()->orderBy('created_at', 'ASC')->get();
+      $project_statuses = ProjectStatus::withoutGlobalScopes()->orderBy('created_at', 'ASC')->get();
         
-    //   foreach($project_statuses->groupBy('project_id') as $project_status_order){
-    //       //keep ->last .... delete all others...    
-    //       if($project_status_order->count() > 1){
-    //           $order_ids = $project_status_order->pluck('id');
-    //           $last = $project_status_order->last()->id;
-    //           ProjectStatus::destroy(array_diff($order_ids->toArray(), array($last)));
-    //       }
-    //   }
+      foreach($project_statuses->groupBy('project_id') as $project_status_order){
+          //keep ->last .... delete all others...    
+          if($project_status_order->count() > 1){
+              $order_ids = $project_status_order->pluck('id');
+              $last = $project_status_order->last()->id;
+              ProjectStatus::destroy(array_diff($order_ids->toArray(), array($last)));
+          }
+      }
 
-    //   dd('past project status combine');
+      dd('past project status combine');
 
 
 
@@ -441,124 +441,124 @@ class MoveController extends Controller
 
 // dd('DONE MOVING 2');
 
-        //BANKS
-        $banks = $move_database->select('select * from banks');
-        foreach($banks as $bank){
-            Bank::create([
-                'id' => $bank->id,
-                'name' => $bank->bank_name,
-                'plaid_access_token' => $bank->access_token == 'null' ? NULL : $bank->access_token,
-                'plaid_item_id' => $bank->item_id,
-                'vendor_id' => $bank->vendor_id,
-                'plaid_ins_id' => $bank->plaid_ins_id,
-                'plaid_options' => $bank->plaid_options,
-                'created_at' => $bank->created_at,
-                'updated_at' => $bank->updated_at,
-                // 'deleted_at' => $bank->access_token == 'null' ? $bank->updated_at : NULL,
-            ]);
-        }
+//         //BANKS
+//         $banks = $move_database->select('select * from banks');
+//         foreach($banks as $bank){
+//             Bank::create([
+//                 'id' => $bank->id,
+//                 'name' => $bank->bank_name,
+//                 'plaid_access_token' => $bank->access_token == 'null' ? NULL : $bank->access_token,
+//                 'plaid_item_id' => $bank->item_id,
+//                 'vendor_id' => $bank->vendor_id,
+//                 'plaid_ins_id' => $bank->plaid_ins_id,
+//                 'plaid_options' => $bank->plaid_options,
+//                 'created_at' => $bank->created_at,
+//                 'updated_at' => $bank->updated_at,
+//                 // 'deleted_at' => $bank->access_token == 'null' ? $bank->updated_at : NULL,
+//             ]);
+//         }
 
-        //BANK_ACCOUNTS
-        $bank_accounts = $move_database->select('select * from bank_accounts');
-        foreach($bank_accounts as $bank_account){
-            if($bank_account->type == 1){
-                $account_status = 'Checking';
-            }elseif($bank_account->type == 2){
-                $account_status = 'Savings';
-            }elseif($bank_account->type == 3){
-                $account_status = 'Credit';
-            }
+//         //BANK_ACCOUNTS
+//         $bank_accounts = $move_database->select('select * from bank_accounts');
+//         foreach($bank_accounts as $bank_account){
+//             if($bank_account->type == 1){
+//                 $account_status = 'Checking';
+//             }elseif($bank_account->type == 2){
+//                 $account_status = 'Savings';
+//             }elseif($bank_account->type == 3){
+//                 $account_status = 'Credit';
+//             }
 
             
-            BankAccount::create([
-                'id' => $bank_account->id,
-                'vendor_id' => $bank_account->vendor_id,
-                'bank_id' => $bank_account->bank_id,
-                'account_number' => $bank_account->account_number,
-                'plaid_account_id' => $bank_account->plaid_account_id,
-                'type' => $account_status,
-                'created_at' => $bank_account->created_at,
-                'updated_at' => $bank_account->updated_at,
-                'deleted_at' => NULL,
-            ]);
-        }
+//             BankAccount::create([
+//                 'id' => $bank_account->id,
+//                 'vendor_id' => $bank_account->vendor_id,
+//                 'bank_id' => $bank_account->bank_id,
+//                 'account_number' => $bank_account->account_number,
+//                 'plaid_account_id' => $bank_account->plaid_account_id,
+//                 'type' => $account_status,
+//                 'created_at' => $bank_account->created_at,
+//                 'updated_at' => $bank_account->updated_at,
+//                 'deleted_at' => NULL,
+//             ]);
+//         }
 
-        // EXPENSES
-        $expenses = $move_database->select('select * from expenses');
-        foreach($expenses as $expense){
-            //if $move_database->split_parent_expense_id = create new SplitExpense entry ..ids irrelevant?
-            if($expense->split_parent_expense_id){
-                ExpenseSplits::create([
-                    'expense_id' => $expense->split_parent_expense_id,
-                    'amount' => $expense->amount,
-                    'project_id' => $expense->project_id,
-                    'distribution_id' => $expense->distribution_id,
-                    'belongs_to_vendor_id' => $expense->belongs_to_vendor_id,
-                    'reimbursment' => $expense->reimbursment == "0" ? NULL : $expense->reimbursment,
-                    'note' => $expense->note,
-                    'created_by_user_id' => $expense->created_by_user_id,
-                    'created_at' => $expense->created_at,
-                    'updated_at' => $expense->updated_at,
-                    'deleted_at' => $expense->deleted_at,
-                ]);
-            }else{
-                $new_expense = 
-                Expense::create([
-                    'id' => $expense->id,
-                    'date' => $expense->expense_date,
-                    'amount' => $expense->amount,
-                    'project_id' => $expense->project_id,
-                    'distribution_id' => $expense->distribution_id,
-                    'vendor_id' => $expense->vendor_id,
-                    'paid_by' => $expense->paid_by,
-                    'belongs_to_vendor_id' => $expense->belongs_to_vendor_id,
-                    'invoice' => $expense->invoice,
-                    'parent_expense_id' => $expense->parent_expense_id,
-                    'check_id' => $expense->check_id,
-                    'reimbursment' => $expense->reimbursment == "0" ? NULL : $expense->reimbursment,
-                    'note' => $expense->note,
-                    'created_by_user_id' => $expense->created_by_user_id,
-                    'created_at' => $expense->created_at,
-                    'updated_at' => $expense->updated_at,
-                    'deleted_at' => $expense->deleted_at,
-                ]);
-            }
-        }
+//         // EXPENSES
+//         $expenses = $move_database->select('select * from expenses');
+//         foreach($expenses as $expense){
+//             //if $move_database->split_parent_expense_id = create new SplitExpense entry ..ids irrelevant?
+//             if($expense->split_parent_expense_id){
+//                 ExpenseSplits::create([
+//                     'expense_id' => $expense->split_parent_expense_id,
+//                     'amount' => $expense->amount,
+//                     'project_id' => $expense->project_id,
+//                     'distribution_id' => $expense->distribution_id,
+//                     'belongs_to_vendor_id' => $expense->belongs_to_vendor_id,
+//                     'reimbursment' => $expense->reimbursment == "0" ? NULL : $expense->reimbursment,
+//                     'note' => $expense->note,
+//                     'created_by_user_id' => $expense->created_by_user_id,
+//                     'created_at' => $expense->created_at,
+//                     'updated_at' => $expense->updated_at,
+//                     'deleted_at' => $expense->deleted_at,
+//                 ]);
+//             }else{
+//                 $new_expense = 
+//                 Expense::create([
+//                     'id' => $expense->id,
+//                     'date' => $expense->expense_date,
+//                     'amount' => $expense->amount,
+//                     'project_id' => $expense->project_id,
+//                     'distribution_id' => $expense->distribution_id,
+//                     'vendor_id' => $expense->vendor_id,
+//                     'paid_by' => $expense->paid_by,
+//                     'belongs_to_vendor_id' => $expense->belongs_to_vendor_id,
+//                     'invoice' => $expense->invoice,
+//                     'parent_expense_id' => $expense->parent_expense_id,
+//                     'check_id' => $expense->check_id,
+//                     'reimbursment' => $expense->reimbursment == "0" ? NULL : $expense->reimbursment,
+//                     'note' => $expense->note,
+//                     'created_by_user_id' => $expense->created_by_user_id,
+//                     'created_at' => $expense->created_at,
+//                     'updated_at' => $expense->updated_at,
+//                     'deleted_at' => $expense->deleted_at,
+//                 ]);
+//             }
+//         }
 
-        //PROJECT STATUS
-        $project_status = $move_database->select('select * from projectstatuses');
-        foreach($project_status as $status){
-            if($status->vendor_id == 1){
-                if($status->title_id == 1){
-                    $status_title = 'Estimate';
-                }elseif($status->title_id == 2){
-                    $status_title = 'Awaiting Response';
-                }elseif($status->title_id == 3){
-                    $status_title = 'Project Prep';
-                }elseif($status->title_id == 4){
-                    $status_title = 'Scheduled';
-                }elseif($status->title_id == 5){
-                    $status_title = 'Active';
-                }elseif($status->title_id == 6){
-                    $status_title = 'Complete';
-                }elseif($status->title_id == 7){
-                    $status_title = 'Canceled';
-                }elseif($status->title_id == 8){
-                    $status_title = 'VIEW ONLY';
-                }
+//         //PROJECT STATUS
+//         $project_status = $move_database->select('select * from projectstatuses');
+//         foreach($project_status as $status){
+//             if($status->vendor_id == 1){
+//                 if($status->title_id == 1){
+//                     $status_title = 'Estimate';
+//                 }elseif($status->title_id == 2){
+//                     $status_title = 'Awaiting Response';
+//                 }elseif($status->title_id == 3){
+//                     $status_title = 'Project Prep';
+//                 }elseif($status->title_id == 4){
+//                     $status_title = 'Scheduled';
+//                 }elseif($status->title_id == 5){
+//                     $status_title = 'Active';
+//                 }elseif($status->title_id == 6){
+//                     $status_title = 'Complete';
+//                 }elseif($status->title_id == 7){
+//                     $status_title = 'Canceled';
+//                 }elseif($status->title_id == 8){
+//                     $status_title = 'VIEW ONLY';
+//                 }
     
-                ProjectStatus::create([
-                    // 'id' => $status->id,
-                    'project_id' => $status->project_id,
-                    'belongs_to_vendor_id' => $status->vendor_id,
-                    'title' => $status_title,    
-                    'created_at' => $status->created_at,
-                    'updated_at' => $status->updated_at,
-                ]);
-            }
-        }  
+//                 ProjectStatus::create([
+//                     // 'id' => $status->id,
+//                     'project_id' => $status->project_id,
+//                     'belongs_to_vendor_id' => $status->vendor_id,
+//                     'title' => $status_title,    
+//                     'created_at' => $status->created_at,
+//                     'updated_at' => $status->updated_at,
+//                 ]);
+//             }
+//         }  
 
-dd('DONE MOVING 3');
+// dd('DONE MOVING 3');
 
     }
 }
