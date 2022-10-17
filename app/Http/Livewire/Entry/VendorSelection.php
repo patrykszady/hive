@@ -33,7 +33,7 @@ class VendorSelection extends Component
         $user = auth()->user();
 
         return view('livewire.entry.vendor-selection', [
-            'vendors' => $user->vendors()->withoutGlobalScopes()->get(),
+            'vendors' => $user->vendors()->withoutGlobalScopes()->where('vendors.id', 1)->get(),
         ]);
     }
 
