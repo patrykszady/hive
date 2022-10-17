@@ -254,7 +254,11 @@
 				</x-slot>
 				<x-slot name="right">
 					{{-- {{route('projects.show', $project->id)}} --}}
-					<x-cards.button href="{{ route('expenses.original_receipt', $expense->receipts()->first()->receipt_filename) }}">
+					{{-- 10-17-2022..make this a modal --}}
+					<x-cards.button 
+						href="{{ route('expenses.original_receipt', $expense->receipts()->first()->receipt_filename) }}"
+						target="_blank"
+						>
 						Original Receipt
 					</x-cards.button>
 				</x-slot>

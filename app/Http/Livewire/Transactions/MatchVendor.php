@@ -28,6 +28,8 @@ class MatchVendor extends Component
     {              
         $this->vendors = Vendor::withoutGlobalScopes()->get();
         // $transaction->bank_account->bank->plaid_ins_id
+
+        // $this->match_vendor_names = Transaction::transactionsSinVendor()->whereIn('bank_account_id', $transaction_bank_accounts)->get()->groupBy('plaid_merchant_name')->values()->toArray();
         $this->match_vendor_names = Transaction::transactionsSinVendor()->get()->groupBy('plaid_merchant_name')->values()->toArray();
         $this->view_text = [
             'card_title' => 'Save Transactions/Vendor',
@@ -43,7 +45,8 @@ class MatchVendor extends Component
 
     public function render()
     {
-        $merchant_names = Transaction::transactionsSinVendor()->get()->groupBy('plaid_merchant_name');
+        $transaction_bank_accounts = BankAccount::where('vendor_id', 1)->pluck('id')->toArray();
+        $merchant_names = Transaction::transactionsSinVendor()->whereIn('bank_account_id', $transaction_bank_accounts)->get()->groupBy('plaid_merchant_name');
     //     $merchant_names = Transaction::transactionsSinVendor()->get()->groupBy('plaid_merchant_name')->each(function($test, $key) {
     //         dd($test->put('name', $key));         
     //    });
@@ -112,8 +115,9 @@ class MatchVendor extends Component
             if(!in_array($vendor_id, $this->vendors->pluck('id')->toArray())){
                 auth()->user()->vendor->vendors()->attach($vendor_id);
             }
-
         }
+
+        //add vendor to transaction ...
 
         //6-8-2022 run in a queue?
         app('App\Http\Controllers\TransactionController')->add_vendor_to_transactions();

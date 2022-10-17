@@ -244,13 +244,20 @@ class TransactionController extends Controller
 
     public function add_vendor_to_transactions()
     {     
-        $transactions = Transaction::TransactionsSinVendor()->get()->groupBy('plaid_merchant_name');
-
+        $transaction_bank_accounts = BankAccount::where('vendor_id', 1)->pluck('id')->toArray();
+        // $transactions = Transaction::TransactionsSinVendor()->get()->groupBy('plaid_merchant_name')
+        $transactions = Transaction::TransactionsSinVendor()->whereIn('bank_account_id', $transaction_bank_accounts)->get()->groupBy('plaid_merchant_name');
         $vendors = Vendor::withoutGlobalScopes()->where('business_type', 'Retail')->get();
 
+        dd($transactions);
+
         foreach($transactions as $merchant_name => $merchant_transactions){
-            // $vendor_match = preg_grep("/^" . $merchant_name . "/i", $vendors_name_array);
+            // dd($merchant_name);
+
+            //find vendor where vendor->business_name is contained in $merchant_name
+            // $vendor_match = preg_grep("/^" . $merchant_name . "/i", $vendors->pluck('business_name')->toArray());
             $vendor_match = $vendors->where('business_name', $merchant_name)->first();
+            // dd($vendor_match);
 
             if($vendor_match){
                 foreach($merchant_transactions as $key => $transaction){
@@ -306,6 +313,7 @@ class TransactionController extends Controller
 
                 if(!empty($matches)){
                     foreach($plaid_name_transactions as $key => $transaction){
+                        // dd($transaction->bank_account);
                         $transaction->vendor_id = $vendor_transaction->vendor_id;
                         $transaction->save();
                         

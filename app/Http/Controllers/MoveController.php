@@ -83,19 +83,21 @@ class MoveController extends Controller
 // ------------------------------------------
 // ------------------------------------------
 
-//         //BIDS
-//         $bids = $move_database->select('select * from bids');
-//         foreach($bids as $bid){
-//             Bid::create([
-//                 'id' => $bid->id,
-//                 'project_id' => $bid->project_id,
-//                 'vendor_id' => $bid->vendor_id,
-//                 'amount' => $bid->amount,
-//                 'type' => 1,
-//                 'created_at' => $bid->created_at,
-//                 'updated_at' => $bid->updated_at,
-//             ]);
-//         }
+        //BIDS
+        $bids = $move_database->select('select * from bids');
+        foreach($bids as $bid){
+            Bid::create([
+                'id' => $bid->id,
+                'project_id' => $bid->project_id,
+                'vendor_id' => $bid->vendor_id,
+                'amount' => $bid->amount,
+                'type' => 1,
+                'created_at' => $bid->created_at,
+                'updated_at' => $bid->updated_at,
+            ]);
+        }
+
+        dd('past BIDS');
 
 //         //PAYMENTS
 //         $payments = $move_database->select('select * from client_payments');
