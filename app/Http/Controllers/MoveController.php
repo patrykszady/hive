@@ -84,237 +84,237 @@ class MoveController extends Controller
 // ------------------------------------------
 
         //BIDS
-        $bids = $move_database->select('select * from bids');
-        foreach($bids as $bid){
-            Bid::create([
-                'id' => $bid->id,
-                'project_id' => $bid->project_id,
-                'vendor_id' => $bid->vendor_id,
-                'amount' => $bid->amount,
-                'type' => 1,
-                'created_at' => $bid->created_at,
-                'updated_at' => $bid->updated_at,
+        // $bids = $move_database->select('select * from bids');
+        // foreach($bids as $bid){
+        //     Bid::create([
+        //         'id' => $bid->id,
+        //         'project_id' => $bid->project_id,
+        //         'vendor_id' => $bid->vendor_id,
+        //         'amount' => $bid->amount,
+        //         'type' => 1,
+        //         'created_at' => $bid->created_at,
+        //         'updated_at' => $bid->updated_at,
+        //     ]);
+        // }
+
+        // dd('past BIDS');
+
+        //PAYMENTS
+        $payments = $move_database->select('select * from client_payments');
+        foreach($payments as $payment){
+            if($payment->belongs_to_vendor_id == 1){
+                // $payment->parent_client_payment_id = $payment->id ? NULL : $payment->parent_client_payment_id
+                if($payment->parent_client_payment_id != $payment->id){
+                    $parent_client_id = $payment->parent_client_payment_id;
+                }else{
+                    $parent_client_id = NULL;
+                }
+
+                Payment::create([
+                    'id' => $payment->id,
+                    'project_id' => $payment->project_id,
+                    'amount' => $payment->amount,
+                    'date' => $payment->date,
+                    'reference' => $payment->reference,
+                    'transaction_id' => $payment->transaction_id,
+                    'belongs_to_vendor_id' => $payment->belongs_to_vendor_id,
+                    'parent_client_payment_id' => $parent_client_id,
+                    'note' => $payment->note,
+                    'created_by_user_id' => $payment->created_by_user_id,
+                    'created_at' => $payment->created_at,
+                    'updated_at' => $payment->updated_at,
+                ]);
+            }
+        }
+
+        //USERS
+        $users = $move_database->select('select * from users');
+        foreach($users as $user){
+            User::create([
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'cell_phone' => $user->phone_number,
+                'email' => $user->email,
+                'email_verified_at' => now(),
+                'primary_vendor_id' => NULL,
+                'password' => $user->password,
+                'remember_token' => NULL,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at,
             ]);
         }
 
-        dd('past BIDS');
+        //VENDORS
+        $vendors = $move_database->select('select * from vendors');
+        foreach($vendors as $vendor){
+            // dd($vendor);
+            if($vendor->biz_type == 1){
+                $vendor_type = 'Sub';
+            }elseif($vendor->biz_type == 2){
+                $vendor_type = 'Retail';
+            }elseif($vendor->biz_type == 3){
+                $vendor_type = 'DBA';
+            }elseif($vendor->biz_type == 4){
+                $vendor_type = 'W9';
+            }else{
+                $vendor_type = '';
+            }
 
-//         //PAYMENTS
-//         $payments = $move_database->select('select * from client_payments');
-//         foreach($payments as $payment){
-//             if($payment->belongs_to_vendor_id == 1){
-//                 // $payment->parent_client_payment_id = $payment->id ? NULL : $payment->parent_client_payment_id
-//                 if($payment->parent_client_payment_id != $payment->id){
-//                     $parent_client_id = $payment->parent_client_payment_id;
-//                 }else{
-//                     $parent_client_id = NULL;
-//                 }
+            Vendor::create([
+                'id' => $vendor->id,
+                'business_name' => $vendor->business_name,
+                'business_type' => $vendor_type,
+                'address' => $vendor->address,
+                'address_2' => $vendor->address_2,
+                'city' => $vendor->city,
+                'state' => $vendor->state,
+                'zip_code' => $vendor->zip_code,
+                'business_phone' => $vendor->biz_phone,
+                'business_email' => $vendor->email,
+                // 'cliff_registration' => NULL,
+                'created_at' => $vendor->created_at,
+                'updated_at' => $vendor->updated_at,
+            ]);
+        }
 
-//                 Payment::create([
-//                     'id' => $payment->id,
-//                     'project_id' => $payment->project_id,
-//                     'amount' => $payment->amount,
-//                     'date' => $payment->date,
-//                     'reference' => $payment->reference,
-//                     'transaction_id' => $payment->transaction_id,
-//                     'belongs_to_vendor_id' => $payment->belongs_to_vendor_id,
-//                     'parent_client_payment_id' => $parent_client_id,
-//                     'note' => $payment->note,
-//                     'created_by_user_id' => $payment->created_by_user_id,
-//                     'created_at' => $payment->created_at,
-//                     'updated_at' => $payment->updated_at,
-//                 ]);
-//             }
-//         }
+        //USER_VENDOR 
+        $user_vendors = $move_database->select('select * from user_vendor');
+        foreach($user_vendors as $user_vendor){           
+            $vendor = Vendor::withoutGlobalScopes()->with('users')->find($user_vendor->vendor_id);
 
-//         //USERS
-//         $users = $move_database->select('select * from users');
-//         foreach($users as $user){
-//             User::create([
-//                 'id' => $user->id,
-//                 'first_name' => $user->first_name,
-//                 'last_name' => $user->last_name,
-//                 'cell_phone' => $user->phone_number,
-//                 'email' => $user->email,
-//                 'email_verified_at' => now(),
-//                 'primary_vendor_id' => NULL,
-//                 'password' => $user->password,
-//                 'remember_token' => NULL,
-//                 'created_at' => $user->created_at,
-//                 'updated_at' => $user->updated_at,
-//             ]);
-//         }
-
-//         //VENDORS
-//         $vendors = $move_database->select('select * from vendors');
-//         foreach($vendors as $vendor){
-//             // dd($vendor);
-//             if($vendor->biz_type == 1){
-//                 $vendor_type = 'Sub';
-//             }elseif($vendor->biz_type == 2){
-//                 $vendor_type = 'Retail';
-//             }elseif($vendor->biz_type == 3){
-//                 $vendor_type = 'DBA';
-//             }elseif($vendor->biz_type == 4){
-//                 $vendor_type = 'W9';
-//             }else{
-//                 $vendor_type = '';
-//             }
-
-//             Vendor::create([
-//                 'id' => $vendor->id,
-//                 'business_name' => $vendor->business_name,
-//                 'business_type' => $vendor_type,
-//                 'address' => $vendor->address,
-//                 'address_2' => $vendor->address_2,
-//                 'city' => $vendor->city,
-//                 'state' => $vendor->state,
-//                 'zip_code' => $vendor->zip_code,
-//                 'business_phone' => $vendor->biz_phone,
-//                 'business_email' => $vendor->email,
-//                 // 'cliff_registration' => NULL,
-//                 'created_at' => $vendor->created_at,
-//                 'updated_at' => $vendor->updated_at,
-//             ]);
-//         }
-
-//         //USER_VENDOR 
-//         $user_vendors = $move_database->select('select * from user_vendor');
-//         foreach($user_vendors as $user_vendor){           
-//             $vendor = Vendor::withoutGlobalScopes()->with('users')->find($user_vendor->vendor_id);
-
-//             if(is_null($vendor)){
-//                 Log::channel('move_channel')->info(['user_vendor', $user_vendor]);
-//                 continue;
-//             }else{
-//                 $vendor->users()->attach($user_vendor->user_id, array(
-//                     'role_id' => $user_vendor->role_id,
-//                     'via_vendor_id' => $user_vendor->via_vendor_id,
-//                     'start_date' => $user_vendor->start_date == '0000-00-00' ? NULL : $user_vendor->start_date,
-//                     'end_date' => $user_vendor->end_date == '0000-00-00' ? NULL : $user_vendor->end_date,
-//                     'is_employed' => $user_vendor->is_employed,
-//                     // 'hourly_rate' => NULL,
-//                     'created_at' => $user_vendor->created_at,
-//                     'updated_at' => $user_vendor->updated_at,
-//                 ));
-//                 continue;
-//             }
-//         }   
+            if(is_null($vendor)){
+                Log::channel('move_channel')->info(['user_vendor', $user_vendor]);
+                continue;
+            }else{
+                $vendor->users()->attach($user_vendor->user_id, array(
+                    'role_id' => $user_vendor->role_id,
+                    'via_vendor_id' => $user_vendor->via_vendor_id,
+                    'start_date' => $user_vendor->start_date == '0000-00-00' ? NULL : $user_vendor->start_date,
+                    'end_date' => $user_vendor->end_date == '0000-00-00' ? NULL : $user_vendor->end_date,
+                    'is_employed' => $user_vendor->is_employed,
+                    // 'hourly_rate' => NULL,
+                    'created_at' => $user_vendor->created_at,
+                    'updated_at' => $user_vendor->updated_at,
+                ));
+                continue;
+            }
+        }   
         
-//         //VENDORS_VENDOR 
-//         $vendor_vendors = $move_database->select('select * from vendors_belong_to_vendor');
-//         foreach($vendor_vendors as $vendor_vendor){  
+        //VENDORS_VENDOR 
+        $vendor_vendors = $move_database->select('select * from vendors_belong_to_vendor');
+        foreach($vendor_vendors as $vendor_vendor){  
 
-//             $vendor = Vendor::withoutGlobalScopes()->find($vendor_vendor->belongs_to_vendor_id);
+            $vendor = Vendor::withoutGlobalScopes()->find($vendor_vendor->belongs_to_vendor_id);
 
-//             if(is_null($vendor)){
-//                 Log::channel('move_channel')->info(['vendor_vendors', $vendor_vendor]);
-//                 continue;
-//             }else{
-//                 $vendor->vendors()->attach($vendor_vendor->vendor_id, array(
-//                     'created_at' => $vendor_vendor->created_at,
-//                     'updated_at' => $vendor_vendor->updated_at,
-//                 ));
-//                 continue;
-//             }
-//         }   
+            if(is_null($vendor)){
+                Log::channel('move_channel')->info(['vendor_vendors', $vendor_vendor]);
+                continue;
+            }else{
+                $vendor->vendors()->attach($vendor_vendor->vendor_id, array(
+                    'created_at' => $vendor_vendor->created_at,
+                    'updated_at' => $vendor_vendor->updated_at,
+                ));
+                continue;
+            }
+        }   
 
-//         //RECEIPT ACCOUNTS
-//         $receipt_accounts = $move_database->select('select * from receipt_accounts');
-//         foreach($receipt_accounts as $account){
-//             ReceiptAccount::create([
-//                 'id' => $account->id,
-//                 'vendor_id' => $account->vendor_id, 
-//                 'belongs_to_vendor_id' => $account->belongs_to_vendor_id,
-//                 'project_id' => $account->project_id,
-//                 'distribution_id' => $account->distribution_id,
-//                 'options' => $account->options,
-//                 'instructions' => NULL,
-//                 'created_at' => $account->created_at,
-//                 'updated_at' => $account->updated_at,
-//             ]);
-//         }
+        //RECEIPT ACCOUNTS
+        $receipt_accounts = $move_database->select('select * from receipt_accounts');
+        foreach($receipt_accounts as $account){
+            ReceiptAccount::create([
+                'id' => $account->id,
+                'vendor_id' => $account->vendor_id, 
+                'belongs_to_vendor_id' => $account->belongs_to_vendor_id,
+                'project_id' => $account->project_id,
+                'distribution_id' => $account->distribution_id,
+                'options' => $account->options,
+                'instructions' => NULL,
+                'created_at' => $account->created_at,
+                'updated_at' => $account->updated_at,
+            ]);
+        }
 
-//         //RECEIPTS
-//         $receipts = $move_database->select('select * from receipts');
-//         foreach($receipts as $receipt){
-//             Receipt::create([
-//                 'id' => $receipt->id,
-//                 'vendor_id' => $receipt->vendor_id, 
-//                 'from_type' => $receipt->from_type,
-//                 'from_address' => $receipt->from_address,
-//                 'from_subject' => $receipt->from_subject,
-//                 'options' => $receipt->options,
-//                 'receipt_width' => $receipt->receipt_width,
-//                 'receipt_type' => $receipt->receipt_type,
-//                 'created_at' => $receipt->created_at,
-//                 'updated_at' => $receipt->updated_at,
-//             ]);
-//         }
+        //RECEIPTS
+        $receipts = $move_database->select('select * from receipts');
+        foreach($receipts as $receipt){
+            Receipt::create([
+                'id' => $receipt->id,
+                'vendor_id' => $receipt->vendor_id, 
+                'from_type' => $receipt->from_type,
+                'from_address' => $receipt->from_address,
+                'from_subject' => $receipt->from_subject,
+                'options' => $receipt->options,
+                'receipt_width' => $receipt->receipt_width,
+                'receipt_type' => $receipt->receipt_type,
+                'created_at' => $receipt->created_at,
+                'updated_at' => $receipt->updated_at,
+            ]);
+        }
 
-//         //PROJECTS
-//         $projects = $move_database->select('select * from projects');
-//         foreach($projects as $project){
-//             Project::create([
-//                 'id' => $project->id,
-//                 'project_name' => $project->project_name,
-//                 'client_id' => $project->client_id,
-//                 'belongs_to_vendor_id' => $project->vendor_id,
-//                 'note' => $project->note,
-//                 'do_not_include' => $project->do_not_include,   
-//                 'address' => $project->address,
-//                 'address_2' => $project->address_2 == NULL || '' ? NULL : $project->address_2,
-//                 'city' => $project->city,
-//                 'state' => $project->state,
-//                 'zip_code' => $project->zip_code,               
-//                 'created_at' => $project->created_at,
-//                 'updated_at' => $project->updated_at,
-//             ]);
-//         }
+        //PROJECTS
+        $projects = $move_database->select('select * from projects');
+        foreach($projects as $project){
+            Project::create([
+                'id' => $project->id,
+                'project_name' => $project->project_name,
+                'client_id' => $project->client_id,
+                'belongs_to_vendor_id' => $project->vendor_id,
+                'note' => $project->note,
+                'do_not_include' => $project->do_not_include,   
+                'address' => $project->address,
+                'address_2' => $project->address_2 == NULL || '' ? NULL : $project->address_2,
+                'city' => $project->city,
+                'state' => $project->state,
+                'zip_code' => $project->zip_code,               
+                'created_at' => $project->created_at,
+                'updated_at' => $project->updated_at,
+            ]);
+        }
 
-//         //TIMESHEETS
-//         $timesheets = $move_database->select('select * from hours');
-//         foreach($timesheets as $timesheet){
-//             Timesheet::create([
-//                 'id' => $timesheet->id,
-//                 'date' => $timesheet->date,
-//                 'user_id' => $timesheet->user_id,
-//                 'vendor_id' => $timesheet->vendor_id,
-//                 'project_id' => $timesheet->project_id,
-//                 'hours' => $timesheet->hours,
-//                 'amount' => $timesheet->amount,                
-//                 'paid_by' => $timesheet->paid_by,
-//                 'check_id' => $timesheet->check_id,
-//                 'hourly' => $timesheet->hourly,
-//                 'invoice' => $timesheet->invoice,
-//                 'note' => $timesheet->note,
-//                 'created_by_user_id' => $timesheet->created_by_user_id,                
-//                 'created_at' => $timesheet->created_at,
-//                 'updated_at' => $timesheet->updated_at,
-//                 'deleted_at' => $timesheet->deleted_at,
-//             ]);
-//         }
+        //TIMESHEETS
+        $timesheets = $move_database->select('select * from hours');
+        foreach($timesheets as $timesheet){
+            Timesheet::create([
+                'id' => $timesheet->id,
+                'date' => $timesheet->date,
+                'user_id' => $timesheet->user_id,
+                'vendor_id' => $timesheet->vendor_id,
+                'project_id' => $timesheet->project_id,
+                'hours' => $timesheet->hours,
+                'amount' => $timesheet->amount,                
+                'paid_by' => $timesheet->paid_by,
+                'check_id' => $timesheet->check_id,
+                'hourly' => $timesheet->hourly,
+                'invoice' => $timesheet->invoice,
+                'note' => $timesheet->note,
+                'created_by_user_id' => $timesheet->created_by_user_id,                
+                'created_at' => $timesheet->created_at,
+                'updated_at' => $timesheet->updated_at,
+                'deleted_at' => $timesheet->deleted_at,
+            ]);
+        }
 
-//         //HOURS
-//         $hours = $move_database->select('select * from hours_daily');
-//         foreach($hours as $hour){
-//             Hour::create([
-//                 'id' => $hour->id,
-//                 'date' => $hour->date,
-//                 'hours' => $hour->hours,
-//                 'project_id' => $hour->project_id,
-//                 'user_id' => $hour->user_id,
-//                 'vendor_id' => $hour->vendor_id,
-//                 'timesheet_id' => $hour->hour_id,
-//                 'created_by_user_id' => $hour->created_by_user_id,
-//                 'note' => $hour->note,
-//                 'created_at' => $hour->created_at,
-//                 'updated_at' => $hour->updated_at,
-//                 'deleted_at' => NULL,
-//             ]);
-//         }
+        //HOURS
+        $hours = $move_database->select('select * from hours_daily');
+        foreach($hours as $hour){
+            Hour::create([
+                'id' => $hour->id,
+                'date' => $hour->date,
+                'hours' => $hour->hours,
+                'project_id' => $hour->project_id,
+                'user_id' => $hour->user_id,
+                'vendor_id' => $hour->vendor_id,
+                'timesheet_id' => $hour->hour_id,
+                'created_by_user_id' => $hour->created_by_user_id,
+                'note' => $hour->note,
+                'created_at' => $hour->created_at,
+                'updated_at' => $hour->updated_at,
+                'deleted_at' => NULL,
+            ]);
+        }
 
-// dd('DONE MOVING 1');
+dd('DONE MOVING 1');
 
 //         //EXPENSE RECEIPTS
 //         $expense_receipts = $move_database->select('select * from expense_receipts_data');
