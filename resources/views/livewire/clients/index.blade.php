@@ -29,14 +29,24 @@
                                     clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <input wire:model="client_name" type="text" name="mobile-search-candidate"
+                        <input 
+                            wire:model="client_name" 
+                            type="text" 
+                            name="mobile-search-candidate"
                             id="mobile-search-candidate"
                             class="focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-none rounded-l-md pl-10 sm:hidden border-gray-300"
-                            placeholder="Search">
-                        <input wire:model="client_name" type="text" name="desktop-search-candidate"
+                            placeholder="Search"
+                            autocomplete="mobile-search-candidate"
+                            >
+                        <input 
+                            wire:model="client_name" 
+                            type="text" 
+                            name="desktop-search-candidate"
                             id="desktop-search-candidate"
                             class="hidden focus:ring-indigo-500 focus:border-indigo-500 w-full rounded-none rounded-l-md pl-10 sm:block sm:text-sm border-gray-300"
-                            placeholder="Search clients">
+                            placeholder="Search clients"
+                            autocomplete="desktop-search-candidate"
+                            >
                     </div>
                     <button type="button"
                         class="-ml-px relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500">

@@ -41,41 +41,41 @@ class MoveController extends Controller
         
         //NEED TO BE LOGGED IN FOR [BIDS TYPE, PROJECT STATUS COMBINE]
         //BIDS TYPE
-      $bids = Bid::withoutGlobalScopes()->orderBy('created_at', 'ASC')->get();
+    //   $bids = Bid::withoutGlobalScopes()->orderBy('created_at', 'ASC')->get();
         
-      foreach($bids->groupBy('project_id') as $bids_project){
-        foreach($bids_project->groupBy('vendor_id') as $bids_project_vendor){
-            foreach($bids_project_vendor as $key => $bid){
-                if($key == 0){
-                    //nothing, BID TYPE already = 1
-                }else{
-                    if($bid->amount == "0.00" || $bid->amount == "0.0"){
-                        //destroy record
-                        $bid->delete();
-                    }else{
-                        $bid->type = 2; //change order
-                        $bid->save();
-                    }
-                }
-            }
-        }
-      }
+    //   foreach($bids->groupBy('project_id') as $bids_project){
+    //     foreach($bids_project->groupBy('vendor_id') as $bids_project_vendor){
+    //         foreach($bids_project_vendor as $key => $bid){
+    //             if($key == 0){
+    //                 //nothing, BID TYPE already = 1
+    //             }else{
+    //                 if($bid->amount == "0.00" || $bid->amount == "0.0"){
+    //                     //destroy record
+    //                     $bid->delete();
+    //                 }else{
+    //                     $bid->type = 2; //change order
+    //                     $bid->save();
+    //                 }
+    //             }
+    //         }
+    //     }
+    //   }
 
     //   dd('past bids type');
 
       //PROJECT STATUS COMBINE ..ONLY DO UNDER LOGGED IN USER FOR VENDOR_ID 1 / GS CONSTRUCTION
-      $project_statuses = ProjectStatus::withoutGlobalScopes()->orderBy('created_at', 'ASC')->get();
+    //   $project_statuses = ProjectStatus::withoutGlobalScopes()->orderBy('created_at', 'ASC')->get();
         
-      foreach($project_statuses->groupBy('project_id') as $project_status_order){
-          //keep ->last .... delete all others...    
-          if($project_status_order->count() > 1){
-              $order_ids = $project_status_order->pluck('id');
-              $last = $project_status_order->last()->id;
-              ProjectStatus::destroy(array_diff($order_ids->toArray(), array($last)));
-          }
-      }
+    //   foreach($project_statuses->groupBy('project_id') as $project_status_order){
+    //       //keep ->last .... delete all others...    
+    //       if($project_status_order->count() > 1){
+    //           $order_ids = $project_status_order->pluck('id');
+    //           $last = $project_status_order->last()->id;
+    //           ProjectStatus::destroy(array_diff($order_ids->toArray(), array($last)));
+    //       }
+    //   }
 
-      dd('past project status combine');
+    //   dd('past project status combine');
 
 
 
