@@ -9,10 +9,10 @@
                     @else
                     <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Log in</a>
     
-                    @if (Route::has('register'))
+                    {{-- @if (Route::has('register'))
                     <a href="{{ route('register') }}"
                         class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
-                    @endif
+                    @endif --}}
                     @endauth
                 </div>
             @endif
@@ -25,7 +25,8 @@
                     </h2>
                     <div class="mt-8 flex justify-center">
                         <div class="inline-flex rounded-md shadow">
-                            <a href="{{route('register')}}"
+                            {{-- <a href="{{route('register')}}" --}}
+                            <a href="{{route('login')}}"
                                 class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                                 Get started
                             </a>

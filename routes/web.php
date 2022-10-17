@@ -54,7 +54,7 @@ use App\Http\Livewire\Dashboard\DashboardShow;
 //if guests go to '/', if logged in to to dashboard (or to /vendor_selection if not set and User has multiple)
 Route::middleware('guest')->group(function(){
     Route::get('/', function () {
-        return view('welcome');
+        return view('auth.login');
     });
 });
 
