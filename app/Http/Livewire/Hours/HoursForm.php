@@ -29,7 +29,7 @@ class HoursForm extends Component
     public function getDays()
     {
         return new \DatePeriod(
-            Carbon::parse("21 days ago")->startOfWeek(Carbon::MONDAY),
+            Carbon::parse("14 days ago")->startOfWeek(Carbon::MONDAY),
             CarbonInterval::day(),
             Carbon::parse("1 week")->startOfWeek(Carbon::MONDAY)->next("Week")
         );
