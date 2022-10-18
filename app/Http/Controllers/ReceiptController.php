@@ -103,10 +103,13 @@ class ReceiptController extends Controller
             dd('server_isnt_connecting');
         }
 
+        // dd('receipt_email');
+
         //EVERY MESSAGE HAS TO MOVE SOMEWHERE... NONE CAN STAY IN env('RECEIPT_MAILBOX') MAILBOX
         $messages = $connection->getMailbox(env('RECEIPT_MAILBOX'))->getMessages();
 
         foreach($messages as $message){
+            // dd($message);
             //can this be above this foreach?
             $company_emails =  CompanyEmail::withoutGlobalScopes()->get();
             //catch forwarded messages where From is in database table company_emails
@@ -550,6 +553,8 @@ class ReceiptController extends Controller
                     ])->
                 get();
 
+                // dd($duplicates);
+
             if(isset($duplicates)){
                 foreach($duplicates as $duplicate){
                     //if has/has not receipts.. this is just an extra check for $expenses that have receipts already .. 06/20/2021
@@ -621,7 +626,8 @@ class ReceiptController extends Controller
 
     public function find_po($result, $po_text, $po_end)
     {
-        $total_pos = strpos(strtoupper($result), $po_text); //independent of CAPITAL or lowecase
+        //independent of CAPITAL or lowecase
+        $total_pos = strpos(strtoupper($result), $po_text);
         if($total_pos == false){
             return NULL;
         }
