@@ -12,11 +12,17 @@ class ExpenseScope implements Scope
     {
         $user = auth()->user();
 
-        //if Admin..all Expenses ... if Member...only expenses the User Paid For....?
-        if($user->vendor->user_role == 'Admin'){
-            $builder->where('belongs_to_vendor_id', auth()->user()->primary_vendor_id);
-        }elseif($user->vendor->user_role == 'Member'){
-            $builder->where('belongs_to_vendor_id',$user->primary_vendor_id)->where('paid_by', $user->id);
+        if(is_null($user)){
+            $builder;
+        }else{
+            //if Admin..all Expenses ... if Member...only expenses the User Paid For....?
+            if($user->vendor->user_role == 'Admin'){
+                $builder->where('belongs_to_vendor_id', auth()->user()->primary_vendor_id);
+            }elseif($user->vendor->user_role == 'Member'){
+                $builder->where('belongs_to_vendor_id',$user->primary_vendor_id)->where('paid_by', $user->id);
+            }else{
+                $builder;
+            }
         }
     }
 }
