@@ -249,7 +249,7 @@ class TransactionController extends Controller
         $transactions = Transaction::TransactionsSinVendor()->whereIn('bank_account_id', $transaction_bank_accounts)->get()->groupBy('plaid_merchant_name');
         $vendors = Vendor::withoutGlobalScopes()->where('business_type', 'Retail')->get();
 
-        dd($transactions);
+        // dd($transactions);
 
         foreach($transactions as $merchant_name => $merchant_transactions){
             // dd($merchant_name);
