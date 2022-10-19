@@ -95,7 +95,7 @@
                                         clip-rule="evenodd" 
                                     />
                                 </svg>
-                                {{ $line_detail['text'] }}
+                                {!! $line_detail['text'] !!}
                             </p>
                         @endforeach
                     </div>

@@ -249,32 +249,38 @@ class ExpensesForm extends Component
     {
         //6-14-2022 this only works for Retail vendors.. really need a Modal from MatchVendor or CreateNewVendor forms and taken back here
         //create Retail vendor here if doesnt exist yet
-        if(is_null($transaction->vendor_id)){
-            $vendor = Vendor::create([
-                'business_type' => 'Retail',
-                'business_name' => $transaction->plaid_merchant_name,
-            ]);
+        // if(is_null($transaction->vendor_id)){
+        //     $vendor = Vendor::create([
+        //         'business_type' => 'Retail',
+        //         'business_name' => $transaction->plaid_merchant_name,
+        //     ]);
 
-            $vendor_id = $vendor->id;
+        //     $vendor_id = $vendor->id;
 
-            //USED IN MULTIPLE OF PLACES TransactionController@add_vendor_to_transactions, MatchVendor@store
-            //add if vendor is not part of the currently logged in vendor
-            if(!$transaction->bank_account->vendor->vendors->contains($vendor_id)){
-                $transaction->bank_account->vendor->vendors()->attach($vendor_id);
-            }
+        //     //USED IN MULTIPLE OF PLACES TransactionController@add_vendor_to_transactions, MatchVendor@store
+        //     //add if vendor is not part of the currently logged in vendor
+        //     if(!$transaction->bank_account->vendor->vendors->contains($vendor_id)){
+        //         $transaction->bank_account->vendor->vendors()->attach($vendor_id);
+        //     }
 
-            //add this vendor to the existing $this->vendors collection
-            $this->vendors->add($vendor);
+        //     //add this vendor to the existing $this->vendors collection
+        //     $this->vendors->add($vendor);
             
-            //6-8-2022 run in a queue?
-            app('App\Http\Controllers\TransactionController')->add_vendor_to_transactions();
-        }else{
-            $vendor_id = $transaction->vendor_id;
-        }
+        //     //6-8-2022 run in a queue?
+        //     app('App\Http\Controllers\TransactionController')->add_vendor_to_transactions();
+        // }else{
+        //     $vendor_id = $transaction->vendor_id;
+        // }
 
         $this->transaction = $transaction;
         $this->expense->date = $transaction->transaction_date;
-        $this->expense->vendor_id = $vendor_id;
+
+        if(is_null($transaction->vendor_id)){
+            $this->expense->vendor_id = NULL;
+        }else{
+            $this->expense->vendor_id = $transaction->vendor_id;
+        }        
+    
         $this->transactions_found = NULL;
         $this->expenses_found = NULL;
     }
@@ -338,6 +344,9 @@ class ExpensesForm extends Component
         ]);
 
         if($this->transaction){
+            if(!$this->transaction->vendor_id){
+                $this->transaction->vendor_id = $expense->vendor_id;
+            }
             $this->transaction->expense_id = $expense->id;
             $this->transaction->save();
         }
