@@ -20,7 +20,7 @@
         {{-- class="mt-3 sm:mt-0 sm:ml-4 --}}
         <div class="mx-auto">
             {{-- <label for="mobile-search-candidate" class="sr-only">Search</label> --}}
-            <label for="desktop-search-candidate" class="sr-only">Search</label>
+            <label for="desktop-search-candidate-5" class="sr-only">Search</label>
             <div class="flex rounded-md shadow-sm">
                 <div class="relative flex-grow focus-within:z-10">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -33,7 +33,7 @@
                         </svg>
                     </div>
                     <input 
-                        wire:model="project_name" 
+                        wire:model="project_name_search" 
                         type="text" 
                         name="mobile-search-candidate"
                         id="mobile-search-candidate"
@@ -42,13 +42,13 @@
                         autocomplete="mobile-search-candidate"
                         >
                     <input 
-                        wire:model="project_name" 
+                        wire:model="project_name_search" 
                         type="text" 
-                        name="desktop-search-candidate"
-                        id="desktop-search-candidate"
+                        name="desktop-search-candidate-5"
+                        id="desktop-search-candidate-5"
                         class="hidden focus:ring-indigo-500 focus:border-indigo-500 w-full rounded-none rounded-l-md pl-10 sm:block sm:text-sm border-gray-300"
                         placeholder="Search Projects"
-                        autocomplete="desktop-search-candidate"
+                        autocomplete="desktop-search-candidate-5"
                         >
                 </div>
                 <button type="button"

@@ -30,7 +30,7 @@
                             </svg>
                         </div>
                         <input 
-                            wire:model="client_name" 
+                            wire:model="client_name_search" 
                             type="text" 
                             name="mobile-search-candidate"
                             id="mobile-search-candidate"
@@ -39,7 +39,7 @@
                             autocomplete="mobile-search-candidate"
                             >
                         <input 
-                            wire:model="client_name" 
+                            wire:model="client_name_search" 
                             type="text" 
                             name="desktop-search-candidate"
                             id="desktop-search-candidate"

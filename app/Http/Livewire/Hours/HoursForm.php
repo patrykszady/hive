@@ -83,9 +83,6 @@ class HoursForm extends Component
 
     public function mount()
     {  
-        $this->selected_date = Carbon::parse(today()->format('Y-m-d'));
-        $this->selectedDate($this->selected_date);
-
         //active only
         $this->projects = Project::active()->orderBy('created_at', 'DESC')->get();
 
@@ -113,7 +110,7 @@ class HoursForm extends Component
         }
 
         $this->hours = NULL;
-        $this->selected_date = Carbon::parse(today()->format('Y-m-d'));
+        $this->selected_date = NULL;
     }
 
     public function update()
@@ -146,11 +143,16 @@ class HoursForm extends Component
         }
 
         $this->hours = NULL;
-        $this->selected_date = Carbon::parse(today()->format('Y-m-d'));
+        $this->selected_date = NULL;
     }
 
     public function render()
     {
+        if(is_null($this->selected_date)){
+            $this->selected_date = Carbon::parse(today()->format('Y-m-d'));
+            $this->selectedDate($this->selected_date);
+        }
+        
         $confirmed_dates =        
             Timesheet::
                 orderBy('date', 'DESC')

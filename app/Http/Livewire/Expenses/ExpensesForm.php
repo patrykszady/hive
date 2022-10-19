@@ -303,7 +303,7 @@ class ExpensesForm extends Component
 
         // dd($this->expense->paid_by ? $this->expense->paid_by : NULL);
 
-        if($this->check){
+        if($this->check->bank_account_id){
             $check = Check::create([
                 'check_type' => $this->check->check_type,
                 'check_number' => $this->check->check_number,
@@ -428,10 +428,10 @@ class ExpensesForm extends Component
             }
         }else{
             //disassociate
-            $this->expense->check->delete();
+            if($this->expense->check && !$this->check->bank_account_id){
+                $this->expense->check->delete();
+            }
         }
-
-
 
         // if($this->check){
         //     $check = Check::create([
@@ -450,9 +450,6 @@ class ExpensesForm extends Component
         // }else{
         //     $check_id = NULL;
         // }
-
-
-
 
         if($this->split){
             $expense_split_database = collect($this->expense_splits)->pluck('id')->toArray();

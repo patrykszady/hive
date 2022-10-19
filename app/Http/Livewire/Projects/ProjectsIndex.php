@@ -13,13 +13,13 @@ class ProjectsIndex extends Component
 {
     use WithPagination, AuthorizesRequests;
 
-    public $project_name = '';
+    public $project_name_search = '';
     public $client_id = '';
     public $project_status_title = '';
     public $view;
     
     protected $queryString = [
-        'project_name' => ['except' => ''],
+        'project_name_search' => ['except' => ''],
         'client_id' => ['except' => ''],
         'project_status_title' => ['except' => '']
     ];
@@ -54,7 +54,7 @@ class ProjectsIndex extends Component
             })
 
             // 8-23-2022 orWhere works on ClientsIndex
-            ->where('project_name', 'like', "%{$this->project_name}%")
+            ->where('project_name', 'like', "%{$this->project_name_search}%")
             // ->orWhere(function ($query) {
             //     $query->where('address', 'like', "{$this->project_name}");
             // })

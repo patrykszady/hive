@@ -12,10 +12,10 @@ class ClientsIndex extends Component
 {
     use WithPagination, AuthorizesRequests;
     
-    public $client_name = '';
+    public $client_name_search = '';
 
     protected $queryString = [
-        'client_name' => ['except' => '']
+        'client_name_search' => ['except' => '']
     ];
 
     public function updating($field)
@@ -28,14 +28,14 @@ class ClientsIndex extends Component
         $clients = Client::orderBy('created_at', 'DESC')
             // ->where('business_name', 'like', "%{$this->business_name}%")
             // ->where('business_type', 'like', "%{$this->vendor_type}%")
-            ->when($this->client_name, function($query) {
+            ->when($this->client_name_search, function($query) {
                 return $query->whereHas('users', function ($query) {
-                    return $query->where('last_name', 'like', "%{$this->client_name}%")
-                        ->orWhere('first_name', 'like', "%{$this->client_name}%");
+                    return $query->where('last_name', 'like', "%{$this->client_name_search}%")
+                        ->orWhere('first_name', 'like', "%{$this->client_name_search}%");
                   });
             })
-            ->orWhere('address', 'like', "%{$this->client_name}%")
-            ->orWhere('business_name', 'like', "%{$this->client_name}%")
+            ->orWhere('address', 'like', "%{$this->client_name_search}%")
+            ->orWhere('business_name', 'like', "%{$this->client_name_search}%")
             ->paginate(10);
 
         return view('livewire.clients.index', [
