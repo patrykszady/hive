@@ -47,7 +47,7 @@ class VendorPaymentForm extends Component
 
     protected $messages = 
     [
-        'payment_projects.*.amount.required' => 'Project Amount is required if included.',
+        'payment_projects.*.amount.required' => 'Project Amount is required if included. "Remove Project" if not included in this Payment',
         'payment_projects.*.amount.numeric' => 'Project Amount must be a number if included.',
         'payment_projects.*.amount.min' => 'Project Amount must be at least $0.01 if included.',
         'payment_projects.*.amount.regex' => 'Amount format is incorrect. Format is 2145.36. No commas and only two digits after decimal allowed. If amount is under $1.00, use 0.XX',
@@ -88,16 +88,25 @@ class VendorPaymentForm extends Component
         if(substr($field, 0, 16) == 'payment_projects'){
             $project_id = preg_replace("/[^0-9]/", '', $field);
 
-            $balance = $this->payment_projects[$project_id]['vendor_sum'] - $this->payment_projects[$project_id]['bids'];
-            $amount = $this->payment_projects[$project_id]['amount'];
-
-            if($amount > 0){
-                $project_balance = $balance - $amount;
+            if($this->payment_projects[$project_id]['amount'] == NULL || $this->payment_projects[$project_id]['amount'] <= 0){
+                $amount = 0;
             }else{
-                $project_balance = $balance;
+                $amount = $this->payment_projects[$project_id]['amount'];
             }
+            
+            $total_paid = $this->payment_projects[$project_id]['vendor_sum'];
+            $bids_amount = $this->payment_projects[$project_id]['bids'];
+            $balance = ($total_paid - $bids_amount) + $amount;
 
-            $this->payment_projects[$project_id]['balance'] = $project_balance;
+            // dd($balance);
+
+            // if($bids_amount <= 0){
+            //     $project_balance = 0;
+            // }else{
+            //     $project_balance = $balance - $amount;
+            // }
+
+            $this->payment_projects[$project_id]['balance'] = $balance;
         }
 
         if($field == 'check.check_type'){
@@ -126,11 +135,19 @@ class VendorPaymentForm extends Component
 
             $project->vendor_expenses = $project_vendor_expenses;
             $project->vendor_sum = $project_vendor_expenses->sum('amount');
-            $project->balance = $project_vendor_expenses->sum('amount') - $project_bids->sum('amount');
+
+            if($project_bids->sum('amount') > 0){
+                $project->balance = $project_vendor_expenses->sum('amount') - $project_bids->sum('amount');
+            }else{
+                $project->balance = 0;
+            }
+            
             $project->bids = $project->bids()->where('vendor_id', $this->vendor->id)->sum('amount');
     
             //add this Model to $payment_projects collection
-            $this->payment_projects += [$project->id => $project];        
+            $this->payment_projects += [$project->id => $project];
+            
+            $this->payment_projects[$project->id]['balance'] = $project->balance;
             $this->project_id = NULL;
         }
     }
@@ -145,6 +162,7 @@ class VendorPaymentForm extends Component
 
     public function updateProjectBalance($project_id)
     {
+        // dd($this->payment_projects[$project_id]['bids']);
         $balance = $this->payment_projects[$project_id]['vendor_sum'] - $this->payment_projects[$project_id]['bids'];
         $amount = $this->payment_projects[$project_id]['amount'];
 
@@ -162,7 +180,6 @@ class VendorPaymentForm extends Component
         //project_id = key in $this->payment_projects
         //remove this Model from $payment_projects collection
         unset($this->payment_projects[$project_id_to_remove]);
-        // $this->payment_projects->forget($project_id_to_remove);
     }
 
     public function store()
@@ -210,6 +227,7 @@ class VendorPaymentForm extends Component
     {
         //8/22/22 projects where id not in $this->payment_projects (key/id)
         $projects = Project::active()->orderBy('created_at', 'DESC')->get();
+        // $projects = Project::orderBy('created_at', 'DESC')->where('created_at', '>', '2020-01-01')->get();
 
         //->whereNot('users.id', auth()->user()->id)
         $employees = auth()->user()->vendor->users()->where('is_employed', 1)->get();

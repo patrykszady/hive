@@ -94,7 +94,8 @@ class PaymentsForm extends Component
                 'created_by_user_id' => auth()->user()->id,                
             ]);
         }
-        dd('in store past validation');
+        
+        return redirect()->route('projects.show', $payment->project_id);     
     }
 
     public function render()

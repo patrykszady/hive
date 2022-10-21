@@ -51,8 +51,7 @@ class BidsForm extends Component
         $this->bids = $this->project->bids()->where('vendor_id', $vendor->id)->orderBy('type')->get()->toArray();
 
         if(!$this->bids){
-            $this->bids = [];
-            array_push($this->bids);
+            array_push($this->bids, 1);
         }
 
         $this->modal_show = TRUE;

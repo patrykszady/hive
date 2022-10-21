@@ -94,6 +94,7 @@ class ExpensesForm extends Component
     public function updated($field) 
     {
         if($field == 'expense.amount'){
+            
             if(is_null($this->expense->id)){
                 if($this->expense->amount != NULL){
                     // 2-4-2022 ..account for splits and transactions same as ExpenseIndex render/search method
@@ -126,6 +127,8 @@ class ExpensesForm extends Component
                     $this->expense->date = NULL;
                 }
             }
+
+            // dd($this->transactions_found);
         }
 
         if($field == 'expense.date'){

@@ -173,7 +173,7 @@
                     x-show="open" 
                     x-transition.duration.150ms
                     >
-                    <x-forms.row 
+                    <x-forms.row
                         wire:model="expense.project_id" 
                         x-bind:disabled="split"
                         errorName="expense.project_id" 
@@ -290,7 +290,7 @@
                     x-show="(openproject || splits) && !open" 
                     x-transition.duration.150ms
                     >
-
+      
                     @include('livewire.checks._include_form')
                 </div>
 
