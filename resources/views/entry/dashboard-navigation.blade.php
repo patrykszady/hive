@@ -111,9 +111,12 @@
             <x-nav.section-dropdown href="{{route('banks.index')}}" :active="request()->routeIs('banks.index')">
                 Banks
             </x-nav.new-section-dropdown>
-            <x-nav.section-dropdown href="{{route('transactions.match_vendor')}}" :active="request()->routeIs('transactions.match_vendor')">
-                Match Transaction/Vendor
-            </x-nav.new-section-dropdown>
+
+            @if (auth()->user()->id == 1)
+                <x-nav.section-dropdown href="{{route('transactions.match_vendor')}}" :active="request()->routeIs('transactions.match_vendor')">
+                    Match Transaction/Vendor
+                </x-nav.new-section-dropdown>
+            @endif
         </x-slot>
         <x-slot name="icon">
             M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z

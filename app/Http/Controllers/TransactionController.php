@@ -335,6 +335,81 @@ class TransactionController extends Controller
         }
     }
 
+    public function add_check_deposit_to_transactions()
+    {
+        $institutions = VendorTransaction::whereNotNull('plaid_inst_id')->groupBy('plaid_inst_id')->pluck('plaid_inst_id');
+
+        //split by institution
+        foreach($institutions as $institution){
+            //NEED TO SHARE THIS WITH TrancationController@store_csv_array.. same code x2 06/29/2021
+            $institution_bank_ids = Bank::where('plaid_ins_id', $institution)->pluck('id');
+            $institution_bank_ids = BankAccount::whereIn('bank_id', $institution_bank_ids)->pluck('id');
+
+            $deposit_check_types = VendorTransaction::groupBy('deposit_check')->where('plaid_inst_id', $institution)->pluck('deposit_check');
+
+            //split by check_type of each institution (multiple of bank_ids)
+            foreach($deposit_check_types as $deposit_check_type){
+
+                //same for type 2 and 3 (check and transfer)
+                $transaction_check_desc = VendorTransaction::where('deposit_check', $deposit_check_type)->where('plaid_inst_id', $institution)->pluck('desc');
+
+                $transactions = Transaction::
+                    where('expense_id', NULL)
+                    ->where('vendor_id', NULL)
+                    ->where('check_number', NULL) 
+                    ->where('check_id', NULL)                      
+                    ->where('deposit', NULL)
+                    ->whereNotNull('transaction_date')
+                    ->whereIn('bank_account_id', $institution_bank_ids)
+                    //Same where clause used $this->createVendorTransactions 6/10/2021
+                    ->where(function ($query) use($transaction_check_desc) {
+                         for ($i = 0; $i < count($transaction_check_desc); $i++){
+                            //  dd($transaction_check_desc[$i]);
+                             //first or whitespace(need to implement 6/10/2021) before query only 6/10/21..instead of preg loop
+                            $query->orWhere('plaid_merchant_description', 'like', '%' . $transaction_check_desc[$i] . '%');
+                            //'like', '%' . $transaction_check_desc[$i]
+                         }      
+                    })
+                    ->get();
+
+                foreach($transactions as $transaction){
+                    //preg here after $transactions are gathered or should it be before?...trying to do this in the LIKE statement above instead 6/10/2021
+                    //NEED A WAY TO INCLUDE BILL PAY (6) IN THIS CODE
+
+                    //CHECK
+                    if($deposit_check_type == 2){
+                        // dd($deposit_check_type);
+                        //if transaction_desc = "CHECK" and no number...it saves as check_number "0"..need to change.. but we account for this in $this->add_check_id_to_transactions 06/23/2021
+                        $re = '/\d{3,}/';
+                        $str = $transaction->plaid_merchant_description;
+                        preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
+      
+                        if(isset($matches[0][0])){
+                            $check = $matches[0][0];
+                            $transaction->check_number = $check;
+                        }
+
+                    //TRANSFER
+                    }elseif($deposit_check_type == 3){
+                        $transaction->check_number = '1010101';
+
+                    //DEPOSIT
+                    }elseif($deposit_check_type == 1){
+                        $transaction->deposit = 1; //yes, transaction has a deposit
+
+                    //CASH
+                    }elseif($deposit_check_type == 4){
+                        $transaction->check_number = '2020202';
+                    }else{
+                        continue;
+                    }
+
+                    $transaction->save();
+                } 
+            }
+        }
+    }
+    
     public function add_expense_to_transactions()
     {
         //OLD: $cliff_vendors = Vendor::where('cliff_registration->vendor_registration_complete', 'true')->get();
@@ -450,80 +525,5 @@ class TransactionController extends Controller
                 } //foreach $transactions
             } //foreach $expenses
         }    
-    }
-
-    public function add_check_deposit_to_transactions()
-    {
-        $institutions = VendorTransaction::whereNotNull('plaid_inst_id')->groupBy('plaid_inst_id')->pluck('plaid_inst_id');
-
-        //split by institution
-        foreach($institutions as $institution){
-            //NEED TO SHARE THIS WITH TrancationController@store_csv_array.. same code x2 06/29/2021
-            $institution_bank_ids = Bank::where('plaid_ins_id', $institution)->pluck('id');
-            $institution_bank_ids = BankAccount::whereIn('bank_id', $institution_bank_ids)->pluck('id');
-
-            $deposit_check_types = VendorTransaction::groupBy('deposit_check')->where('plaid_inst_id', $institution)->pluck('deposit_check');
-
-            //split by check_type of each institution (multiple of bank_ids)
-            foreach($deposit_check_types as $deposit_check_type){
-
-                //same for type 2 and 3 (check and transfer)
-                $transaction_check_desc = VendorTransaction::where('deposit_check', $deposit_check_type)->where('plaid_inst_id', $institution)->pluck('desc');
-
-                $transactions = Transaction::
-                    where('expense_id', NULL)
-                    ->where('vendor_id', NULL)
-                    ->where('check_number', NULL) 
-                    ->where('check_id', NULL)                      
-                    ->where('deposit', NULL)
-                    ->whereNotNull('transaction_date')
-                    ->whereIn('bank_account_id', $institution_bank_ids)
-                    //Same where clause used $this->createVendorTransactions 6/10/2021
-                    ->where(function ($query) use($transaction_check_desc) {
-                         for ($i = 0; $i < count($transaction_check_desc); $i++){
-                            //  dd($transaction_check_desc[$i]);
-                             //first or whitespace(need to implement 6/10/2021) before query only 6/10/21..instead of preg loop
-                            $query->orWhere('plaid_merchant_description', 'like', '%' . $transaction_check_desc[$i] . '%');
-                            //'like', '%' . $transaction_check_desc[$i]
-                         }      
-                    })
-                    ->get();
-
-                foreach($transactions as $transaction){
-                    //preg here after $transactions are gathered or should it be before?...trying to do this in the LIKE statement above instead 6/10/2021
-                    //NEED A WAY TO INCLUDE BILL PAY (6) IN THIS CODE
-
-                    //CHECK
-                    if($deposit_check_type == 2){
-                        // dd($deposit_check_type);
-                        //if transaction_desc = "CHECK" and no number...it saves as check_number "0"..need to change.. but we account for this in $this->add_check_id_to_transactions 06/23/2021
-                        $re = '/\d{3,}/';
-                        $str = $transaction->plaid_merchant_description;
-                        preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
-      
-                        if(isset($matches[0][0])){
-                            $check = $matches[0][0];
-                            $transaction->check_number = $check;
-                        }
-
-                    //TRANSFER
-                    }elseif($deposit_check_type == 3){
-                        $transaction->check_number = '1010101';
-
-                    //DEPOSIT
-                    }elseif($deposit_check_type == 1){
-                        $transaction->deposit = 1; //yes, transaction has a deposit
-
-                    //CASH
-                    }elseif($deposit_check_type == 4){
-                        $transaction->check_number = '2020202';
-                    }else{
-                        continue;
-                    }
-
-                    $transaction->save();
-                } 
-            }
-        }
     }
 }
