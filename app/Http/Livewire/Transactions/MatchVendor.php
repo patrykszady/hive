@@ -65,14 +65,10 @@ class MatchVendor extends Component
 
     public function store()
     {
-        // dd($this);
         $this->validate();
         // $this->authorize('create', Expense::class);
-
         
         foreach($this->match_merchant_names as $key => $vendor_match){
-            dd($this->merchant_names);
-            dd($key);
             if($vendor_match['vendor_id'] == "NEW"){
                 //new Retail Vendor
                 $vendor = Vendor::create([
@@ -98,13 +94,9 @@ class MatchVendor extends Component
                     $deposit_check = NULL;                    
                     $vendor_id = $vendor_match['vendor_id'];                  
                 }
-
-                // dd($deposit_check);
                 
                 if(isset($vendor_match['bank_specific'])){
-                    // dd($this->match_vendor_names[$key]);
-                    $institution_id = BankAccount::findOrFail($this->match_vendor_names[$key][0]['bank_account_id']);
-                    dd($institution_id);
+                    $institution_id = $this->merchant_names->values()[$key][0]['bank_account']['bank']['plaid_ins_id'];
                 }else{
                     $institution_id = NULL;
                 }
@@ -135,6 +127,7 @@ class MatchVendor extends Component
 
         //6-8-2022 run in a queue?
         app('App\Http\Controllers\TransactionController')->add_vendor_to_transactions();
+        app('App\Http\Controllers\TransactionController')->add_check_deposit_to_transactions();
 
         return redirect(route('transactions.match_vendor'));
     }
