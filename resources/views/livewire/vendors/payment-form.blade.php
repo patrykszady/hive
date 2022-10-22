@@ -119,6 +119,7 @@
                                 placeholder="00.00"
                                 inputmode="decimal" 
                                 step="0.01"
+                                pattern="[0-9]*"
                                 autofocus
                                 > 
                             </x-forms.row>
