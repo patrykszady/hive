@@ -14,6 +14,7 @@ class MatchVendor extends Component
 {
     use AuthorizesRequests;
 
+    public $merchant_names = [];
     public $match_merchant_names = [];
     public $match_vendor_names = [];
 
@@ -26,7 +27,7 @@ class MatchVendor extends Component
 
     public function mount()
     {              
-        $this->vendors = Vendor::withoutGlobalScopes()->get();
+        $this->vendors = Vendor::withoutGlobalScopes()->orderBy('business_name', 'ASC')->where('business_type', 'Retail')->get();
         // $transaction->bank_account->bank->plaid_ins_id
 
         // $this->match_vendor_names = Transaction::transactionsSinVendor()->whereIn('bank_account_id', $transaction_bank_accounts)->get()->groupBy('plaid_merchant_name')->values()->toArray();
@@ -46,23 +47,32 @@ class MatchVendor extends Component
     public function render()
     {
         $transaction_bank_accounts = BankAccount::where('vendor_id', 1)->pluck('id')->toArray();
-        $merchant_names = Transaction::transactionsSinVendor()->whereIn('bank_account_id', $transaction_bank_accounts)->get()->groupBy('plaid_merchant_name');
+        $this->merchant_names = Transaction::transactionsSinVendor()->whereIn('bank_account_id', $transaction_bank_accounts)->get()->groupBy('plaid_merchant_description')->toBase();
+
+        // dd($this->merchant_names);
+        
     //     $merchant_names = Transaction::transactionsSinVendor()->get()->groupBy('plaid_merchant_name')->each(function($test, $key) {
     //         dd($test->put('name', $key));         
     //    });
         // $merchant_names = Transaction::transactionsSinVendor()->get()->keyBy('id')->groupBy('plaid_merchant_name', true)->values();
 
+        // dd($merchant_names);
+
         return view('livewire.transactions.match-vendor', [
-            'merchant_names' => $merchant_names,
+            'merchant_names' => $this->merchant_names,
         ]);
     }
 
     public function store()
     {
+        // dd($this);
         $this->validate();
         // $this->authorize('create', Expense::class);
 
+        
         foreach($this->match_merchant_names as $key => $vendor_match){
+            dd($this->merchant_names);
+            dd($key);
             if($vendor_match['vendor_id'] == "NEW"){
                 //new Retail Vendor
                 $vendor = Vendor::create([
@@ -89,8 +99,12 @@ class MatchVendor extends Component
                     $vendor_id = $vendor_match['vendor_id'];                  
                 }
 
+                // dd($deposit_check);
+                
                 if(isset($vendor_match['bank_specific'])){
-                    $institution_id = BankAccount::findOrFail($this->match_vendor_names[$key][0]['bank_account_id'])->bank->plaid_ins_id;
+                    // dd($this->match_vendor_names[$key]);
+                    $institution_id = BankAccount::findOrFail($this->match_vendor_names[$key][0]['bank_account_id']);
+                    dd($institution_id);
                 }else{
                     $institution_id = NULL;
                 }

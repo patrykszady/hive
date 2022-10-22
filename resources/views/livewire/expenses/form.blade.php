@@ -32,7 +32,7 @@
                     hint="$" 
                     textSize="xl" 
                     placeholder="00.00" 
-                    inputmode="numeric" 
+                    inputmode="decimal" 
                     step="0.01"
                     autofocus
                     > 

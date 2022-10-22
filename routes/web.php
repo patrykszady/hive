@@ -76,7 +76,7 @@ Route::get('new_orc_status', [ReceiptController::class, 'new_orc_status'])->name
 Route::get('plaid_transactions_scheduled', [TransactionController::class, 'plaid_transactions_scheduled']);
 Route::get('add_vendor_to_transactions', [TransactionController::class, 'add_vendor_to_transactions']);
 Route::get('add_expense_to_transactions', [TransactionController::class, 'add_expense_to_transactions']);
-
+Route::get('add_check_deposit_to_transactions', [TransactionController::class, 'add_check_deposit_to_transactions']);
 
 Route::middleware(['auth', 'user.vendor'])->group(function(){
     //DASHBOARD/ PRIMARY VENDOR

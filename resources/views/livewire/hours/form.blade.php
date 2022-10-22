@@ -71,7 +71,7 @@
 							hint="Hours" 
 							textSize="xl" 
 							placeholder="1.00"
-							inputmode="numeric" 
+							inputmode="decimal" 
 							step="0.25"
 							> 
 						</x-forms.row>						

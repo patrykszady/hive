@@ -252,7 +252,7 @@ class TransactionController extends Controller
         // dd($transactions);
 
         foreach($transactions as $merchant_name => $merchant_transactions){
-            // dd($merchant_name);
+            // dd($merchant_transactions);
 
             //find vendor where vendor->business_name is contained in $merchant_name
             // $vendor_match = preg_grep("/^" . $merchant_name . "/i", $vendors->pluck('business_name')->toArray());
@@ -275,7 +275,9 @@ class TransactionController extends Controller
 
         //CHECK VendorTransaction table
         $vendor_transactions = VendorTransaction::whereNull('deposit_check')->get();
+        // dd($vendor_transactions);
         foreach($vendor_transactions as $vendor_transaction){
+            // dd($vendor_transaction);
             
             //get all BankAccount where bank_account_id 
 
@@ -287,7 +289,7 @@ class TransactionController extends Controller
             //Alter $transactions variable/results based on the if statement below
             // dd(Transaction::TransactionsSinVendor()->where('bank_account_id', 1)->get());
 
-            foreach($transactions as $plaid_name_transactions){
+            foreach($transactions as $vendor_name => $plaid_name_transactions){
                 // if($vendor_transaction->plaid_inst_id){
                 //     //6-11-2022 way too code heavy!!!...!!!
                 //     $vendor_inst_id = $plaid_name_transactions->first()->bank_account->bank->plaid_ins_id;
@@ -305,11 +307,12 @@ class TransactionController extends Controller
                 // }
                 // dd('too far');
 
-                $vendor_desc = $plaid_name_transactions->first()->plaid_merchant_description;
+                // $vendor_desc = $plaid_name_transactions->first()->plaid_merchant_description;
             
-                //decode json on VendorTrasaction Model!
+                //decode json on VendorTrasaction Model
                 $preg = json_decode($vendor_transaction->options);
-                preg_match('/'. $vendor_transaction->desc . $preg, $vendor_desc, $matches, PREG_UNMATCHED_AS_NULL);
+                preg_match('/'. $vendor_transaction->desc . $preg, $vendor_name, $matches, PREG_UNMATCHED_AS_NULL);
+                // dd($matches);
 
                 if(!empty($matches)){
                     foreach($plaid_name_transactions as $key => $transaction){
@@ -403,8 +406,8 @@ class TransactionController extends Controller
                         continue 2;
                     }
 
-                    if(!$expense->expense_receipts->isEmpty()){
-                        $receipt_text = $expense->expense_receipts->first()->receipt_html;
+                    if(!$expense->receipts->isEmpty()){
+                        $receipt_text = $expense->receipts->first()->receipt_html;
                         $re = '/(-|-\$|\()?((\d{1,3})([,])(\d{1,3})([.,]))\d{1,2}|(-|-\$|\()?(\d{1,3})([.,])\d{1,2}/m';
                         // $re = '/(-|-\$|\()?(\d{1,3})([.])\d{1,2}/m'; 4/30/21
                         $str = $receipt_text;
@@ -443,5 +446,81 @@ class TransactionController extends Controller
                 } //foreach $transactions
             } //foreach $expenses
         }    
+    }
+
+    public function add_check_deposit_to_transactions()
+    {
+        //NEED A WAY TO INCLUDE BILL PAY (6) IN THIS CODE
+        $institutions = VendorTransaction::whereNotNull('plaid_inst_id')->groupBy('plaid_inst_id')->pluck('plaid_inst_id');
+        dd($institutions);
+        
+        //split by institution
+        foreach($institutions as $institution){
+            //NEED TO SHARE THIS WITH TrancationController@store_csv_array.. same code x2 06/29/2021
+            $institution_bank_ids = Bank::where('plaid_ins_id', $institution)->pluck('id');
+            // dd($institution_bank_ids);
+            $deposit_check_types = VendorTransaction::groupBy('deposit_check')->where('plaid_inst_id', $institution)->pluck('deposit_check');
+            // dd($deposit_check_types);
+            //split by check_type of each institution (multiple of bank_ids)
+            foreach($deposit_check_types as $deposit_check_type){
+                // dd($deposit_check_type);
+                //same for type 2 and 3 (check and transfer)
+                $transaction_check_desc = VendorTransaction::where('deposit_check', $deposit_check_type)->where('plaid_inst_id', $institution)->pluck('desc');
+                // dd($transaction_check_desc);
+                $transactions = Transaction::
+                    where('expense_id', NULL)
+                    ->where('vendor_id', NULL)
+                    ->where('check_number', NULL) 
+                    ->where('check_id', NULL)                      
+                    ->where('deposit', NULL)
+                    ->whereNotNull('transaction_date')
+                    ->whereIn('bank_id', $institution_bank_ids)
+
+                    //Same where clause used $this->createVendorTransactions 6/10/2021
+                    ->where(function ($query) use($transaction_check_desc) {
+                         for ($i = 0; $i < count($transaction_check_desc); $i++){
+                            //  dd($transaction_check_desc[$i]);
+                             //first or whitespace(need to implement 6/10/2021) before query only 6/10/21..instead of preg loop
+                            $query->orWhere('plaid_merchant_name', 'like', $transaction_check_desc[$i] . '%');
+                            //'like', '%' . $transaction_check_desc[$i]
+                         }      
+                    })
+                    ->get();
+
+                foreach($transactions as $transaction){
+                    //preg here after $transactions are gathered or should it be before?...trying to do this in the LIKE statement above instead 6/10/2021
+
+                    //CHECK
+                    if($deposit_check_type == 2){
+                        //if transaction_desc = "CHECK" and no number...it saves as check_number "0"..need to change.. but we account for this in $this->add_check_id_to_transactions 06/23/2021
+
+                        $re = '/\d{3,}/';
+                        $str = $transaction->plaid_merchant_name;
+                        preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
+                        // dd($matches);
+                        if(isset($matches[0][0])){
+                            $check = $matches[0][0];
+                            $transaction->check_number = $check;
+                        }
+
+                    //TRANSFER
+                    }elseif($deposit_check_type == 3){
+                        $transaction->check_number = '1010101';
+
+                    //DEPOSIT
+                    }elseif($deposit_check_type == 1){
+                        $transaction->deposit = 1; //yes, transaction has a deposit
+
+                    //CASH
+                    }elseif($deposit_check_type == 4){
+                        $transaction->check_number = '2020202';
+                    }else{
+                        continue;
+                    }
+
+                    $transaction->save();
+                } 
+            }
+        }
     }
 }

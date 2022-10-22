@@ -4,7 +4,12 @@
             <x-cards.wrapper class="max-w-2xl lg:max-w-3xl mx-auto mt-6">
                 <x-cards.heading>
                     <x-slot name="left">
-                        <h1>{{$merchant_name}}</h1>
+                        <h1>
+                            {{$merchant_name}} 
+                            @if($merchant_name != $merchant_transactions->first()->plaid_merchant_name)
+                                <br> {{$merchant_transactions->first()->plaid_merchant_name}}
+                            @endif
+                        </h1>
                     </x-slot>
                     <x-slot name="right">
                         {{-- <x-cards.button href="{{route('expenses.index')}}">
@@ -18,7 +23,7 @@
                             @php
                                 $line_details = [
                                     1 => [
-                                        'text' => $transaction->posted_date->format('m/d/Y'),
+                                        'text' => $transaction->transaction_date->format('m/d/Y'),
                                         'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
                                         ],
                                     // 2 => [
@@ -41,7 +46,9 @@
                             </x-lists.search_li>                        
                         @endforeach
                     </x-lists.ul>
+
                     <hr>
+
                     <x-forms.row 
                         wire:model="match_merchant_names.{{ $loop->index }}.match_desc" 
                         errorName="match_merchant_names.{{ $loop->index }}.match_desc"
@@ -50,6 +57,7 @@
                         type="text"
                         >
                     </x-forms.row>
+
                     <x-forms.row 
                         wire:model.debounce.250ms="match_merchant_names.{{ $loop->index }}.vendor_id" 
                         errorName="match_merchant_names.{{ $loop->index }}.vendor_id" 
@@ -63,11 +71,12 @@
                         <option value="CHECK">Check Paid</option>
                         <option value="TRANSFER">Transfer/Zelle Out</option>
                         <option value="CASH">Cash Withdrawal</option>
-                        <hr>
+                        <option value="" disabled>--------------</option>
                         @foreach ($vendors as $index => $vendor)
                             <option value="{{$vendor->id}}">{{$vendor->business_name}}</option>
                         @endforeach
                     </x-forms.row>
+
                     <x-forms.row 
                         wire:model="match_merchant_names.{{ $loop->index }}.options" 
                         errorName="match_merchant_names.{{ $loop->index }}.options" 
@@ -87,6 +96,9 @@
                             >
                         </x-slot>
                     </x-forms.row>
+{{-- 
+                    <input type="hidden" id="match_merchant_names.{{ $loop->index }}.bank_id" name="match_merchant_names.{{ $loop->index }}.bank_id" value="{{$transaction->bank_account->bank->id}}"> --}}
+
                 </x-cards.body>
             </x-cards.wrapper>        
         @endforeach

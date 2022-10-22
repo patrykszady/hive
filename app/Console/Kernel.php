@@ -33,8 +33,8 @@ class Kernel extends ConsoleKernel
         //Transactions bidaily/hourly
         // $schedule->call('\App\Http\Controllers\TransactionController@plaid_item_error_update')->hourly();
         $schedule->call('\App\Http\Controllers\TransactionController@plaid_transactions_scheduled')->hourly();
-        $schedule->call('\App\Http\Controllers\TransactionController@add_vendor_to_transactions')->everyMinute();
-        $schedule->call('\App\Http\Controllers\TransactionController@add_expense_to_transactions')->everyMinute(); 
+        // $schedule->call('\App\Http\Controllers\TransactionController@add_vendor_to_transactions')->everyMinute();
+        // $schedule->call('\App\Http\Controllers\TransactionController@add_expense_to_transactions')->everyMinute(); 
         // $schedule->command('inspire')->hourly();
     }
 
