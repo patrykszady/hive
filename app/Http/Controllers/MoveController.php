@@ -38,7 +38,18 @@ class MoveController extends Controller
         //open old database
         $move_database = DB::connection('move_mysql');
 
-        
+        //add check totals
+        $checks = Check::withoutGlobalScopes()->get();
+
+        foreach($checks as $check){
+            $check->amount = $check->expenses->sum('amount') + $check->timesheets->sum('amount');
+            $check->timestamps = false;
+            $check->save();
+        }
+
+        dd('check amounts added');
+
+
         //NEED TO BE LOGGED IN FOR [BIDS TYPE, PROJECT STATUS COMBINE]
         //BIDS TYPE
     //   $bids = Bid::withoutGlobalScopes()->orderBy('created_at', 'ASC')->get();

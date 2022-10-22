@@ -12,7 +12,7 @@ class Check extends Model
 {
     use HasFactory, SoftDeletes;
     
-    protected $fillable = ['id', 'check_type', 'check_number', 'date', 'bank_account_id', 'user_id', 'vendor_id', 'belongs_to_vendor_id', 'created_by_user_id', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['id', 'check_type', 'check_number', 'date', 'bank_account_id', 'user_id', 'vendor_id', 'belongs_to_vendor_id', 'created_by_user_id', 'created_at', 'updated_at', 'deleted_at', 'amount'];
 
     protected $dates = ['date', 'deleted_at'];
 
@@ -24,26 +24,6 @@ class Check extends Model
     {
         static::addGlobalScope(new CheckScope);
     }
-
-    // protected $appends = ['owner'];
-
-    // public function vendor()
-    // {
-    //     return $this->belongsTo(Vendor::class)->withDefault([
-    //         //if transaction->vendor_id == NULL?
-    //         'business_name' => 'No Vendor',
-    //     ]);
-    // }
-
-    // public function expense()
-    // {
-    //     return $this->belongsTo(Expense::class)->withDefault([
-    //         //if transaction->expense_id == NULL?
-    //         'id' => 'No Expense',
-    //     ]);
-    // }
-
-    //has many hours
     
     public function bank_account()
     {
@@ -78,14 +58,6 @@ class Check extends Model
     public function expenses()
     {
         return $this->hasMany(Expense::class);
-    }    
-
-    public function getAmountAttribute()
-    {
-        //distrubutions too!
-        $total = $this->expenses->sum('amount') + $this->timesheets->sum('amount');
-
-        return $total;
     }
 
     public function getOwnerAttribute()

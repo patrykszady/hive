@@ -77,6 +77,7 @@ Route::get('plaid_transactions_scheduled', [TransactionController::class, 'plaid
 Route::get('add_vendor_to_transactions', [TransactionController::class, 'add_vendor_to_transactions']);
 Route::get('add_expense_to_transactions', [TransactionController::class, 'add_expense_to_transactions']);
 Route::get('add_check_deposit_to_transactions', [TransactionController::class, 'add_check_deposit_to_transactions']);
+Route::get('add_check_id_to_transactions', [TransactionController::class, 'add_check_id_to_transactions']);
 
 Route::middleware(['auth', 'user.vendor'])->group(function(){
     //DASHBOARD/ PRIMARY VENDOR

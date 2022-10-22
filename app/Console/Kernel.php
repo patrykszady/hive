@@ -26,16 +26,19 @@ class Kernel extends ConsoleKernel
     {
         // only in Production not in Development enviroment ... ANYTHING EMAIL RELATED GOES HERE
         if(env('APP_ENV') == 'production'){
-            $schedule->call('\App\Http\Controllers\ReceiptController@receipt_email')->everyMinute();       
+            $schedule->call('\App\Http\Controllers\ReceiptController@receipt_email')->everyMinute();  
+            
+            $schedule->call('\App\Http\Controllers\TransactionController@plaid_transactions_scheduled')->hourly();
+            $schedule->call('\App\Http\Controllers\TransactionController@add_check_deposit_to_transactions')->everyTenMinutes();
+            $schedule->call('\App\Http\Controllers\TransactionController@add_vendor_to_transactions')->everyTenMinutes();
+            $schedule->call('\App\Http\Controllers\TransactionController@add_expense_to_transactions')->everyTenMinutes();
+            $schedule->call('\App\Http\Controllers\TransactionController@add_check_id_to_transactions')->everyTenMinutes(); 
         }
         // $schedule->call('\App\Http\Controllers\ReceiptController@receipt_email')->everyMinute();
 
         //Transactions bidaily/hourly
         // $schedule->call('\App\Http\Controllers\TransactionController@plaid_item_error_update')->hourly();
-        $schedule->call('\App\Http\Controllers\TransactionController@plaid_transactions_scheduled')->hourly();
-        $schedule->call('\App\Http\Controllers\TransactionController@add_check_deposit_to_transactions')->everyTenMinutes();
-        $schedule->call('\App\Http\Controllers\TransactionController@add_vendor_to_transactions')->everyTenMinutes();
-        // $schedule->call('\App\Http\Controllers\TransactionController@add_expense_to_transactions')->everyTenMinutes(); 
+
         // $schedule->command('inspire')->hourly();
     }
 

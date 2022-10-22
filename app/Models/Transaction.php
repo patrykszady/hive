@@ -40,7 +40,8 @@ class Transaction extends Model
         return $this->belongsTo(Check::class);
     }
 
-    public function bank_accountBank()
+    //bank_accountBank
+    public function bank()
     {
         return $this->hasOneThrough(Bank::class, BankaAccount::class);
     }

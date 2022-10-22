@@ -209,7 +209,12 @@ class TimesheetPaymentForm extends Component
             $expense->save();
         }
 
-        return redirect()->route('timesheets.payment', $this->user->id);
+        if($check){
+            $check->amount = $check->expenses->sum('amount') + $check->timesheets->sum('amount');
+            $check->save();
+        }
+
+        return redirect()->route('timesheets.show', $weekly_timesheet->id);
     }
 
     public function render()

@@ -391,6 +391,12 @@ class ExpensesForm extends Component
             //1/3/2022 Laravel queue $receipt_file HTML... 
         }
 
+        if($expense->check){
+            //get check total AMOUNT
+            $expense->check->amount = $expense->check->expenses->sum('amount') + $expense->check->timesheets->sum('amount');
+            $expense->check->save();
+        }
+
         //session()->flash('notify-saved'); with amount of new expense and href to go to it route('expenses.show', $expense->id)
         return redirect()->route('expenses.show', $expense);
     }
