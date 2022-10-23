@@ -11,7 +11,7 @@
             </div>
         </div> --}}
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">{{$h1}}</h1>
+            <h1 class="text-2xl font-bold text-gray-900">{!!$h1!!}</h1>
             {{-- 8/23/22 make the p below href where applicable --}}
             <p class="text-sm font-medium text-gray-500">
                 {{$p}}

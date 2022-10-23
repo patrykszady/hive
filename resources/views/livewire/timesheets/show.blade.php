@@ -1,6 +1,7 @@
 <x-page.top
-	h1="{{ $timesheet->user->first_name . 's Timesheet Week of ' . $timesheet->date->format('M d Y') }}"
-	p="Timesheet Week of {{ $timesheet->date->format('M d Y') }}"
+	{{-- h1="{!! $timesheet->user->first_name . 's Timesheet' . '<br>' . 'Week of ' . $timesheet->date->format('M dS Y') !!}" --}}
+    h1="{!! $timesheet->user->first_name . '\'s Timesheet' !!}"
+	p="Week of {{ $timesheet->date->format('M dS Y') }}"
 	{{-- right_button_href="{{auth()->user()->can('update', $timesheet) ? route('timesheets.edit', $tinesheet->id) : ''}}" --}}
 
 	{{-- {{ route('expenses.edit', $expense->id) }} --}}
