@@ -33,6 +33,7 @@
                     textSize="xl" 
                     placeholder="00.00" 
                     inputmode="decimal" 
+                    {{-- pattern="[0-9]*" --}}
                     step="0.01"
                     autofocus
                     > 
@@ -162,7 +163,7 @@
                     >
                         <option value="" readonly>Select Vendor</option>
                         @foreach ($vendors as $index => $vendor)
-                            <option value="{{$vendor->id}}">{{$vendor->business_name}}</option>
+                            <option value="{{$vendor->id}}">{{$vendor->name}}</option>
                         @endforeach
                     </x-forms.row>
                 </div>

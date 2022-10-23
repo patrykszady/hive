@@ -102,7 +102,7 @@
             <x-lists.search_li
                 href="{{route('vendors.show', $vendor->id)}}"
                 :line_details="$line_details"
-                :line_title="$vendor->business_name"
+                :line_title="$vendor->name"
                 :bubble_message="$vendor->business_type"
                 >
 

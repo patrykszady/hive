@@ -1,6 +1,6 @@
 <div>
 	<x-page.top
-        h1="{!! $vendor->business_name !!}"
+        h1="{!! $vendor->name !!}"
         p=""
         right_button_href="{{auth()->user()->can('update', $vendor) ? route('vendors.show', $vendor->id) : ''}}"
         right_button_text="Edit Vendor"

@@ -13,7 +13,7 @@
                 <x-cards.heading>
                     <x-slot name="left">
                         <h1>Payment</h1>
-                        <p class="text-gray-500"><i>Create a Payment for User {{$user->full_name}}</i></p>
+                        <p class="text-gray-500"><i>Create a Payment for {{$user->full_name}}</i></p>
                     </x-slot>
                 </x-cards.heading>
 

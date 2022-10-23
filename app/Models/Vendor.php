@@ -13,6 +13,8 @@ class Vendor extends Model
 
     protected $fillable = ['id', 'business_name', 'business_type', 'address', 'address_2', 'city', 'state', 'zip_code', 'business_phone', 'business_email', 'created_at', 'updated_at'];
 
+    protected $appends = ['name'];
+
     protected static function booted()
     {
         static::addGlobalScope(new VendorScope);
@@ -101,6 +103,31 @@ class Vendor extends Model
         
         return $address;
     }
+
+    public function getNameAttribute()
+    {
+        if($this->biz_type == 4 AND !is_null($this->users()->first())){
+            $name = $this->users()->first()->first_name . ' ' . $this->users()->first()->last_name;
+            return $name;
+        }else{
+            //delete. INC, DBA..and if it's too long
+            $name = explode(",",$this->business_name);  
+            return $name[0];          
+        }        
+    }
+
+    // public function getBusinessNameAttribute()
+    // {
+    //     if($this->address_2){
+    //         $address = $this->address . '<br>' . $this->address_2 . '<br>' . $this->city . ', ' . $this->state . ' ' . $this->zip_code; 
+    //     }elseif($this->address){
+    //         $address = $this->address . '<br>' . $this->city . ', ' . $this->state . ' ' . $this->zip_code; 
+    //     }else{
+    //         $address = NULL;
+    //     }
+        
+    //     return $address;
+    // }
 
     // public function getOneLineAddressAttribute()
     // {
