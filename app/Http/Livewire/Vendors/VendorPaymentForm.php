@@ -218,7 +218,7 @@ class VendorPaymentForm extends Component
 
         if(isset($check)){
             //get check total AMOUNT
-            $check->amount = $expenses->sum('amount') + $check->timesheets->sum('amount');
+            $check->amount = $check->expenses->sum('amount') + $check->timesheets->sum('amount');
             $check->save();
             return redirect()->route('checks.show', $check->id);
         }else{
