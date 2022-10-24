@@ -7,6 +7,7 @@
     'hrefTarget' => NULL,
     'lineData' => NULL,
     'bubbleMessage' => NULL,
+    'bubbleColor' => 'indigo',
     'bold' => NULL
     ])
 
@@ -61,7 +62,7 @@
                     @if($bubbleMessage)
                         <div class="ml-auto">
                             <p
-                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                                class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{$bubbleColor}}-100 text-{{$bubbleColor}}-800">
                                 {{ $bubbleMessage }}
                             </p>
                         </div>
@@ -72,7 +73,7 @@
                     </p>
                     <div class="ml-auto">
                         <p
-                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">
+                            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{$bubbleColor}}-100 text-{{$bubbleColor}}-800">
                             {{ $bubbleMessage }}
                         </p>
                     </div>

@@ -30,4 +30,9 @@ class Payment extends Model
     {
         return $this->belongsTo(Project::class);
     }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
+    }
 }

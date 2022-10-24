@@ -94,6 +94,26 @@ class Project extends Model
         }
         
         return $name;
+
+
+
+
+        // if($this->project_name == 'Expense is Split' || $this->project_name == 'No Project'){
+        //     $name = $this->project_name;
+        // }else{
+        //     $address = $this->address;
+
+        //     //find S/N/W/E and delete it..
+        //     //find first space after numbers
+        //     //find first space
+        //     $last_space_position = strrpos($address, ' ');
+        //     $address = substr($address, 0, $last_space_position);
+
+        //     //remove last word of string
+        //     $name = $address . ' | ' . $this->project_name;
+        // }
+    
+        // return $name;
     }
 
     public function scopeActive($query)

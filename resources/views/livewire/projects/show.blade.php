@@ -260,7 +260,8 @@
 							href=""
 							:line_details="$line_details"
 							:line_title="money($payment->amount)"
-							:bubble_message="'Payment'"
+							:bubble_message="$payment->transaction ? 'Complete' : 'No Transaction'"
+							:bubble_color="$payment->transaction ? 'green' : 'red'"
 							>
 						</x-lists.search_li>
 					@endforeach
