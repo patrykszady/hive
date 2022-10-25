@@ -415,7 +415,7 @@ class TransactionController extends Controller
     public function add_expense_to_transactions()
     {
         //OLD: $cliff_vendors = Vendor::where('cliff_registration->vendor_registration_complete', 'true')->get();
-        $cliff_vendors = Vendor::where('business_type', 'Sub')->get();
+        $cliff_vendors = Vendor::where('business_type', 'Sub')->where('id', 1)->get();
 
         foreach($cliff_vendors as $cliff_vendor){
             $cliff_vendor_bank_account_ids = $cliff_vendor->bank_accounts->pluck('id');

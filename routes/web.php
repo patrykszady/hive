@@ -80,6 +80,10 @@ Route::get('add_check_deposit_to_transactions', [TransactionController::class, '
 Route::get('add_check_id_to_transactions', [TransactionController::class, 'add_check_id_to_transactions']);
 Route::get('add_payments_to_transaction', [TransactionController::class, 'add_payments_to_transaction']);
 
+//plaid webhooks
+// Route::post('plaid_webhooks', 'TransactionController@plaid_webhooks');
+// Route::get('fire_webhook', 'TransactionController@fire_webhook');
+
 Route::middleware(['auth', 'user.vendor'])->group(function(){
     //DASHBOARD/ PRIMARY VENDOR
     Route::get('/dashboard', DashboardShow::class)->name('dashboard');
