@@ -645,9 +645,8 @@ class TransactionController extends Controller
     {
         //where doesnt have clientpayment
         //why does 2017/older transactions/client_payments not work?
-        $transactions = Transaction::where('transaction_date', '>', '2019-01-01')->where('deposit', 1)->where('id', 17105)->whereDoesntHave('payments')->whereNull('expense_id')->get();
+        $transactions = Transaction::where('transaction_date', '>', '2019-01-01')->where('deposit', 1)->whereDoesntHave('payments')->whereNull('expense_id')->get();
 
-        // dd($transactions);
         foreach($transactions as $transaction){
             $vendor_id = $transaction->bank_account->bank->vendor_id;
             //reset payments variable?
