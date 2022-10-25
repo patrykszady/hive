@@ -35,16 +35,21 @@ class Transaction extends Model
         return $this->belongsTo(BankAccount::class);
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function check()
     {
         return $this->belongsTo(Check::class);
     }
 
     //bank_accountBank
-    public function bank()
-    {
-        return $this->hasOneThrough(Bank::class, BankaAccount::class);
-    }
+    // public function bank()
+    // {
+    //     return $this->hasOneThrough(BankAccount::class, Bank::class);
+    // }
 
     //used in TransactionController::add_vendor_to_transactions
     //used in Livewire/Transactions/MatchVendor::mount

@@ -8,6 +8,7 @@ use App\Models\Bank;
 use App\Models\Check;
 use App\Models\Expense;
 use App\Models\Vendor;
+use App\Models\Payment;
 use App\Models\BankAccount;
 use App\Models\Transaction;
 use App\Models\VendorTransaction;
@@ -638,5 +639,73 @@ class TransactionController extends Controller
             //     $transactions->forget($key);
             // }
         } //transactions foreach
+    }
+
+    public function add_payments_to_transaction()
+    {
+        //where doesnt have clientpayment
+        //why does 2017/older transactions/client_payments not work?
+        $transactions = Transaction::where('transaction_date', '>', '2019-01-01')->where('deposit', 1)->where('id', 17105)->whereDoesntHave('payments')->whereNull('expense_id')->get();
+
+        // dd($transactions);
+        foreach($transactions as $transaction){
+            $vendor_id = $transaction->bank_account->bank->vendor_id;
+            //reset payments variable?
+            $payments = Payment::
+                whereBetween('date', [$transaction->transaction_date->subDays(90), $transaction->transaction_date->addDays(7)])
+                //where bank_id belongs_to same vendor_id as this payment
+                ->where('belongs_to_vendor_id', $vendor_id)
+                ->where('transaction_id', NULL)
+                ->where('amount', substr($transaction->amount, 1))
+                ->get();
+
+                //json store which $transactions have been checked against which $payments so it doesnt check again?
+                //where parent_client_payment_id is not in json for this $transaction
+                // ->groupBy('parent_client_payment_id');
+            
+            if($payments->count() == 1){
+                $payments->first()->transaction_id = $transaction->id;
+                $payments->first()->save();
+            }
+        }            
+    }
+
+    // Iterative PHP program to print  
+    // sums of all possible subsets.  
+      
+    // Prints sums of all subsets of array  
+    public function subsetSums($arr, $n, $ids)  
+    {  
+        ini_set('max_execution_time', 600000);
+        // dd($ids);
+        // There are totoal 2^n subsets  
+        $total = 1 << $n; 
+        // $sums = array();
+
+        // Consider all numbers 
+        // from 0 to 2^n - 1  
+        for ($i = 0; $i < $total; $i++)  
+        {  
+            $sum = 0;  
+            $summy = array();
+            // Consider binary reprsentation of  
+            // current i to decide which elements  
+            // to pick.  
+            for ($j = 0; $j < $n; $j++){
+                if ($i & (1 << $j)){
+                   $sum += $arr[$j];
+                   $summy[] = array('subtotal' => $arr[$j], 'client_payment_id' => $ids[$j]);
+                   // dd($summy);
+                } 
+            }                
+      
+            // Print sum of picked elements.  
+            // echo $sum , " "; 
+            if($sum != 0){
+                $summys[] = ['sum' => $sum, 'transactions' => $summy];
+            } 
+        }  
+
+        return $summys;
     }
 }
