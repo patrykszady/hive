@@ -70,7 +70,9 @@
                         hint="$" 
                         textSize="xl"
                         placeholder="00.00" 
-                        inputmode="numeric" step="0.01"
+                        inputmode="decimal" 
+                        pattern="[0-9]*"
+                        step="0.01"
                         >
                     </x-forms.row>
 

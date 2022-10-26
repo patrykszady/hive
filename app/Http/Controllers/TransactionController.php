@@ -9,6 +9,7 @@ use App\Models\Check;
 use App\Models\Expense;
 use App\Models\Vendor;
 use App\Models\Payment;
+use App\Models\Distribution;
 use App\Models\BankAccount;
 use App\Models\Transaction;
 use App\Models\VendorTransaction;
@@ -246,29 +247,27 @@ class TransactionController extends Controller
 
     public function add_vendor_to_transactions()
     {     
-        $transaction_bank_accounts = BankAccount::where('vendor_id', 1)->pluck('id')->toArray();
-        // $transactions = Transaction::TransactionsSinVendor()->get()->groupBy('plaid_merchant_name')
+        $transaction_bank_accounts = BankAccount::withoutGlobalScopes()->where('vendor_id', 1)->pluck('id')->toArray();
         $transactions = Transaction::TransactionsSinVendor()->whereIn('bank_account_id', $transaction_bank_accounts)->get()->groupBy('plaid_merchant_description');
         $vendors = Vendor::withoutGlobalScopes()->where('business_type', 'Retail')->get();
 
-        // dd($transactions);
-
         foreach($transactions as $merchant_name => $merchant_transactions){
-            // dd($merchant_transactions);
-
             //find vendor where vendor->business_name is contained in $merchant_name
             // $vendor_match = preg_grep("/^" . $merchant_name . "/i", $vendors->pluck('business_name')->toArray());
-            $vendor_match = $vendors->where('business_name', $merchant_name)->first();
-            // dd($vendor_match);
 
-            if($vendor_match){
+            // dd(Transaction::where('id', 17124)->first()->bank_account->vendor);
+            $vendor_match = $vendors->where('business_name', $merchant_name)->first();
+
+            if($vendor_match){           
                 foreach($merchant_transactions as $key => $transaction){
                     $transaction->vendor_id = $vendor_match->id;
                     $transaction->save();
                 }
-
                 //USED IN MULTIPLE OF PLACES MatchVendor@store, ExpesnesForm@createExpenseFromTransaction, below in CHECK VendorTransaction code in this function as well
                 //add vendor if vendor is not part of the currently logged in vendor
+
+                //->vendor->vendors->contains($transaction->vendor_id)
+                // dd($transaction->bank_account->withoutGlobalScopes()->vendor->withoutGlobalScopes());
                 if(!$transaction->bank_account->vendor->vendors->contains($transaction->vendor_id)){
                     $transaction->bank_account->vendor->vendors()->attach($transaction->vendor_id);
                 }
@@ -277,23 +276,14 @@ class TransactionController extends Controller
 
         //CHECK VendorTransaction table
         $vendor_transactions = VendorTransaction::whereNull('deposit_check')->get();
-        // dd($vendor_transactions);
-        foreach($vendor_transactions as $vendor_transaction){
-            // dd($vendor_transaction);
-            
-            //get all BankAccount where bank_account_id 
 
+        foreach($vendor_transactions as $vendor_transaction){
+            //get all BankAccount where bank_account_id 
             //get plaid_inst_id of bank_account_ids on transactions table
 
-            
-            // dd($transactions);
-
             //Alter $transactions variable/results based on the if statement below
-            // dd(Transaction::TransactionsSinVendor()->where('bank_account_id', 1)->get());
 
             foreach($transactions as $vendor_name => $plaid_name_transactions){
-
-                // dd($vendor_name);
                 // if($vendor_transaction->plaid_inst_id){
                 //     //6-11-2022 way too code heavy!!!...!!!
                 //     $vendor_inst_id = $plaid_name_transactions->first()->bank_account->bank->plaid_ins_id;
@@ -309,20 +299,15 @@ class TransactionController extends Controller
                 // }else{
                 //     dd('NOT specific bank/inst Transactions/All Transactions');
                 // }
-                // dd('too far');
 
                 // $vendor_desc = $plaid_name_transactions->first()->plaid_merchant_description;
             
                 //decode json on VendorTrasaction Model
                 $preg = json_decode($vendor_transaction->options);
-
-                // dd($vendor_transaction);
                 preg_match('/'. $vendor_transaction->desc . $preg, $vendor_name, $matches, PREG_UNMATCHED_AS_NULL);
-                // dd($matches);
 
                 if(!empty($matches)){
                     foreach($plaid_name_transactions as $key => $transaction){
-                        // dd($transaction->bank_account);
                         $transaction->vendor_id = $vendor_transaction->vendor_id;
                         $transaction->save();
                         
@@ -340,18 +325,17 @@ class TransactionController extends Controller
     public function add_check_deposit_to_transactions()
     {
         $institutions = VendorTransaction::whereNotNull('plaid_inst_id')->groupBy('plaid_inst_id')->pluck('plaid_inst_id');
-
         //split by institution
         foreach($institutions as $institution){
             //NEED TO SHARE THIS WITH TrancationController@store_csv_array.. same code x2 06/29/2021
-            $institution_bank_ids = Bank::where('plaid_ins_id', $institution)->pluck('id');
+            $institution_bank_ids = Bank::withoutGlobalScopes()->where('plaid_ins_id', $institution)->pluck('id');
             $institution_bank_ids = BankAccount::whereIn('bank_id', $institution_bank_ids)->pluck('id');
 
+            // dd($institution_bank_ids);
             $deposit_check_types = VendorTransaction::groupBy('deposit_check')->where('plaid_inst_id', $institution)->pluck('deposit_check');
 
             //split by check_type of each institution (multiple of bank_ids)
             foreach($deposit_check_types as $deposit_check_type){
-
                 //same for type 2 and 3 (check and transfer)
                 $transaction_check_desc = VendorTransaction::where('deposit_check', $deposit_check_type)->where('plaid_inst_id', $institution)->pluck('desc');
 
@@ -415,7 +399,7 @@ class TransactionController extends Controller
     public function add_expense_to_transactions()
     {
         //OLD: $cliff_vendors = Vendor::where('cliff_registration->vendor_registration_complete', 'true')->get();
-        $cliff_vendors = Vendor::where('business_type', 'Sub')->where('id', 1)->get();
+        $cliff_vendors = Vendor::withoutGlobalScopes()->where('business_type', 'Sub')->where('id', 1)->get();
 
         foreach($cliff_vendors as $cliff_vendor){
             $cliff_vendor_bank_account_ids = $cliff_vendor->bank_accounts->pluck('id');
@@ -670,13 +654,11 @@ class TransactionController extends Controller
     }
 
     // Iterative PHP program to print  
-    // sums of all possible subsets.  
-      
+    // sums of all possible subsets. 
     // Prints sums of all subsets of array  
     public function subsetSums($arr, $n, $ids)  
     {  
         ini_set('max_execution_time', 600000);
-        // dd($ids);
         // There are totoal 2^n subsets  
         $total = 1 << $n; 
         // $sums = array();
@@ -706,5 +688,92 @@ class TransactionController extends Controller
         }  
 
         return $summys;
+    }
+
+    public function find_credit_payments_on_debit()
+    {
+        //group bank_accounts per vendor
+        $vendors_credit_bank_accounts = BankAccount::withoutGlobalScopes()->where('deleted_at', NULL)->where('type', 'Credit')->get()->groupBy('vendor_id');
+        // dd($vendors_credit_bank_accounts);
+        foreach($vendors_credit_bank_accounts as $vendor_id => $vendor_bank_accounts){
+            $vendor = Vendor::findOrFail($vendor_id);
+            $vendor_office_distribution_id = Distribution::withoutGlobalScopes()->where('vendor_id', $vendor_id)->where('name', 'OFFICE')->first()->id;
+            $bank_account_ids = $vendors_credit_bank_accounts[$vendor_id]->pluck('id');
+            $vendors_debit_bank_accounts = BankAccount::withoutGlobalScopes()->where('vendor_id', $vendor->id)->where('deleted_at', NULL)->where('type', 'Checking')->get();            
+
+            $credit_transactions = 
+                Transaction::
+                    where('check_id', NULL)
+                    // ->where('id', 17095)
+                    ->where('expense_id', NULL)
+                    ->where('check_number', NULL)
+                    ->where('deposit', NULL)
+                    ->whereNotNull('vendor_id')
+                    ->whereIn('bank_account_id', $bank_account_ids) //where bank_id_account is a credit card for this user
+                    ->orderBy('transaction_date', 'ASC')
+                    ->get();
+
+            // dd($credit_transactions);
+
+            foreach($credit_transactions as $credit_transaction){
+                // dd($credit_transaction);
+                $debit_transactions = 
+                    Transaction::
+                        where('amount', substr($credit_transaction->amount, 1))
+                        ->where('vendor_id', $credit_transaction->vendor_id)
+                        ->whereIn('bank_account_id', $vendors_debit_bank_accounts->pluck('id')) //and where bank_type = DEBIT
+                        ->where('expense_id', NULL)
+                        ->whereBetween('transaction_date', [$credit_transaction->transaction_date->subDays(2), $credit_transaction->transaction_date->addDays(5)])
+                        //where what else?
+                        ->get();
+
+                // dd($debit_transactions);
+
+                //can we add a Model attribute in the above Where statement?! --I dont think so
+                foreach($debit_transactions as $debit_transaction){
+                    $debit_transaction->date_diff = $credit_transaction->transaction_date->floatDiffInDays($debit_transaction->transaction_date);                
+                }
+
+                $debit_transaction = $debit_transactions->sortBy('date_diff')->first();
+                
+                if(is_null($debit_transaction)){
+                    // continue;
+                }else{
+                    // dd('in else');
+                    //create new expenses with associated_expense_id
+
+                    //CREDIT CARD TRANSACTION
+                    $credit_expense = Expense::create([
+                        'distribution_id' => $vendor_office_distribution_id,
+                        'created_by_user_id' => 0,
+                        'amount' => $credit_transaction->amount,
+                        'date' => $credit_transaction->transaction_date,
+                        'vendor_id' => $credit_transaction->vendor_id,
+                        'belongs_to_vendor_id' => $vendor->id
+                        // 'reimbursment' => 0
+                    ]);
+
+                    $credit_transaction->expense()->associate($credit_expense);
+                    $credit_transaction->save();
+
+                    //DEBIT CARD TRANSACTION
+                    $debit_expense = Expense::create([
+                        'distribution_id' => $vendor_office_distribution_id,
+                        'created_by_user_id' => 0,
+                        'amount' => $debit_transaction->amount,
+                        'date' => $debit_transaction->transaction_date,
+                        'vendor_id' => $debit_transaction->vendor_id,
+                        'belongs_to_vendor_id' => $vendor->id
+                        // 'parent_expense_id' => $credit_expense->id
+                    ]);
+
+                    $debit_expense->parent_expense_id = $credit_expense->id;
+                    $debit_expense->save();
+                    $debit_transaction = Transaction::find($debit_transaction->id);
+                    $debit_transaction->expense()->associate($debit_expense);
+                    $debit_transaction->save();
+                }
+            } 
+        }
     }
 }

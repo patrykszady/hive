@@ -88,4 +88,20 @@ class Expense extends Model
         // dd('in Expense.php associated() function');
         return $this->hasMany(Expense::class, 'id', 'parent_expense_id');
     }
+
+    public function getAssociatedExpensesAttribute()
+    {
+        // dd($this->associated->isEmpty());
+        if($this->associated->isEmpty()){
+            $associated_check = Expense::where('parent_expense_id', $this->id)->get();
+            // dd($associated_check);
+            if(!$associated_check->isEmpty()){
+                return $associated_check;
+            }else{
+                return NULL;
+            }
+        }else{
+            return $this->associated;
+        }        
+    }
 }

@@ -33,7 +33,7 @@
                     textSize="xl" 
                     placeholder="00.00" 
                     inputmode="decimal" 
-                    {{-- pattern="[0-9]*" --}}
+                    pattern="[0-9]*"
                     step="0.01"
                     autofocus
                     > 

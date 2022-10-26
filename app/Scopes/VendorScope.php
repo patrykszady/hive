@@ -12,9 +12,13 @@ class VendorScope implements Scope
 {
     public function apply(Builder $builder, Model $model)    
     {
-        $logged_in_vendor = auth()->user()->vendor;
-        //get vendors where belongs_to_vendor_id on vendor_vendors tables = logged_in_vendor_id
-        $vendor_ids = $logged_in_vendor->vendors->pluck('id');
-        $builder->whereIn('id', $vendor_ids)->orWhere('id', $logged_in_vendor->id);
+        if(auth()->guest()){
+
+        }else{
+            $logged_in_vendor = auth()->user()->vendor;
+            //get vendors where belongs_to_vendor_id on vendor_vendors tables = logged_in_vendor_id
+            $vendor_ids = $logged_in_vendor->vendors->pluck('id');
+            $builder->whereIn('id', $vendor_ids)->orWhere('id', $logged_in_vendor->id);
+        }        
     }
 }
