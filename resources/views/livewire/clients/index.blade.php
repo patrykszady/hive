@@ -6,7 +6,7 @@
         </x-slot>
 
         <x-slot name="right">
-            <x-cards.button href="{{route('clients.index')}}">
+            <x-cards.button href="{{route('clients.create')}}">
                 Create Client
             </x-cards.button>
         </x-slot>

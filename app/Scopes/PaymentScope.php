@@ -10,6 +10,10 @@ class PaymentScope implements Scope
 {
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where('belongs_to_vendor_id', auth()->user()->primary_vendor_id);
+        if(auth()->guest()){
+
+        }else{
+            $builder->where('belongs_to_vendor_id', auth()->user()->primary_vendor_id);;
+        }
     }
 }

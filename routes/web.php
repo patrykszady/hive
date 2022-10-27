@@ -18,6 +18,7 @@ use App\Http\Livewire\Vendors\VendorsShow;
 
 use App\Http\Livewire\Clients\ClientsIndex;
 use App\Http\Livewire\Clients\ClientsShow;
+use App\Http\Livewire\Clients\ClientsForm;
 
 use App\Http\Livewire\Timesheets\TimesheetsIndex;
 use App\Http\Livewire\Timesheets\TimesheetsForm;
@@ -120,7 +121,9 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
 
     //CLIENTS
     Route::get('/clients', ClientsIndex::class)->name('clients.index');
+    Route::get('/clients/create', ClientsForm::class)->name('clients.create');
     Route::get('/clients/{client}', ClientsShow::class)->name('clients.show');
+    
 
     //PROJECTS
     Route::get('/projects', ProjectsIndex::class)->name('projects.index');
