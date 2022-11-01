@@ -121,6 +121,7 @@ class UsersForm extends Component
         }
     }
 
+    //SAME AS ClientsForm::user_cell
     public function user_cell()
     {
         $this->user = User::make();

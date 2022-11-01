@@ -106,6 +106,18 @@ return [
             'path' => storage_path('logs/move_channel.log'),
             'level' => 'debug',
         ],
+
+        'hd_rebates' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/hd_rebates.log'),
+            'level' => 'debug',
+        ],
+
+        'hd_rebates_errors' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/hd_rebates_errors.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];

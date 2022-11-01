@@ -27,11 +27,11 @@ class Kernel extends ConsoleKernel
         // only in Production not in Development enviroment ... EVERYTHING EMAIL RELATED GOES HERE
         if(env('APP_ENV') == 'production'){
             $schedule->call('\App\Http\Controllers\ReceiptController@receipt_email')->everyMinute();  
-            $schedule->call('\App\Http\Controllers\TransactionController@plaid_transactions_scheduled')->dailyAt('06:30');
+            $schedule->call('\App\Http\Controllers\TransactionController@plaid_transactions_scheduled')->twiceDaily(6, 18);
             $schedule->call('\App\Http\Controllers\TransactionController@add_check_deposit_to_transactions')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_vendor_to_transactions')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_expense_to_transactions')->everyTenMinutes();
-            $schedule->call('\App\Http\Controllers\TransactionController@add_check_id_to_transactions')->dailyAt('07:00');
+            $schedule->call('\App\Http\Controllers\TransactionController@add_check_id_to_transactions')->twiceDaily(7, 19);
             $schedule->call('\App\Http\Controllers\TransactionController@add_payments_to_transaction')->everyTenMinutes();
             // $schedule->call('\App\Http\Controllers\TransactionController@find_credit_payments_on_debit')->everyTenMinutes();
         }

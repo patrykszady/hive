@@ -16,12 +16,15 @@ class TimesheetPaymentIndex extends Component
     {
         $this->authorize('viewPayment', Timesheet::class);
         
+        $user = auth()->user();
+        $vendor_users = $user->vendor->users()->where('is_employed', 1)->get();
+
         $user_timesheets = 
             Timesheet::
                 orderBy('date', 'DESC')
                 // ->where('user_id', auth()->user()->id)
                 ->whereNull('check_id')
-                // ->whereNull('deleted_at')
+                ->whereNull('paid_by')
                 ->get()
                 ->groupBy('user_id');
                 // ->groupBy('date');
@@ -29,6 +32,7 @@ class TimesheetPaymentIndex extends Component
         // dd($timesheets);
         return view('livewire.timesheets.payment-index', [
             'user_timesheets' => $user_timesheets,
+            'vendor_users' => $vendor_users,
         ]);
     }
 }

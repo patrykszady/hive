@@ -18,7 +18,8 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.6",
-        "regulus/tetra-text": "^0.6.16"
+        "regulus/tetra-text": "^0.6.16",
+        "spatie/browsershot": "^3.57"
     },
     "require-dev": {
         "spatie/laravel-ignition": "^1.0",

@@ -9,7 +9,6 @@ class DashboardShow extends Component
     public function render()
     {
         $user = auth()->user();
-
         $vendor_users = $user->vendor->users()->where('is_employed', 1)->get();
 
         return view('livewire.dashboard.show', [

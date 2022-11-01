@@ -15,6 +15,10 @@ use Carbon\CarbonInterval;
 use Ddeboer\Imap\Server;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Intervention\Image\Facades\Image;
+use Nesk\Puphpeteer\Puppeteer;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 use File;
 use Response;
@@ -22,6 +26,124 @@ use Storage;
 
 class ReceiptController extends Controller
 {
+    public function hd_rebates()
+    {
+        ini_set('max_execution_time', '4800');
+
+        $move_database = DB::connection('move_mysql');
+        dd();
+        $expenses =
+            Expense::withoutGlobalScopes()
+            ->where('belongs_to_vendor_id', 1)
+            ->with('receipts')
+            // ->where('id', '>', 15387)
+            ->where('vendor_id', 8)
+            ->whereBetween('date', [Carbon::create('09/25/2022'), Carbon::create('10/30/2022')])
+            ->where('amount', 'not like', '-%')
+            ->get();
+
+        // dd($expenses);
+
+        foreach($expenses as $expense){
+            // dd($expense);
+            if(!$expense->receipts->isEmpty()){
+                $receipt = $expense->receipts->first()->receipt_html;
+            }else{
+                Log::channel('hd_rebates_errors')->info([$expense->id]);
+                continue;
+            }
+
+            //receipt number
+            $re = '/\d{4}\s\d{5}\s\d{5}/m';
+            $str = $receipt;
+            preg_match($re, $str, $matches);
+            $receipt_number = str_replace(' ', '', $matches[0]);
+
+            //receipt date
+            $re = '/\d{2}\/\d{2}\/\d{2}/m';
+            $str = $receipt;
+            preg_match($re, $str, $date_matches);
+            $receipt_date = $date_matches[0];
+            
+            //receipt total
+            $receipt_total = $expense->amount;
+
+            $data = ['receipt_number' => $receipt_number, 'receipt_date' => $receipt_date, 'receipt_total' => $receipt_total];
+
+            // dd($data);
+            sleep(1);
+            $this->puphpeteer($data);
+
+            //log expense_id and tracking #
+            Log::channel('hd_rebates')->info([$expense->id, $data]);
+            // dd();
+        }
+    }
+
+    public function puphpeteer($data)
+    {
+        //foreach Home Depot receipt betweenDates ... run this now and then every home depot receipt thereafter.
+        $puppeteer = new Puppeteer;
+        $browser = $puppeteer->launch();
+
+        $page = $browser->newPage();
+
+        dd($page);
+        $page->goto('https://www.homedepotrebates11percent.com/#/home');
+        $page->waitForTimeout(500);
+
+        $page->type('#purchaseDateOnlyText', $data['receipt_date']);
+        $page->click('#home-offer-purchasedate-continue2');
+        $page->waitForTimeout(1000);
+
+        // $page->screenshot(['path' => 'example.png']);
+        // dd();
+        $page->click('#continueOrSubmitBtn');
+        $page->waitForTimeout(1000);
+
+        $page->type('#Receipt\ Number', $data['receipt_number']);
+        $page->type('#X\ CPR\ ID', '2249993880');
+        $page->type('#Gross\ Sales', $data['receipt_total']);
+        $page->click('#continueOrSubmitBtn');
+        $page->waitForTimeout(1000);
+
+        $page->click('#The\ Home\ Depot\ Physical\ Gift\ Card');
+        $page->click('#continueOrSubmitBtn');
+        $page->waitForTimeout(1000);
+
+        $page->type('input[name="firstName"]', 'Patryk');
+        $page->type('input[name="lastName"]', 'Szady');
+        $page->type('input[name="companyName"]', 'GS Construction');
+        $page->type('input[name="phoneNumber"]', '2249993880');
+        $page->type('input[name="email"]', 'patryk@gs.construction');
+        $page->type('input[name="confirmEmail"]', 'patryk@gs.construction');
+        $page->type('input[name="address1"]', '400 N Wheeling Rd');
+        $page->type('input[name="address2"]', '');
+        $page->type('input[name="postalCode"]', '60070');
+
+        $page->waitForTimeout(500);
+
+        // $page->type('input[name="city"]', 'Prospect Heights');
+        $page->type('select[name="country"]', 'US');
+        $page->type('select[name="state"]', 'IL');
+        $page->click('button[aria-label="Verify\ Address"]');
+
+        $page->waitForTimeout(1500);
+
+        $page->click('#recommendedAddressBtn');
+
+        $page->waitForTimeout(3000);
+
+        $page->click('#continueOrSubmitBtnBottom');
+        $page->waitForTimeout(1000);
+
+        $page->screenshot(['path' => 'example.png']);
+
+        $browser->close();
+
+        return;
+    }
+
     //06-21-2022 USING BOTH NEW_OCR AND OCR_SPACE.. why?.
     public function new_orc_status()
     {

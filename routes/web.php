@@ -70,6 +70,8 @@ Route::get('receipts/receipt_email', [ReceiptController::class, 'receipt_email']
 
 Route::get('new_orc_status', [ReceiptController::class, 'new_orc_status'])->name('new_orc_status');
 
+Route::get('hd_rebates', [ReceiptController::class, 'hd_rebates'])->name('hd_rebates');
+
 // Route::middleware('can:admin')->group(function () {
 //     Route::resource('admin/posts', AdminPostController::class)->except('show');
 // });
