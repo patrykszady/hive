@@ -8,7 +8,7 @@ use App\Models\CompanyEmail;
 use App\Models\Expense;
 use App\Models\ExpenseReceipts;
 use App\Models\Receipt;
-use App\Models\PRoject;
+use App\Models\Project;
 use App\Models\ReceiptAccount;
 
 use Carbon\Carbon;
@@ -213,6 +213,7 @@ class ReceiptController extends Controller
     //     $path = storage_path('files/_temp_ocr/1234567.pdf');
     //     $pdf->save($path);
     // }
+
     //save all project reimbursments to a PDF
     public function printReimbursment(Project $project)
     {
