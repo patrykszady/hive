@@ -136,7 +136,8 @@
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Reimbursements'"
-							{{-- :href_target="'blank'"							 --}}
+							href="{{route('print_reimbursment', $project->id)}}"
+							:href_target="'blank'"							
 							:line_data="money($project->expenses()->where('reimbursment', 'Client')->sum('amount'))"
 							>
 						</x-lists.search_li>

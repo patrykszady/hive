@@ -305,7 +305,7 @@
 					{{-- {{route('projects.show', $project->id)}} --}}
 					{{-- 10-17-2022..make this a modal --}}
 					<x-cards.button 
-						href="{{ route('expenses.original_receipt', $expense->receipts()->first()->receipt_filename) }}"
+						href="{{ route('expenses.original_receipt', $expense->receipts()->latest()->first()->receipt_filename) }}"
 						target="_blank"
 						>
 						Original Receipt

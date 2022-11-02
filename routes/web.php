@@ -66,11 +66,11 @@ Route::get('/vendor_selection', VendorSelection::class)->middleware('auth')->nam
 
 //1-5-2022 not working..almost
 Route::get('expenses/original_receipts/{receipt}', [ReceiptController::class, 'original_receipt'])->name('expenses.original_receipt');
+
 Route::get('receipts/receipt_email', [ReceiptController::class, 'receipt_email'])->name('receipt_email');
-
 Route::get('new_orc_status', [ReceiptController::class, 'new_orc_status'])->name('new_orc_status');
-
 Route::get('hd_rebates', [ReceiptController::class, 'hd_rebates'])->name('hd_rebates');
+Route::get('projects/reimbursments/print/{project}', [ReceiptController::class, 'printReimbursment'])->name('print_reimbursment');
 
 // Route::middleware('can:admin')->group(function () {
 //     Route::resource('admin/posts', AdminPostController::class)->except('show');

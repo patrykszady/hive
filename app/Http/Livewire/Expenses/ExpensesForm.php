@@ -93,8 +93,10 @@ class ExpensesForm extends Component
 
     public function updated($field) 
     {
+        // if($this->expense->amount == ""){
+
+        // }
         if($field == 'expense.amount'){
-            
             if(is_null($this->expense->id)){
                 if($this->expense->amount != NULL){
                     // 2-4-2022 ..account for splits and transactions same as ExpenseIndex render/search method
@@ -103,7 +105,7 @@ class ExpensesForm extends Component
                         ->with(['project', 'vendor', 'splits'])
                         ->where('amount', 'like', "{$this->expense->amount}%")
                         ->get();
-
+    
                     $this->transactions_found = 
                         Transaction::orderBy('transaction_date', 'DESC')
                         ->where('amount', 'like', "{$this->expense->amount}%")
@@ -112,12 +114,12 @@ class ExpensesForm extends Component
                         ->whereNull('check_id')
                         ->whereNull('deposit')
                         ->get();
-
+    
                     // $this->amounts_found = $expenses_found->merge($transactions_found)->sortBy('updated_at');
                     if($this->expenses_found->isEmpty()){
                         $this->expenses_found = NULL;
                     }
-
+    
                     if($this->transactions_found->isEmpty()){
                         $this->transactions_found = NULL;
                     }
@@ -247,6 +249,42 @@ class ExpensesForm extends Component
         $this->expense_splits = $splits;
         $this->splits = TRUE;
     }
+
+    // public function find_amount()
+    // {
+    //     if(is_null($this->expense->id)){
+    //         if($this->expense->amount != NULL){
+    //             // 2-4-2022 ..account for splits and transactions same as ExpenseIndex render/search method
+    //             $this->expenses_found = 
+    //                 Expense::orderBy('date', 'DESC')
+    //                 ->with(['project', 'vendor', 'splits'])
+    //                 ->where('amount', 'like', "{$this->expense->amount}%")
+    //                 ->get();
+
+    //             $this->transactions_found = 
+    //                 Transaction::orderBy('transaction_date', 'DESC')
+    //                 ->where('amount', 'like', "{$this->expense->amount}%")
+    //                 // ->whereNotNull('vendor_id')
+    //                 ->whereNull('expense_id')
+    //                 ->whereNull('check_id')
+    //                 ->whereNull('deposit')
+    //                 ->get();
+
+    //             // $this->amounts_found = $expenses_found->merge($transactions_found)->sortBy('updated_at');
+    //             if($this->expenses_found->isEmpty()){
+    //                 $this->expenses_found = NULL;
+    //             }
+
+    //             if($this->transactions_found->isEmpty()){
+    //                 $this->transactions_found = NULL;
+    //             }
+    //         }else{
+    //             $this->expenses_found = NULL;
+    //             $this->transactions_found = NULL;
+    //             $this->expense->date = NULL;
+    //         }
+    //     }
+    // }
 
     public function createExpenseFromTransaction(Transaction $transaction)
     {

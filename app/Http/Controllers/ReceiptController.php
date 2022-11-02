@@ -8,6 +8,7 @@ use App\Models\CompanyEmail;
 use App\Models\Expense;
 use App\Models\ExpenseReceipts;
 use App\Models\Receipt;
+use App\Models\PRoject;
 use App\Models\ReceiptAccount;
 
 use Carbon\Carbon;
@@ -199,7 +200,7 @@ class ReceiptController extends Controller
             $response = Response::make(file_get_contents($path), 200, [
                 'Content-Type' => 'application/pdf'
             ]);
-        } else {
+        }else{
             $response = Image::make($path)->response();
         }
 
@@ -212,6 +213,36 @@ class ReceiptController extends Controller
     //     $path = storage_path('files/_temp_ocr/1234567.pdf');
     //     $pdf->save($path);
     // }
+    //save all project reimbursments to a PDF
+    public function printReimbursment(Project $project)
+    {
+        $this->authorize('view', $project);
+
+        //11-1-22 account for splits
+        $expenses = $project->expenses()->where('reimbursment', 'Client')->with('receipts')->get();
+
+        // foreach($expenses as $expense){
+        //     if(isset($expense->split_parent_expense_id)){
+        //         $receipt = $expense->split_parent->expense_receipts()->orderBy('created_at', 'DESC')->first();
+        //         $expense->receipt_html = $receipt->receipt_html;
+        //         $expense->receipt = $receipt->receipt;
+        //     }else{
+        //         $receipt = $expense->expense_receipts()->orderBy('created_at', 'DESC')->first();
+        //         $expense->receipt_html = $receipt->receipt_html;
+        //         $expense->receipt = $receipt->receipt;
+        //     }
+        // }
+
+        $pdf = SnappyPdf::loadView('misc.print_reimbursments', compact('expenses'))
+                ->setPaper('a4'); //->setOrientation('portrait')
+
+        $filename = 'Reimbursments.' . date('Y-m-d-H-i-s') . '.pdf';
+        
+        $location = storage_path('reimbursments/' . $filename);
+    
+        return $pdf->stream($location, 'reimbursments.pdf');
+        //QUEUE THIS??
+    }
 
     public function receipt_email()
     {

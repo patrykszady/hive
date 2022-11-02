@@ -24,7 +24,7 @@
             <x-cards.body :class="'space-y-4 my-4'">
                 {{-- AMOUNT --}}
                 <x-forms.row 
-                    wire:model.debounce.500ms="expense.amount" 
+                    wire:model="expense.amount" 
                     errorName="expense.amount" 
                     name="expense.amount"
                     text="Amount"
@@ -38,6 +38,16 @@
                     autofocus
                     > 
                 </x-forms.row>
+
+                {{-- <x-forms.row
+                    wire:click.prevent="find_amount"
+                    errorName=""
+                    name=""
+                    text=""
+                    type="button"
+                    buttonText="Search Expenses"
+                    >    
+                </x-forms.row> --}}
 
                 {{-- existing expenses/transactions match from expense.amount --}}
                 <div 
@@ -393,4 +403,4 @@
 </div>
 
 {{-- SPLITS MODAL --}}
-@livewire('expenses.expense-splits-form', ['expense_splits' => $expense_splits])
+{{-- @livewire('expenses.expense-splits-form', ['expense_splits' => $expense_splits]) --}}
