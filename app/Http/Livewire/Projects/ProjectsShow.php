@@ -27,6 +27,10 @@ class ProjectsShow extends Component
     public function mount()
     {
         $this->project_status = $this->project->project_status ? $this->project->project_status->title : NULL;
+
+        $expenses_sum = floatval($this->project->expenses()->where('reimbursment', 'Client')->sum('amount'));
+        $splits_sum = floatval($this->project->expenseSplits()->where('reimbursment', 'Client')->sum('amount'));
+        $this->reimbursment_sum = $splits_sum + $expenses_sum;
     }
 
     // public funpction updated($field) 

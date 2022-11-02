@@ -403,4 +403,4 @@
 </div>
 
 {{-- SPLITS MODAL --}}
-{{-- @livewire('expenses.expense-splits-form', ['expense_splits' => $expense_splits]) --}}
+@livewire('expenses.expense-splits-form', ['expense_splits' => $expense_splits])

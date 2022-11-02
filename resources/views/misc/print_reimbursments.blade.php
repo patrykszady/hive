@@ -6,7 +6,7 @@ set_time_limit(0);
 
   <head>
     <meta charset="utf-8">
-    <title>{{$expenses->first()->project->name}} Reimbursment PDF</title>
+    <title>{{$expenses->first()->project_name}} Reimbursment PDF</title>
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 <style type="text/css" media="print">
     div.page
@@ -23,7 +23,7 @@ set_time_limit(0);
                 <div class="row">
       <div class="col-xs-12">
         @foreach ($expenses as $expense)
-      <h1>{{ money($expense->amount) . ' for ' . $expense->vendor->business_name }}</h1><br>
+      <h1>{{ money($expense->amount) . ' for ' . $expense->business_name }}</h1><br>
      
 @endforeach  
       </div>
@@ -44,14 +44,14 @@ set_time_limit(0);
 
 @foreach ($expenses as $expense)
 
-@if(isset($expenses->first()->receipts()->latest()->first()->receipt_html))
+@if(isset($expense->receipt_html))
         <div class="container page">
             <div class="row">
                 <div class="row">
       <div class="col-xs-12">
-      <h1>{{ money($expense->amount) . ' for ' . $expense->vendor->business_name }}</h1>
+      <h1>{{ money($expense->amount) . ' for ' . $expense->business_name }}</h1>
       <pre style="background-color:transparent">
-        {!! $expenses->first()->receipts()->latest()->first()->receipt_html !!}
+        {!! $expense->receipt_html !!}
      </pre>
     {{-- <img src="{{route('expenses.receipt', $expense->receipt)}}"> --}}
 
@@ -61,7 +61,7 @@ set_time_limit(0);
     </div>
     <div class="row">
         <div class="col-md-12">
-      <h4><a href="{{ route('expenses.original_receipt', $expense->receipts()->latest()->first()->receipt_filename) }}" target="new">Original Receipt</a></h4>
+      <h4><a href="{{ route('expenses.original_receipt', $expense->receipt_filename) }}" target="new">Original Receipt</a></h4>
     </div>
     </div>
 
@@ -84,7 +84,7 @@ set_time_limit(0);
             <div class="row">
                 <div class="row">
     	<div class="col-xs-12">
-    	<h1>{{ money($expense->amount) . ' for ' . $expense->vendor->business_name }}</h1>
+    	<h1>{{ money($expense->amount) . ' for ' . $expense->business_name }}</h1>
     <img height="900" widht="auto" max-width="500" alt="Expense Receipt" src="{{storage_path() . '/files/receipts/' . $expense->receipt}}" />
     {{-- <img src="{{route('expenses.receipt', $expense->receipt)}}"> --}}
 

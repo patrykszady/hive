@@ -219,20 +219,26 @@ class ReceiptController extends Controller
     {
         $this->authorize('view', $project);
 
-        //11-1-22 account for splits
-        $expenses = $project->expenses()->where('reimbursment', 'Client')->with('receipts')->get();
+        $expenses = $project->expenses()->where('reimbursment', 'Client')->get();
+        $splits = $project->expenseSplits()->where('reimbursment', 'Client')->get();
 
-        // foreach($expenses as $expense){
-        //     if(isset($expense->split_parent_expense_id)){
-        //         $receipt = $expense->split_parent->expense_receipts()->orderBy('created_at', 'DESC')->first();
-        //         $expense->receipt_html = $receipt->receipt_html;
-        //         $expense->receipt = $receipt->receipt;
-        //     }else{
-        //         $receipt = $expense->expense_receipts()->orderBy('created_at', 'DESC')->first();
-        //         $expense->receipt_html = $receipt->receipt_html;
-        //         $expense->receipt = $receipt->receipt;
-        //     }
-        // }
+        foreach($expenses as $expense){
+            $receipt = $expense->receipts()->latest()->first();
+            $expense->receipt_html = $receipt->receipt_html;
+            $expense->receipt_filename = $receipt->receipt_filename;
+            $expense->business_name = $expense->vendor->business_name;
+            $expense->project_name = $expense->project->name;
+        }
+
+        foreach($splits as $split){
+            $receipt = $split->expense->receipts()->latest()->first();
+            $split->receipt_html = $receipt->receipt_html;
+            $split->receipt_filename = $receipt->receipt_filename;
+            $split->business_name = $split->expense->vendor->business_name;
+            $split->project_name = $split->project->name;
+
+            $expenses->add($split);
+        }
 
         $pdf = SnappyPdf::loadView('misc.print_reimbursments', compact('expenses'))
                 ->setPaper('a4'); //->setOrientation('portrait')

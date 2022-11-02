@@ -138,7 +138,7 @@
 							:line_title="'Reimbursements'"
 							href="{{route('print_reimbursment', $project->id)}}"
 							:href_target="'blank'"							
-							:line_data="money($project->expenses()->where('reimbursment', 'Client')->sum('amount'))"
+							:line_data="money($reimbursment_sum)"
 							>
 						</x-lists.search_li>
 
@@ -148,7 +148,7 @@
 							{{-- make gray --}}
 							:line_title="'TOTAL PROJECT'"						
 							:line_data="money(
-										$project->expenses()->where('reimbursment', 'Client')->sum('amount') +
+										$reimbursment_sum +
 										$project->bids()->where('type', 2)->sum('amount') +
 										$project->bids()->where('type', 1)->sum('amount')
 									)"
