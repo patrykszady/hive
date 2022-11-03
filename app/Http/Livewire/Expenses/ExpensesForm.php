@@ -78,7 +78,17 @@ class ExpensesForm extends Component
             //required_without:check.paid_by
             'check.bank_account_id' => 'nullable',
             'check.check_type' => 'required_with:check.bank_account_id',
-            'check.check_number' => 'required_if:check.check_type,Check',  
+            // 'check.check_number' => 'required_if:check.check_type,Check',  
+            'check.check_number' => [
+                //ignore if vendor_id of Check is same as request()->vendor_id
+                'required_if:check.check_type,Check',
+                'nullable',
+                'numeric',
+                Rule::unique('checks', 'check_number')->where(function ($query) {
+                    return $query->where('deleted_at', NULL)->where('bank_account_id', $this->check->bank_account_id)->where('vendor_id', '!=', $this->expense->vendor_id);
+                }),         
+                //->ignore(request()->get('check_id_id'))
+            ],
         ];
     }
 
@@ -328,13 +338,18 @@ class ExpensesForm extends Component
 
     public function store()
     {   
-        $this->validate();
         $this->authorize('create', Expense::class);
+        $this->validate();
 
         if(is_numeric($this->expense->project_id)){
             $project_id = $this->expense->project_id;
             $vendor_id = $this->expense->vendor_id;
             $distribution_id = NULL;
+            $dist_user = NULL;
+        }elseif($this->splits){
+            $project_id = NULL;
+            $distribution_id = NULL;
+            $vendor_id = $this->expense->vendor_id;
             $dist_user = NULL;
         }elseif(is_null($this->expense->project_id)){
             $project_id = NULL;
@@ -350,20 +365,27 @@ class ExpensesForm extends Component
 
         // dd($this->expense->paid_by ? $this->expense->paid_by : NULL);
 
+        //if check exists
         if($this->check->bank_account_id){
-            $check = Check::create([
-                'check_type' => $this->check->check_type,
-                'check_number' => $this->check->check_number,
-                'date' => $this->expense->date,
-                'bank_account_id' => $this->check->bank_account_id,
-                //user_id if expense project = distribution
-                'user_id' => $dist_user,
-                'vendor_id' => $vendor_id,
-                'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
-                'created_by_user_id' => auth()->user()->id,                
-            ]);
-            
-            $check_id = $check->id;
+            //new or existing check
+            $existing_check = Check::where('bank_account_id', $this->check->bank_account_id)->where('check_number', $this->check->check_number)->first();
+            if($existing_check){
+                $check_id = $existing_check->id;
+            }else{
+                $check = Check::create([
+                    'check_type' => $this->check->check_type,
+                    'check_number' => $this->check->check_number,
+                    'date' => $this->expense->date,
+                    'bank_account_id' => $this->check->bank_account_id,
+                    //user_id if expense project = distribution
+                    'user_id' => $dist_user,
+                    'vendor_id' => $vendor_id,
+                    'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
+                    'created_by_user_id' => auth()->user()->id,                
+                ]);
+
+                $check_id = $check->id;
+            }
         }else{
             $check_id = NULL;
         }
