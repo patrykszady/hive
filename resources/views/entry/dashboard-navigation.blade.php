@@ -44,7 +44,7 @@
             @endcan
 
             @can('create', App\Models\Expense::class)
-            <x-nav.section-dropdown href="{{route('expenses.create')}}" :active="request()->routeIs('expenses.create')">
+            <x-nav.section-dropdown href="{{route('expenses.find')}}" :active="request()->routeIs('expenses.find')">
                 Create Expense
             </x-nav.new-section-dropdown>
             @endcan

@@ -38,6 +38,7 @@ use App\Http\Livewire\Expenses\ExpenseIndex;
 use App\Http\Livewire\Expenses\ExpensesEdit;
 use App\Http\Livewire\Expenses\ExpensesForm;
 use App\Http\Livewire\Expenses\ExpensesShow;
+use App\Http\Livewire\Expenses\ExpensesFind;
 
 use App\Http\Livewire\Checks\ChecksShow;
 use App\Http\Livewire\Checks\ChecksIndex;
@@ -100,6 +101,7 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     
     //EXPENSES
     Route::get('/expenses', ExpenseIndex::class)->name('expenses.index');
+    Route::get('/expenses/find', ExpensesFind::class)->name('expenses.find');
     Route::get('/expenses/create', ExpensesForm::class)->name('expenses.create');
     Route::get('/expenses/{expense}', ExpensesShow::class)->name('expenses.show');
     Route::get('/expenses/{expense}/edit', ExpensesForm::class)->name('expenses.edit');

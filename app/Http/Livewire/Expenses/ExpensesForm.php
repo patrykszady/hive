@@ -28,10 +28,6 @@ class ExpensesForm extends Component
     public $transaction = NULL;
     public $check = NULL;
     public $check_input = FALSE;
-    // public $has_check_indication = NULL;
-
-    public $expenses_found = NULL;
-    public $transactions_found = NULL;
 
     public $check_number = NULL;
 
@@ -71,8 +67,6 @@ class ExpensesForm extends Component
 
             'split' => 'nullable',
             'splits' => 'nullable',
-            'expenses_found' => 'nullable',
-            'transactions_found' => 'nullable',
 
             //USED in MULTIPLE OF PLACES TimesheetPaymentForm and VendorPaymentForm
             //required_without:check.paid_by
@@ -106,42 +100,42 @@ class ExpensesForm extends Component
         // if($this->expense->amount == ""){
 
         // }
-        if($field == 'expense.amount'){
-            if(is_null($this->expense->id)){
-                if($this->expense->amount != NULL){
-                    // 2-4-2022 ..account for splits and transactions same as ExpenseIndex render/search method
-                    $this->expenses_found = 
-                        Expense::orderBy('date', 'DESC')
-                        ->with(['project', 'vendor', 'splits'])
-                        ->where('amount', 'like', "{$this->expense->amount}%")
-                        ->get();
+        // if($field == 'expense.amount'){
+        //     if(is_null($this->expense->id)){
+        //         if($this->expense->amount != NULL){
+        //             // 2-4-2022 ..account for splits and transactions same as ExpenseIndex render/search method
+        //             $this->expenses_found = 
+        //                 Expense::orderBy('date', 'DESC')
+        //                 ->with(['project', 'vendor', 'splits'])
+        //                 ->where('amount', 'like', "{$this->expense->amount}%")
+        //                 ->get();
     
-                    $this->transactions_found = 
-                        Transaction::orderBy('transaction_date', 'DESC')
-                        ->where('amount', 'like', "{$this->expense->amount}%")
-                        // ->whereNotNull('vendor_id')
-                        ->whereNull('expense_id')
-                        ->whereNull('check_id')
-                        ->whereNull('deposit')
-                        ->get();
+        //             $this->transactions_found = 
+        //                 Transaction::orderBy('transaction_date', 'DESC')
+        //                 ->where('amount', 'like', "{$this->expense->amount}%")
+        //                 // ->whereNotNull('vendor_id')
+        //                 ->whereNull('expense_id')
+        //                 ->whereNull('check_id')
+        //                 ->whereNull('deposit')
+        //                 ->get();
     
-                    // $this->amounts_found = $expenses_found->merge($transactions_found)->sortBy('updated_at');
-                    if($this->expenses_found->isEmpty()){
-                        $this->expenses_found = NULL;
-                    }
+        //             // $this->amounts_found = $expenses_found->merge($transactions_found)->sortBy('updated_at');
+        //             if($this->expenses_found->isEmpty()){
+        //                 $this->expenses_found = NULL;
+        //             }
     
-                    if($this->transactions_found->isEmpty()){
-                        $this->transactions_found = NULL;
-                    }
-                }else{
-                    $this->expenses_found = NULL;
-                    $this->transactions_found = NULL;
-                    $this->expense->date = NULL;
-                }
-            }
+        //             if($this->transactions_found->isEmpty()){
+        //                 $this->transactions_found = NULL;
+        //             }
+        //         }else{
+        //             $this->expenses_found = NULL;
+        //             $this->transactions_found = NULL;
+        //             $this->expense->date = NULL;
+        //         }
+        //     }
 
-            // dd($this->transactions_found);
-        }
+        //     // dd($this->transactions_found);
+        // }
 
         if($field == 'expense.date'){
             $this->expenses_found = NULL;
@@ -202,10 +196,15 @@ class ExpensesForm extends Component
     public function mount()
     {      
         // 11-10-21 there shouldnt be any view/blade text data in a controller, move to blade, have a placeholder view after the render method
-            // $this->expense = isset($this->expense) ? $this->expense : Expense::make();
-
+        // $this->expense = isset($this->expense) ? $this->expense : Expense::make();
         $this->vendors = Vendor::orderBy('business_name')->get();
-        
+        $this->bank_accounts = BankAccount::with('bank')->where('type', 'Checking')
+            ->whereHas('bank', function ($query) {
+                return $query->whereNotNull('plaid_access_token');
+            })->get();
+        $this->projects = Project::orderBy('created_at', 'DESC')->get();
+        $this->distributions = Distribution::all();
+        $this->employees = auth()->user()->vendor->users()->where('is_employed', 1)->get();
 
         if(isset($this->expense)){
             $this->expense = $this->expense;
@@ -244,8 +243,8 @@ class ExpensesForm extends Component
                 'form_submit' => 'update',             
             ];
         }else{
-            $this->check = Check::make();
             $this->expense = Expense::make();
+            $this->check = Check::make();
             $this->view_text = [
                 'card_title' => 'Create Expense',
                 'button_text' => 'Create',
@@ -260,70 +259,40 @@ class ExpensesForm extends Component
         $this->splits = TRUE;
     }
 
-    // public function find_amount()
-    // {
-    //     if(is_null($this->expense->id)){
-    //         if($this->expense->amount != NULL){
-    //             // 2-4-2022 ..account for splits and transactions same as ExpenseIndex render/search method
-    //             $this->expenses_found = 
-    //                 Expense::orderBy('date', 'DESC')
-    //                 ->with(['project', 'vendor', 'splits'])
-    //                 ->where('amount', 'like', "{$this->expense->amount}%")
-    //                 ->get();
-
-    //             $this->transactions_found = 
-    //                 Transaction::orderBy('transaction_date', 'DESC')
-    //                 ->where('amount', 'like', "{$this->expense->amount}%")
-    //                 // ->whereNotNull('vendor_id')
-    //                 ->whereNull('expense_id')
-    //                 ->whereNull('check_id')
-    //                 ->whereNull('deposit')
-    //                 ->get();
-
-    //             // $this->amounts_found = $expenses_found->merge($transactions_found)->sortBy('updated_at');
-    //             if($this->expenses_found->isEmpty()){
-    //                 $this->expenses_found = NULL;
-    //             }
-
-    //             if($this->transactions_found->isEmpty()){
-    //                 $this->transactions_found = NULL;
-    //             }
-    //         }else{
-    //             $this->expenses_found = NULL;
-    //             $this->transactions_found = NULL;
-    //             $this->expense->date = NULL;
-    //         }
-    //     }
-    // }
-
     public function createExpenseFromTransaction(Transaction $transaction)
     {
-        //6-14-2022 this only works for Retail vendors.. really need a Modal from MatchVendor or CreateNewVendor forms and taken back here
-        //create Retail vendor here if doesnt exist yet
-        // if(is_null($transaction->vendor_id)){
-        //     $vendor = Vendor::create([
-        //         'business_type' => 'Retail',
-        //         'business_name' => $transaction->plaid_merchant_name,
-        //     ]);
+        // {
+                    //6-14-2022 this only works for Retail vendors.. really need a Modal from MatchVendor or CreateNewVendor forms and taken back here
+            //create Retail vendor here if doesnt exist yet
+            // if(is_null($transaction->vendor_id)){
+            //     $vendor = Vendor::create([
+            //         'business_type' => 'Retail',
+            //         'business_name' => $transaction->plaid_merchant_name,
+            //     ]);
 
-        //     $vendor_id = $vendor->id;
+            //     $vendor_id = $vendor->id;
 
-        //     //USED IN MULTIPLE OF PLACES TransactionController@add_vendor_to_transactions, MatchVendor@store
-        //     //add if vendor is not part of the currently logged in vendor
-        //     if(!$transaction->bank_account->vendor->vendors->contains($vendor_id)){
-        //         $transaction->bank_account->vendor->vendors()->attach($vendor_id);
-        //     }
+            //     //USED IN MULTIPLE OF PLACES TransactionController@add_vendor_to_transactions, MatchVendor@store
+            //     //add if vendor is not part of the currently logged in vendor
+            //     if(!$transaction->bank_account->vendor->vendors->contains($vendor_id)){
+            //         $transaction->bank_account->vendor->vendors()->attach($vendor_id);
+            //     }
 
-        //     //add this vendor to the existing $this->vendors collection
-        //     $this->vendors->add($vendor);
-            
-        //     //6-8-2022 run in a queue?
-        //     app('App\Http\Controllers\TransactionController')->add_vendor_to_transactions();
-        // }else{
-        //     $vendor_id = $transaction->vendor_id;
+            //     //add this vendor to the existing $this->vendors collection
+            //     $this->vendors->add($vendor);
+                
+            //     //6-8-2022 run in a queue?
+            //     app('App\Http\Controllers\TransactionController')->add_vendor_to_transactions();
+            // }else{
+            //     $vendor_id = $transaction->vendor_id;
+            // }
         // }
-
+                dd('in createExpenseFromTransaction');
+        //account for Check info if isset
         $this->transaction = $transaction;
+        
+        dd($this->transaction);
+
         $this->expense->date = $transaction->transaction_date;
 
         if(is_null($transaction->vendor_id)){
@@ -334,6 +303,8 @@ class ExpensesForm extends Component
     
         $this->transactions_found = NULL;
         $this->expenses_found = NULL;
+
+        //send to expenses.edit in new window
     }
 
     public function store()
@@ -465,8 +436,6 @@ class ExpensesForm extends Component
     {
         $this->validate();
         $this->authorize('update', $this->expense);
-
-        // dd($this);
 
         if(is_numeric($this->expense->project_id)){
             $project_id = $this->expense->project_id;
@@ -606,18 +575,13 @@ class ExpensesForm extends Component
         //11-10-21 or authorize UPDATE if update method
         $this->authorize('create', Expense::class);
         // $bank_accounts = BankAccount::where('type', 'Checking')->get();
-        $bank_accounts = BankAccount::with('bank')->where('type', 'Checking')
-            ->whereHas('bank', function ($query) {
-                return $query->whereNotNull('plaid_access_token');
-            })->get();
-            
-        $employees = auth()->user()->vendor->users()->where('is_employed', 1)->get();
 
-        return view('livewire.expenses.form', [
-            'projects' => Project::orderBy('created_at', 'DESC')->get(),
-            'distributions' => Distribution::all(),
-            'bank_accounts' => $bank_accounts,
-            'employees' => $employees,
-        ]);
+        return view('livewire.expenses.form');
+        // return view('livewire.expenses.form', [
+        //     'projects' => Project::orderBy('created_at', 'DESC')->get(),
+        //     'distributions' => Distribution::all(),
+        //     'bank_accounts' => $bank_accounts,
+        //     'employees' => $employees,
+        // ]);
     } 
 }
