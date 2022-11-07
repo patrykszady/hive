@@ -1,19 +1,18 @@
-{{-- form classes divide-y divide-gray-200 --}}
-<div class="xl:relative max-w-xl lg:max-w-5xl sm:px-6 mx-auto">
+<div 
+    x-data="{open: @entangle('new')}" 
+    x-show="open" 
+    x-transition.duration.250ms
+    >
     <form wire:submit.prevent="{{$view_text['form_submit']}}">
-        <x-cards.wrapper class="max-w-3xl mx-auto">
+        <x-cards.wrapper class="max-w-2xl mx-auto">
             {{-- HEADER --}}
             <x-cards.heading>
                 <x-slot name="left">
                     <h1>{{$view_text['card_title']}}</h1>
                 </x-slot>
                 <x-slot name="right">
-                    <x-cards.button href="{{route('expenses.index')}}">
-                        All Expenses
-                    </x-cards.button>
-
-                    @if(request()->routeIs('expenses.edit'))
-                        <x-cards.button href="{{route('expenses.show', $expense->id)}}">
+                    @if(isset($expense->id))
+                        <x-cards.button href="{{route('expenses.show', $expense->id)}}" target="_blank">
                             Show Expense
                         </x-cards.button>
                     @endif
@@ -22,39 +21,29 @@
 
             {{-- ROWS --}}
             <x-cards.body :class="'space-y-4 my-4'">
-
                 {{-- AMOUNT --}}
                 <x-forms.row 
-                    wire:model.defer="expense.amount" 
+                    wire:model="expense.amount" 
                     errorName="expense.amount" 
-                    name="expense.amount"
+                    name="amount"
                     text="Amount"
                     type="number" 
                     hint="$" 
                     textSize="xl" 
-                    placeholder="00.00" 
-                    inputmode="decimal" 
-                    pattern="[0-9]*"
-                    step="0.01"
-                    autofocus
+                    disabled
                     > 
                 </x-forms.row>
 
                 {{-- DATE --}}
-                <div 
-                    x-data="{open: @entangle('expense.amount')}" 
-                    x-show="open" 
-                    x-transition.duration.150ms
+                <x-forms.row 
+                    wire:model.debounce.500ms="expense.date" 
+                    errorName="expense.date" 
+                    name="date" 
+                    text="Date" 
+                    type="date"
+                    autofocus
                     >
-                    <x-forms.row 
-                        wire:model.debounce.500ms="expense.date" 
-                        errorName="expense.date" 
-                        name="date" 
-                        text="Date" 
-                        type="date"
-                    >
-                    </x-forms.row>
-                </div>
+                </x-forms.row> 
 
                 {{-- VENDOR --}}
                 <div 
@@ -68,14 +57,14 @@
                         name="vendor_id" 
                         text="Vendor"
                         type="dropdown"
-                    >
+                        >
                         <option value="" readonly>Select Vendor</option>
-                        @foreach ($vendors as $index => $vendor)
+                        @foreach ($vendors as $vendor)
                             <option value="{{$vendor->id}}">{{$vendor->name}}</option>
                         @endforeach
                     </x-forms.row>
                 </div>
-            
+
                 {{-- PROJECT --}}
                 <div 
                     x-data="{ open: @entangle('expense.vendor_id'), split: @entangle('split') }" 
@@ -83,7 +72,7 @@
                     x-transition.duration.150ms
                     >
                     <x-forms.row
-                        wire:model="expense.project_id" 
+                        wire:model.debounce.250ms="expense.project_id" 
                         x-bind:disabled="split"
                         errorName="expense.project_id" 
                         name="project_id" 
@@ -135,9 +124,9 @@
                 <div 
                     x-data="{ open: @entangle('split'), splits: @entangle('splits') }" 
                     x-show="open" 
-                    x-transition.duration.150ms
+                    x-transition.duration.250ms
                     >
-        
+
                     <x-forms.row
                         wire:click="$emit('addSplits', {{$expense->amount}})"
                         errorName="" 
@@ -149,6 +138,8 @@
                         x-text="splits == true ? 'Edit Splits' : 'Add Splits'"
                         >    
                     </x-forms.row>
+                    {{-- SPLITS MODAL --}}
+                    @livewire('expenses.expense-splits-form', ['expense_splits' => $expense_splits])
                 </div>
 
                 {{-- 04-09-2022 SHOW ALL SPLITS IN A UL/LI --}}
@@ -157,7 +148,7 @@
                 <div 
                     x-data="{ open: @entangle('expense.project_id'), splits: @entangle('splits'), split: @entangle('split') }" 
                     x-show="splits && split || open" 
-                    x-transition.duration.150ms
+                    x-transition.duration.250ms
                     >
                     <x-forms.row 
                         wire:model="expense.paid_by" 
@@ -173,32 +164,14 @@
                             @endforeach
                     </x-forms.row>
                 </div>
-                {{-- @include('livewire.checks._payment_form') --}}
-
-                {{-- PAYMENT --}}
-                {{-- <div 
-                    x-data="{ open: @entangle('expense.project_id'), splits: @entangle('splits'), split: @entangle('split'), has_check_indication: @entangle('has_check_indication') }" 
-                    x-show="splits && split || open"
-                    x-transition.duration.150ms
-                    >
-                    <x-forms.row
-                        wire:click="$emit('newCheck')"
-                        errorName="" 
-                        name=""
-                        text="Check"
-                        type="button"
-                        x-text="has_check_indication == true ? 'Edit Payment Info' : 'Add Payment Info'"
-                        >    
-                    </x-forms.row>
-                </div> --}}
 
                 {{-- CHECKS --}}
                 <div 
                     x-data="{ open: @entangle('expense.paid_by'), openproject: @entangle('expense.project_id'), splits: @entangle('splits') }" 
                     x-show="(openproject || splits) && !open" 
-                    x-transition.duration.150ms
+                    x-transition.duration.250ms
                     >
-      
+
                     @include('livewire.checks._include_form')
                 </div>
 
@@ -206,7 +179,7 @@
                 <div 
                     x-data="{ open: @entangle('expense.project_id'), splits: @entangle('splits'), split: @entangle('split') }" 
                     x-show="splits && split || open" 
-                    x-transition.duration.150ms
+                    x-transition.duration.250ms
                     >
                     <x-forms.row 
                         wire:model="receipt_file" 
@@ -230,7 +203,7 @@
                 <div 
                     x-data="{ open: @entangle('expense.project_id') }" 
                     x-show="open" 
-                    x-transition.duration.150ms
+                    x-transition.duration.250ms
                     >
                     <x-forms.row wire:model.lazy="expense.reimbursment" errorName="expense.reimbursment" name="reimbursment"
                         text="Reimbursment" type="dropdown">
@@ -243,7 +216,7 @@
                 <div 
                     x-data="{ open: @entangle('expense.project_id'), splits: @entangle('splits'), split: @entangle('split') }" 
                     x-show="splits && split || open"
-                    x-transition.duration.150ms
+                    x-transition.duration.250ms
                     >
                     <x-forms.row 
                         wire:model.lazy="expense.invoice" 
@@ -260,7 +233,7 @@
                 <div 
                     x-data="{ open: @entangle('expense.project_id'), splits: @entangle('splits'), split: @entangle('split') }" 
                     x-show="splits && split || open"
-                    x-transition.duration.150ms
+                    x-transition.duration.250ms
                     >
                     <x-forms.row 
                         wire:model.lazy="expense.note" 
@@ -273,12 +246,12 @@
                     </x-forms.row>
                 </div>
             </x-cards.body>
-            
+
             {{-- FOOTER --}}
             <div 
                 x-data="{ open: @entangle('expense.project_id'), split: @entangle('split') }" 
                 x-show="split || open" 
-                x-transition.duration.150ms
+                x-transition.duration.250ms
                 >
                 <x-cards.footer>
                     <button 
@@ -298,6 +271,3 @@
         </x-cards.wrapper>
     </form>
 </div>
-
-{{-- SPLITS MODAL --}}
-@livewire('expenses.expense-splits-form', ['expense_splits' => $expense_splits])

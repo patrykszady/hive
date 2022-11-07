@@ -24,11 +24,15 @@ class ExpensesForm extends Component
     use AuthorizesRequests, WithFileUploads;
     
     public Expense $expense;
+    public $check = NULL;
+
+    public $new = NULL;
+
+    public $view_text = [];
 
     public $transaction = NULL;
-    public $check = NULL;
+    
     public $check_input = FALSE;
-
     public $check_number = NULL;
 
     public $bank_account = NULL;
@@ -40,7 +44,7 @@ class ExpensesForm extends Component
     public $splits = NULL;
     public $expense_splits = [];
 
-    protected $listeners = ['hasSplits', 'createExpenseFromTransaction'];
+    protected $listeners = ['hasSplits', 'createExpenseFromTransaction', 'createNewExpense', 'editExpense'];
 
     protected function rules()
     {
@@ -48,7 +52,7 @@ class ExpensesForm extends Component
             'expense.amount' => 'required|numeric|regex:/^-?\d+(\.\d{1,2})?$/',
             'expense.date' => 'required|date|before_or_equal:today|after:2017-01-01',
             'expense.project_id' => 'required_unless:split,true',
-            'expense.vendor_id' => 'required|numeric',
+            'expense.vendor_id' => 'required',
             'expense.reimbursment' => 'nullable',
             'expense.invoice' => 'nullable',
             'expense.note' => 'nullable',
@@ -92,56 +96,11 @@ class ExpensesForm extends Component
         'expense.project_id.required_unless' => 'Project is required unless Expense is Split.',
         'expense.date.before_or_equal' => 'Date cannot be in the future. Make sure Date is before or equal to today.',
         'expense.date.after' => 'Date cannot be before the year 2017. Make sure Date is after or equal to 01/01/2017.',
-        // 'receipt_file.requiredif' => 'Receipt is required if Expense is Reimbursed or has Splits',
+        'receipt_file.required_if' => 'Receipt is required if Expense is Reimbursed or has Splits',
     ];
 
     public function updated($field) 
     {
-        // if($this->expense->amount == ""){
-
-        // }
-        // if($field == 'expense.amount'){
-        //     if(is_null($this->expense->id)){
-        //         if($this->expense->amount != NULL){
-        //             // 2-4-2022 ..account for splits and transactions same as ExpenseIndex render/search method
-        //             $this->expenses_found = 
-        //                 Expense::orderBy('date', 'DESC')
-        //                 ->with(['project', 'vendor', 'splits'])
-        //                 ->where('amount', 'like', "{$this->expense->amount}%")
-        //                 ->get();
-    
-        //             $this->transactions_found = 
-        //                 Transaction::orderBy('transaction_date', 'DESC')
-        //                 ->where('amount', 'like', "{$this->expense->amount}%")
-        //                 // ->whereNotNull('vendor_id')
-        //                 ->whereNull('expense_id')
-        //                 ->whereNull('check_id')
-        //                 ->whereNull('deposit')
-        //                 ->get();
-    
-        //             // $this->amounts_found = $expenses_found->merge($transactions_found)->sortBy('updated_at');
-        //             if($this->expenses_found->isEmpty()){
-        //                 $this->expenses_found = NULL;
-        //             }
-    
-        //             if($this->transactions_found->isEmpty()){
-        //                 $this->transactions_found = NULL;
-        //             }
-        //         }else{
-        //             $this->expenses_found = NULL;
-        //             $this->transactions_found = NULL;
-        //             $this->expense->date = NULL;
-        //         }
-        //     }
-
-        //     // dd($this->transactions_found);
-        // }
-
-        if($field == 'expense.date'){
-            $this->expenses_found = NULL;
-            $this->transactions_found = NULL;
-        }
-
         // if SPLIT checked vs if unchecked
         if($field == 'split'){
             if($this->split == true){
@@ -194,49 +153,14 @@ class ExpensesForm extends Component
     }
 
     public function mount()
-    {      
+    {     
+
         // 11-10-21 there shouldnt be any view/blade text data in a controller, move to blade, have a placeholder view after the render method
-        // $this->expense = isset($this->expense) ? $this->expense : Expense::make();
-        $this->vendors = Vendor::orderBy('business_name')->get();
-        $this->bank_accounts = BankAccount::with('bank')->where('type', 'Checking')
-            ->whereHas('bank', function ($query) {
-                return $query->whereNotNull('plaid_access_token');
-            })->get();
-        $this->projects = Project::orderBy('created_at', 'DESC')->get();
-        $this->distributions = Distribution::all();
-        $this->employees = auth()->user()->vendor->users()->where('is_employed', 1)->get();
 
         if(isset($this->expense)){
             $this->expense = $this->expense;
             //11-27-21 if $expense->has('receipts') ... HERE
 
-            if($this->expense->distribution){
-                $this->expense->project_id = 'D:' . $this->expense->distribution_id;
-            }
-
-            if($this->expense->splits()->exists()){
-                $this->split = TRUE;
-                $this->splits = TRUE;
-                $this->expense_splits = $this->expense->splits;
-
-                foreach($this->expense_splits as $split){
-                    if($split->distribution){
-                        $split->project_id = 'D:' . $split->distribution_id;
-                    }
-                }
-            }
-
-            if($this->expense->check){
-                // $this->emit('hasCheck');
-                $this->check = $this->expense->check;
-                if($this->check->check_number){
-                    $this->check_input = TRUE;
-                }
-                
-            }else{
-                $this->check = Check::make();
-            }
-            
             $this->view_text = [
                 'card_title' => 'Update Expense',
                 'button_text' => 'Update',
@@ -259,10 +183,10 @@ class ExpensesForm extends Component
         $this->splits = TRUE;
     }
 
-    public function createExpenseFromTransaction(Transaction $transaction)
+    public function createExpenseFromTransaction(Transaction $transaction, $amount)
     {
         // {
-                    //6-14-2022 this only works for Retail vendors.. really need a Modal from MatchVendor or CreateNewVendor forms and taken back here
+            //6-14-2022 this only works for Retail vendors.. really need a Modal from MatchVendor or CreateNewVendor forms and taken back here
             //create Retail vendor here if doesnt exist yet
             // if(is_null($transaction->vendor_id)){
             //     $vendor = Vendor::create([
@@ -287,12 +211,32 @@ class ExpensesForm extends Component
             //     $vendor_id = $transaction->vendor_id;
             // }
         // }
-                dd('in createExpenseFromTransaction');
-        //account for Check info if isset
-        $this->transaction = $transaction;
-        
-        dd($this->transaction);
 
+
+        //account for Check info if isset
+
+        if($transaction->check_number){
+            if($transaction->check_number == '1010101'){
+                $check_type = 'Transfer';
+            }elseif($transaction->check_number == '2020202'){
+                $check_type = 'Cash';
+            }else{
+                $check_type = 'Check';
+            }
+
+            $this->check->bank_account_id = $transaction->bank_account_id;
+            $this->check->check_type = $check_type;
+            $this->check_input = TRUE;
+
+            if($check_type == 'Check'){
+                $this->check->check_number = $transaction->check_number;
+                $this->check_number = NULL;
+            }               
+        }
+
+        $this->transaction = $transaction;
+
+        $this->expense->amount = $amount;
         $this->expense->date = $transaction->transaction_date;
 
         if(is_null($transaction->vendor_id)){
@@ -300,11 +244,70 @@ class ExpensesForm extends Component
         }else{
             $this->expense->vendor_id = $transaction->vendor_id;
         }        
-    
-        $this->transactions_found = NULL;
-        $this->expenses_found = NULL;
 
-        //send to expenses.edit in new window
+        $this->new = TRUE;
+    }
+
+    public function createNewExpense($new_bool, $amount)
+    {
+        $this->resetValidation();
+        $this->check = NULL;
+
+        $this->expense = Expense::make();      
+        $this->expense->amount = $amount;  
+
+        $this->check = Check::make();   
+
+        $this->view_text = [
+                'card_title' => 'Create Expense',
+                'button_text' => 'Create',
+                'form_submit' => 'store',             
+            ];
+
+        $this->new = $new_bool;
+    }
+
+    public function editExpense($new_bool, $expense_id)
+    {
+        $this->resetValidation();
+        
+        $this->expense = Expense::findOrFail($expense_id);
+        //11-27-21 if $expense->has('receipts') ... HERE
+
+        if($this->expense->distribution){
+            $this->expense->project_id = 'D:' . $this->expense->distribution_id;
+        }
+
+        if($this->expense->splits()->exists()){
+            $this->split = TRUE;
+            $this->splits = TRUE;
+            $this->expense_splits = $this->expense->splits;
+
+            foreach($this->expense_splits as $split){
+                if($split->distribution){
+                    $split->project_id = 'D:' . $split->distribution_id;
+                }
+            }
+        }
+
+        if($this->expense->check){
+            // $this->emit('hasCheck');
+            $this->check = $this->expense->check;
+            if($this->check->check_number){
+                $this->check_input = TRUE;
+            }
+            
+        }else{
+            $this->check = Check::make();
+        }
+        
+        $this->view_text = [
+            'card_title' => 'Update Expense',
+            'button_text' => 'Update',
+            'form_submit' => 'update',             
+        ];
+
+        $this->new = $new_bool;
     }
 
     public function store()
@@ -429,7 +432,8 @@ class ExpensesForm extends Component
         }
 
         //session()->flash('notify-saved'); with amount of new expense and href to go to it route('expenses.show', $expense->id)
-        return redirect()->route('expenses.show', $expense);
+        // return redirect()->route('expenses.show', $expense);
+        $this->new = NULL;
     }
 
     public function update()
@@ -566,22 +570,30 @@ class ExpensesForm extends Component
             //1/3/2022 Laravel queue $receipt_file HTML... 
         }
 
+        $this->new = NULL;
+        $this->emit('newExpense', NULL, 'reset_form');
         //session()->flash('notify-saved'); "This expense was updated.. go back to results href with button)
-        return redirect()->route('expenses.show', $this->expense);
+        // return redirect()->route('expenses.show', $this->expense);
     }
 
     public function render()
     {
         //11-10-21 or authorize UPDATE if update method
         $this->authorize('create', Expense::class);
-        // $bank_accounts = BankAccount::where('type', 'Checking')->get();
 
-        return view('livewire.expenses.form');
-        // return view('livewire.expenses.form', [
-        //     'projects' => Project::orderBy('created_at', 'DESC')->get(),
-        //     'distributions' => Distribution::all(),
-        //     'bank_accounts' => $bank_accounts,
-        //     'employees' => $employees,
-        // ]);
+        $employees = auth()->user()->vendor->users()->where('is_employed', 1)->get();
+        $bank_accounts = BankAccount::with('bank')->where('type', 'Checking')
+            ->whereHas('bank', function ($query) {
+                return $query->whereNotNull('plaid_access_token');
+            })->get();
+        $vendors = Vendor::orderBy('business_name')->get();
+
+        return view('livewire.expenses.form', [
+            'projects' => Project::orderBy('created_at', 'DESC')->get(),
+            'distributions' => Distribution::all(),
+            'bank_accounts' => $bank_accounts,
+            'employees' => $employees,
+            'vendors' => $vendors
+        ]);
     } 
 }

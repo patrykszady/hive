@@ -18,14 +18,16 @@ class ExpensesFind extends Component
     public $amount = NULL;
     public $expenses_found = NULL;
     public $transactions_found = NULL;
-    public $found = NULL;
 
-    // protected $listeners = ['createExpenseFromTransaction'];
+    public $found = NULL;
+    public $expense_form = NULL;
+
+    protected $listeners = ['newExpense'];
 
     protected function rules()
     {
         return [
-            'amount' => 'required|numeric|regex:/^-?\d+(\.\d{1,2})?$/',
+            'amount' => 'numeric|regex:/^-?\d+(\.\d{1,2})?$/',
         ];
     }
 
@@ -38,8 +40,18 @@ class ExpensesFind extends Component
         ];
     }
 
+    public function updated($field) 
+    {
+        $this->found = NULL;
+        $this->emit('createNewExpense', NULL, $this->amount);
+        $this->validateOnly($field);
+        
+    }
+
     public function find_amount()
     {
+        $this->emit('createNewExpense', NULL, $this->amount);
+
         // 2-4-2022 ..account for splits and transactions same as ExpenseIndex render/search method
         $this->expenses_found = 
             Expense::
@@ -57,18 +69,37 @@ class ExpensesFind extends Component
                 ->whereNull('check_id')
                 ->whereNull('deposit')
                 ->get();
+        
+        $this->found = TRUE;
 
         if($this->expenses_found->isEmpty()){
             $this->expenses_found = NULL;
-        }else{
-            $this->found = TRUE;
         }
 
         if($this->transactions_found->isEmpty()){
             $this->transactions_found = NULL;
-        }else{
-            $this->found = TRUE;
         }
+    }
+
+    public function newExpense($id = NULL, $id_type = NULL)
+    {
+        if($id_type == 'transaction'){
+            $this->emit('createExpenseFromTransaction', $id, $this->amount);
+        }elseif($id_type == 'reset_form'){
+            $this->found = FALSE;
+            $this->expense_form = FALSE;
+            $this->found = FALSE;
+            $this->amount = NULL;
+        }elseif($id_type == 'expense'){
+            $this->emit('editExpense', TRUE, $id);
+        }else{
+            $this->emit('createNewExpense', TRUE, $this->amount);
+        }
+
+        if($id_type != 'reset_form'){
+            $this->found = FALSE;
+            $this->expense_form = TRUE; 
+        }               
     }
 
     public function render()

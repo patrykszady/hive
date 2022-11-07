@@ -101,8 +101,8 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     
     //EXPENSES
     Route::get('/expenses', ExpenseIndex::class)->name('expenses.index');
-    Route::get('/expenses/find', ExpensesFind::class)->name('expenses.find');
     Route::get('/expenses/create', ExpensesForm::class)->name('expenses.create');
+    Route::get('/expenses/find', ExpensesFind::class)->name('expenses.find');
     Route::get('/expenses/{expense}', ExpensesShow::class)->name('expenses.show');
     Route::get('/expenses/{expense}/edit', ExpensesForm::class)->name('expenses.edit');
     Route::get('/expenses/{expense}/udpate', ExpensesForm::class)->name('expenses.update');
