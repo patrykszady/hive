@@ -108,9 +108,12 @@
             <x-nav.section-dropdown href="{{route('checks.index')}}" :active="request()->routeIs('checks.index')">
                 Checks
             </x-nav.new-section-dropdown>
+            
+            @can('create', App\Models\Bank::class)
             <x-nav.section-dropdown href="{{route('banks.index')}}" :active="request()->routeIs('banks.index')">
                 Banks
             </x-nav.new-section-dropdown>
+            @endcan
 
             @if (auth()->user()->id == 1)
                 <x-nav.section-dropdown href="{{route('transactions.match_vendor')}}" :active="request()->routeIs('transactions.match_vendor')">

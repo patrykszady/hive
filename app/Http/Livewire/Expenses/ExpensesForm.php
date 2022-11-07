@@ -154,7 +154,6 @@ class ExpensesForm extends Component
 
     public function mount()
     {     
-
         // 11-10-21 there shouldnt be any view/blade text data in a controller, move to blade, have a placeholder view after the render method
 
         if(isset($this->expense)){

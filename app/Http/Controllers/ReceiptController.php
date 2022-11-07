@@ -32,7 +32,7 @@ class ReceiptController extends Controller
         ini_set('max_execution_time', '4800');
 
         $move_database = DB::connection('move_mysql');
-        dd();
+        dd('in hd_rebates');
         $expenses =
             Expense::withoutGlobalScopes()
             ->where('belongs_to_vendor_id', 1)
@@ -88,8 +88,6 @@ class ReceiptController extends Controller
         $browser = $puppeteer->launch();
 
         $page = $browser->newPage();
-
-        dd($page);
         $page->goto('https://www.homedepotrebates11percent.com/#/home');
         $page->waitForTimeout(500);
 
@@ -217,6 +215,7 @@ class ReceiptController extends Controller
     //save all project reimbursments to a PDF
     public function printReimbursment(Project $project)
     {
+        //11-6-2022 QUEUE THIS??
         $this->authorize('view', $project);
 
         $expenses = $project->expenses()->where('reimbursment', 'Client')->get();
@@ -248,7 +247,6 @@ class ReceiptController extends Controller
         $location = storage_path('reimbursments/' . $filename);
     
         return $pdf->stream($location, 'reimbursments.pdf');
-        //QUEUE THIS??
     }
 
     public function receipt_email()
@@ -263,10 +261,9 @@ class ReceiptController extends Controller
             dd('server_isnt_connecting');
         }
 
-        // dd('receipt_email');
-
         //EVERY MESSAGE HAS TO MOVE SOMEWHERE... NONE CAN STAY IN env('RECEIPT_MAILBOX') MAILBOX
         $messages = $connection->getMailbox(env('RECEIPT_MAILBOX'))->getMessages();
+        // dd($messages);
 
         foreach($messages as $message){
             // dd($message);
@@ -325,6 +322,8 @@ class ReceiptController extends Controller
                 continue;
             }
 
+            // dd($from_email);
+
             //where Receipt::from_subject in $email_subject 
             // $receipt_accounts = Receipt::withoutGlobalScopes()->where('from_address', 'like', '%' . 'info@jclicht.com')->get();
 
@@ -353,6 +352,8 @@ class ReceiptController extends Controller
                 }
             }
 
+            // dd($receipt);
+
             $receipt_account = ReceiptAccount::withoutGlobalScopes()->where('belongs_to_vendor_id', $company_email->vendor_id)->where('vendor_id', $receipt->vendor_id)->first();
 
             //6-16-2022 combine the 2 below into 1
@@ -375,6 +376,8 @@ class ReceiptController extends Controller
                 $connection->expunge();
                 continue;
             }
+
+            // dd($receipt_account);
 
             $this->dirty_work($message, $receipt, $receipt_account, $company_email, $connection, $amazon_orders_loop = NULL, $email_date);   
         }
@@ -460,7 +463,7 @@ class ReceiptController extends Controller
                     //REMOVE IMAGES
                     /* $string = preg_replace("/<a.+?href.+?>.+?<\/a>/is","", $string); */
                     //make PDF from HTML
-                    $pdf = PDF::loadView('receipts.makePdfReceipt', compact('string', 'message_type'))
+                    $pdf = SnappyPdf::loadView('receipts.makePdfReceipt', compact('string', 'message_type'))
                             ->setPaper('a4'); //->setOrientation('portrait')
                     $ocr_path = date('Y-m-d-H-i-s') .'-' . $receipt->id . '.' . $receipt->options['image_extension'];
                     $ocr_filename = 'files/_temp_ocr/' . $ocr_path;

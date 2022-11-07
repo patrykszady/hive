@@ -6,8 +6,11 @@ use App\Models\Bank;
 use Livewire\Component;
 use App\Models\BankAccount;
 
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 class BankIndex extends Component
 {
+    use AuthorizesRequests;
     protected $listeners = ['plaidLinkItem' => 'plaid_link_item'];
 
     //from GS/TransactionController.plaid_link_token
@@ -125,6 +128,8 @@ class BankIndex extends Component
 
     public function render()
     {
+        $this->authorize('create', Bank::class);
+
         return view('livewire.banks.index', [
             'banks' => Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get(),
         ]);

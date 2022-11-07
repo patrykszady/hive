@@ -104,6 +104,7 @@ class ExpensesFind extends Component
 
     public function render()
     {
+        $this->authorize('create', Expense::class);
         return view('livewire.expenses.find');
     }
 }
