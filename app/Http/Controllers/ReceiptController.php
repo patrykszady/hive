@@ -172,14 +172,7 @@ class ReceiptController extends Controller
     //middleware
     public function ocr_space($ocr_filename)
     {
-        // dd($ocr_filename);
-        // file_put_contents(
-        //     storage_path($ocr_filename),
-        //     file_get_contents($file)
-        // );
         $ocr_file_stored = realpath(storage_path($ocr_filename));
-
-        // dd($ocr_file_stored);
 
         $result = exec('curl -H "apikey:' .  env('OCR_SPACE_API') . '" --form "file=@' . realpath($ocr_file_stored) . '" --form "language=eng" --form "isTable=true" --form "OCREngine=1" --form "scale=true"  https://api.ocr.space/Parse/Image');
         $result = json_decode($result, true);
@@ -462,18 +455,25 @@ class ReceiptController extends Controller
                 try{
                     //REMOVE IMAGES
                     /* $string = preg_replace("/<a.+?href.+?>.+?<\/a>/is","", $string); */
+
                     //make PDF from HTML
-                    $pdf = SnappyPdf::loadView('receipts.makePdfReceipt', compact('string', 'message_type'))
+                    $pdf = SnappyPdf::loadView('misc.create_pdf_receipt', compact('string', 'message_type'))
                             ->setPaper('a4'); //->setOrientation('portrait')
-                    $ocr_path = date('Y-m-d-H-i-s') .'-' . $receipt->id . '.' . $receipt->options['image_extension'];
-                    $ocr_filename = 'files/_temp_ocr/' . $ocr_path;
-                    $location = storage_path($ocr_filename);
-                    $pdf->save($location);
+
+                    // $ocr_path = date('Y-m-d-H-i-s') . '-' . $receipt->id . '.' . $receipt->options['image_extension'];
+                    $filename = date('Y-m-d-H-i-s') . '--' . $receipt->id . '.' . $receipt->options['image_extension'];
+
+                    $ocr_path = 'files/_temp_ocr/' . $filename;
+                    $location = storage_path($ocr_path);
+                    
+                    // $ocr_filename = 'files/_temp_ocr/' . $ocr_path;
+                    // $location = storage_path($ocr_filename);
+                    $pdf->save($location, $filename);
                 }catch(\Exception $e){
 
                 }
 
-                $string = $this->new_ocr($ocr_filename);
+                $string = $this->ocr_space($ocr_path);
 
             //first attached PDF
             }elseif($receipt->options['ocr_type'] == 'pdf_to_text'){
@@ -743,24 +743,25 @@ class ReceiptController extends Controller
 
             //CREATE NEW Expense
             // $expense->project_id = $receipt_account->project_id; //If PO matches a project, use that project
-            // $expense->distribution_id = $receipt_account->distribution_id;
             if(isset($receipt_account->project_id)){
                 if($receipt_account->project_id === 0){
                     $receipt_account->project = 0;
                 }else{
                     $receipt_account->project = $receipt_account->project_id;
                 }
-            }elseif(isset($receipt_account->distribution_id)){
-                $receipt_account->project = 'D' . $receipt_account->distribution_id;
-            }else{
 
+                $receipt_account->distribution_id = NULL;
+            }elseif(isset($receipt_account->distribution_id)){
+                $receipt_account->distribution_id = $receipt_account->distribution_id;
+                $receipt_account->project_id = NULL;
             }
             
             //how to do $expense = Expense::create(); ?!. double check 06/20/2021
             $expense = new Expense;
             $expense->amount = $amount;
             $expense->reimbursment = NULL;
-            $expense->project_id = $receipt_account->project;
+            $expense->project_id = $receipt_account->project_id;
+            $expense->distribution_id = $receipt_account->distribution_id;
             $expense->created_by_user_id = 0;//automated
             $expense->date = $email_date; ///carbon + system timezone //get from OCR or EMAIL....FIND DATE above 08/12/2021
             $expense->invoice = $invoice_string;
@@ -948,21 +949,45 @@ class ReceiptController extends Controller
         }else{
             if(isset($receipt->options['ocr'])){
                 //SAVE TEMP OCR RECEIPT TO EXPENSE
-                $name = date('Y-m-d-H-i-s') . '-' . $expense->id . '.' . $receipt->options['image_extension'];
-                Storage::disk('files')->move('/_temp_ocr/' . $ocr_path, '/receipts/' . $name);
+                $filename = date('Y-m-d-H-i-s') . '-' . $expense->id . '.' . $receipt->options['image_extension'];
+                Storage::disk('files')->move('/_temp_ocr/' . $ocr_path, '/receipts/' . $filename);
                 //delete temp file...
             }else{
+                //same as above (line 750ish)
                 //make PDF from HTML
-                $pdf = PDF::loadView('receipts.makePdfReceipt', compact('string', 'message_type'))
+           
+                //REMOVE IMAGES
+                /* $string = preg_replace("/<a.+?href.+?>.+?<\/a>/is","", $string); */
+    
+                //make PDF from HTML
+                $pdf = SnappyPdf::loadView('misc.create_pdf_receipt', compact('string', 'message_type'))
                         ->setPaper('a4'); //->setOrientation('portrait')
-                $name = date('Y-m-d-H-i-s') . '-' . $expense->id . '.pdf';
-                $location = storage_path('files/receipts/' . $name);
-                $pdf->save($location);                        
+            
+                // $ocr_path = date('Y-m-d-H-i-s') . '-' . $receipt->id . '.' . $receipt->options['image_extension'];
+                // $filename = date('Y-m-d-H-i-s') . '--' . $receipt->id . '.' . $receipt->options['image_extension'];
+                $filename = date('Y-m-d-H-i-s') . '--' . $receipt->id . '.pdf';
+
+                $ocr_path = 'files/receipts/' . $filename;
+                $location = storage_path($ocr_path);
+                
+                // $ocr_filename = 'files/_temp_ocr/' . $ocr_path;
+                // $location = storage_path($ocr_filename);
+                $pdf->save($location, $filename);
+        
+                // Storage::disk('files')->move('/_temp_ocr/' . $ocr_path, '/receipts/' . $filename);
+                // $string = $this->ocr_space($ocr_path);
+
+
+                // $pdf = PDF::loadView('receipts.makePdfReceipt', compact('string', 'message_type'))
+                //         ->setPaper('a4'); //->setOrientation('portrait')
+                // $name = date('Y-m-d-H-i-s') . '-' . $expense->id . '.pdf';
+                // $location = storage_path('files/receipts/' . $name);
+                // $pdf->save($location);                        
             }
 
             $expense_receipt = new ExpenseReceipts;
             $expense_receipt->expense_id = $expense->id;
-            $expense_receipt->receipt_filename = $name;
+            $expense_receipt->receipt_filename = $filename;
             $expense_receipt->receipt_html = $receipt_html_main;
             $expense_receipt->save();   
         }
