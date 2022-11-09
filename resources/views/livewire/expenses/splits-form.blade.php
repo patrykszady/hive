@@ -101,7 +101,8 @@
                         @endforeach
                     </x-forms.row>
 
-                    <x-forms.row wire:model.lazy="expense_splits.{{ $index }}.reimbursment"
+                    <x-forms.row 
+                        wire:model.lazy="expense_splits.{{ $index }}.reimbursment"
                         errorName="expense_splits.{{ $index }}.reimbursment" name="expense_splits.{{ $index }}.reimbursment"
                         text="Reimbursment" type="dropdown">
                         <option value="">None</option>
@@ -119,19 +120,19 @@
         <x-cards.footer>
             <button 
                 type="button"
+                wire:click="$emit('resetSplits')"
                 x-on:click="open = false"
                 class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 > 
                 Cancel
             </button>
 
-            <div>
-                <h1>{{money($this->splits_sum)}}</h1>
-                @if($errors->has('expense_splits_total_match'))         
-                    <x-forms.error errorName="expense_splits_total_match" />              
-                @endif
-            </div>            
-
+            <a
+                type="button"
+                class="text-center focus:outline-none rounded-md border-2 border-indigo-600 py-2 px-4 text-lg font-medium text-gray-900 shadow-sm">
+                {{money($this->splits_sum)}}
+            </a>        
+        
             <button 
                 type="submit"
                 {{-- x-on:click="open = false" --}}
@@ -139,7 +140,15 @@
                 class="ml-3 inline-flex justify-center disabled:opacity-50 py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                 {{$view_text['button_text']}}
-            </button>          
+            </button>
+
+            @if($errors->has('expense_splits_total_match')) 
+                <x-slot name="bottom">
+                    <x-forms.error errorName="expense_splits_total_match" />              
+                </x-slot>
+            @endif
         </x-cards.footer> 
+
+
     </form>
 </x-modals.modal>

@@ -57,7 +57,8 @@
                     @elseif($day['month'] == today()->format('m')) 
                         '  bg-gray-100 ' 
                     @elseif($day['has_hours'] == TRUE) 
-                        ' bg-green-500 ' 
+                    {{-- ' bg-green-500 '  --}}
+                        ' bg-green-100 ' 
                     @else 
                         ' bg-white text-gray-400 ' 
                     @endif 

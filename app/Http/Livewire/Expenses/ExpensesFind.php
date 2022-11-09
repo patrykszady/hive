@@ -31,6 +31,11 @@ class ExpensesFind extends Component
         ];
     }
 
+    protected $messages = 
+    [
+        'amount' => 'Amount format is incorrect. Format is 2145.36. No commas and only two digits after decimal allowed. If amount is under $1.00, use 0.XX',
+    ];
+   
     public function mount()
     {      
         $this->view_text = [

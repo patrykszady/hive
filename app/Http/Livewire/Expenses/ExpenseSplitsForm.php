@@ -19,6 +19,7 @@ class ExpenseSplitsForm extends Component
     //keep track of expense_splits.*.amount sum 
     public $expense_splits = [];
     public $splits_count = 0;
+    public $splits_total = 0;
     public $modal_show = NULL;
     public $expense_total = 0;
 
@@ -41,11 +42,28 @@ class ExpenseSplitsForm extends Component
         'expense_splits.*.amount.numeric' => 'The amount field must be numberic.',
     ];
 
-    public function updated($field) 
+    public function updated($field, $value) 
     {
-        // $this->validate();
         $this->validateOnly($field);
+        //expense_splits.0.amount
+        $index = substr($field, 15, -7);
+        if($field == 'expense_splits.' . $index . '.amount'){
+            if($value == "" || $value == 0 || $value == 0.0 || $value == 0.00){
+                $this->expense_splits[$index] = 0;
+                
+            }      
+        }        
     }
+
+    // public function updatedExpenseSplits($value) 
+    // {
+    //     dd($this);
+    //     //expense_splits.0.amount
+    //     dd($value);
+    //     // $this->validate();
+    //     dd($this->expense_splits);
+    //     $this->validateOnly($field);
+    // }
 
     public function mount()
     {                   
@@ -59,9 +77,9 @@ class ExpenseSplitsForm extends Component
 
     public function getSplitsSumProperty()
     {
-        $splits_total = collect($this->expense_splits)->where('amount', '!=', '')->sum('amount');
-        //expense_total amount - $splits_total MUST = 0.00
-        return $this->expense_total - $splits_total;
+        $this->splits_total = collect($this->expense_splits)->sum('amount');
+
+        return round($this->expense_total - $this->splits_total, 2);
     }
 
     public function split_store()
