@@ -629,8 +629,14 @@ class TransactionController extends Controller
     {
         //where doesnt have clientpayment
         //why does 2017/older transactions/client_payments not work?
-        $transactions = Transaction::where('transaction_date', '>', '2019-01-01')->where('deposit', 1)->whereDoesntHave('payments')->whereNull('expense_id')->get();
+        $transactions = Transaction::
+            where('transaction_date', '>', '2019-01-01')
+            ->where('deposit', 1)
+            ->whereDoesntHave('payments')
+            ->whereNull('expense_id')
+            ->get();
 
+        // dd($transactions);
         foreach($transactions as $transaction){
             $vendor_id = $transaction->bank_account->bank->vendor_id;
             //reset payments variable?
@@ -639,16 +645,50 @@ class TransactionController extends Controller
                 //where bank_id belongs_to same vendor_id as this payment
                 ->where('belongs_to_vendor_id', $vendor_id)
                 ->where('transaction_id', NULL)
-                ->where('amount', substr($transaction->amount, 1))
+                // ->where('amount', substr($transaction->amount, 1))
                 ->get();
 
                 //json store which $transactions have been checked against which $payments so it doesnt check again?
                 //where parent_client_payment_id is not in json for this $transaction
                 // ->groupBy('parent_client_payment_id');
-            
-            if($payments->count() == 1){
-                $payments->first()->transaction_id = $transaction->id;
-                $payments->first()->save();
+
+            if(!$payments->isEmpty()){
+                //try any of $payments->payment_total ($payment->sum('amount')) == $transaction->amount? if so and only one result..that's our guy. 
+                
+                //clear array before next foreach statement
+                $payment_results = array();
+
+                $client_payment_ids = $payments->pluck('id')->toArray();
+                $client_payments_plucked = $payments->pluck('amount')->toArray();
+       
+                $arr = array_values(array_filter($client_payments_plucked));
+                $n = sizeof($arr); 
+                $ids = $client_payment_ids;
+
+                $results = collect($this->subsetSums($arr, $n, $ids))->sortBy('sum');
+               
+                foreach ($results as $key => $result) {
+                    $sum = number_format($result['sum'], 2, '.', '');
+                    //this can happen multiple of times.. eg transaction_id 6230
+
+                    //is this Transaction a RETURN CHECK "DEPOSIT"?
+                    if($sum === substr($transaction->amount, 1) OR $sum === '-' . $transaction->amount){
+                        $payment_results[] = $result;           
+                    }else{
+                        //if not found... create json array for $transaction with all parent_client_payment_id s so that we dont have to run this heavy program for those payments again.
+                        //06/10/2021 we do the above line already with add_transactions_to_expenses... data is put into database... need it here too
+                    }
+                }
+
+                $payment_array = collect($payment_results)[0]['transactions'];
+
+                if(count($payment_results) == 1){
+                    foreach($payment_array as $payment){
+                        $save_payment = Payment::findOrFail($payment['client_payment_id']);
+                        $save_payment->transaction_id = $transaction->id;
+                        $save_payment->save();
+                    }
+                }
             }
         }            
     }
