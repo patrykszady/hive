@@ -634,7 +634,6 @@ class TransactionController extends Controller
             ->where('deposit', 1)
             ->whereDoesntHave('payments')
             ->whereNull('expense_id')
-            ->whereId(17260)
             ->get();
 
         // dd($transactions);
