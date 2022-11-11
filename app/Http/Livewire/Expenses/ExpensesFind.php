@@ -55,6 +55,10 @@ class ExpensesFind extends Component
 
     public function find_amount()
     {
+        if(!str_contains($this->amount, '.')){
+            $this->amount = $this->amount . '.00';
+        }
+        
         $this->emit('createNewExpense', NULL, $this->amount);
 
         // 2-4-2022 ..account for splits and transactions same as ExpenseIndex render/search method

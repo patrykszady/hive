@@ -31,6 +31,7 @@ class ChecksShow extends Component
             Expense::
                 where('paid_by', $this->check->user_id)
                 ->where('check_id', $this->check->id)
+                ->whereNull('distribution_id')
                 ->get();
 
         $this->user_distributions = 

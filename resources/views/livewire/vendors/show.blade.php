@@ -57,7 +57,7 @@
 				</x-cards.body>
 
                 @can('update', $vendor)
-                    @if($vendor->business_type == 'Sub')
+                    @if($vendor->business_type == "Sub" || $vendor->business_type == "W9")
                         <x-cards.footer>
                             <x-cards.button 
                                 href="{{route('vendors.payment', $vendor->id)}}" 
@@ -74,7 +74,7 @@
 
 		<div class="col-span-4 lg:col-span-2">
             {{-- VENDOR TEAM MEMBERS --}}
-            @if($vendor->business_type == "Sub")
+            @if($vendor->business_type == "Sub" || $vendor->business_type == "W9")
                 <x-cards.wrapper class="max-w-2xl">
                     <x-cards.heading>
                         <x-slot name="left">
@@ -83,11 +83,12 @@
                         </x-slot>
                     
                         @can('create', App\Models\User::class)
-                            <x-slot name="right">                            
+                            <x-slot name="right">     
+                                @if($vendor->business_type == "Sub")                       
                                     <x-cards.button wire:click="$emit('newMember', 'vendor', {{$vendor->id}})">
                                         Add team member
-                                    </x-cards.button>      
-                        
+                                    </x-cards.button> 
+                                @endif
                                 @livewire('users.users-form')                
                             </x-slot>
                         @endcan
