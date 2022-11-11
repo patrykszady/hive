@@ -225,7 +225,6 @@
 			<br>
 
 			{{-- PROJECT PAYMENTS --}}
-			@if(!$project->payments->isEmpty())
 			<x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
 				<x-cards.heading>
 					<x-slot name="left">
@@ -238,37 +237,38 @@
 						</x-cards.button>
 					</x-slot>
 				</x-cards.heading>
-				<x-lists.ul>
-					@foreach($project->payments()->orderBy('date', 'DESC')->get() as $payment)
-						@php
-							$line_details = [
-								1 => [
-									'text' => $payment->date->format('m/d/Y'),
-									'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'					
-									],
-								// 2 => [
-								// 	'text' => $transaction->bank_account->type,
-								// 	'icon' => 'M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z'
-								// 	],
-								3 => [
-									'text' => $payment->reference,
-									'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'					
-									],
-								];
-						@endphp
-			
-						<x-lists.search_li
-							href=""
-							:line_details="$line_details"
-							:line_title="money($payment->amount)"
-							:bubble_message="$payment->transaction ? 'Complete' : 'No Transaction'"
-							:bubble_color="$payment->transaction ? 'green' : 'red'"
-							>
-						</x-lists.search_li>
-					@endforeach
-				</x-lists.ul>
-			</x-cards.wrapper>
-			@endif
+				@if(!$project->payments->isEmpty())
+					<x-lists.ul>
+						@foreach($project->payments()->orderBy('date', 'DESC')->get() as $payment)
+							@php
+								$line_details = [
+									1 => [
+										'text' => $payment->date->format('m/d/Y'),
+										'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'					
+										],
+									// 2 => [
+									// 	'text' => $transaction->bank_account->type,
+									// 	'icon' => 'M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z'
+									// 	],
+									3 => [
+										'text' => $payment->reference,
+										'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'					
+										],
+									];
+							@endphp
+				
+							<x-lists.search_li
+								href=""
+								:line_details="$line_details"
+								:line_title="money($payment->amount)"
+								:bubble_message="$payment->transaction ? 'Complete' : 'No Transaction'"
+								:bubble_color="$payment->transaction ? 'green' : 'red'"
+								>
+							</x-lists.search_li>
+						@endforeach
+					</x-lists.ul>
+				@endif
+			</x-cards.wrapper>			
 		</div>
 		@endcan
 	</div>

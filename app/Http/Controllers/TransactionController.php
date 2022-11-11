@@ -634,6 +634,7 @@ class TransactionController extends Controller
             ->where('deposit', 1)
             ->whereDoesntHave('payments')
             ->whereNull('expense_id')
+            ->whereId(17260)
             ->get();
 
         // dd($transactions);
@@ -641,6 +642,7 @@ class TransactionController extends Controller
             $vendor_id = $transaction->bank_account->bank->vendor_id;
             //reset payments variable?
             $payments = Payment::
+                // withoutGlobalScopes()
                 whereBetween('date', [$transaction->transaction_date->subDays(90), $transaction->transaction_date->addDays(7)])
                 //where bank_id belongs_to same vendor_id as this payment
                 ->where('belongs_to_vendor_id', $vendor_id)
@@ -654,19 +656,19 @@ class TransactionController extends Controller
 
             if(!$payments->isEmpty()){
                 //try any of $payments->payment_total ($payment->sum('amount')) == $transaction->amount? if so and only one result..that's our guy. 
-                
+          
                 //clear array before next foreach statement
                 $payment_results = array();
-
+                
                 $client_payment_ids = $payments->pluck('id')->toArray();
                 $client_payments_plucked = $payments->pluck('amount')->toArray();
-       
+                
                 $arr = array_values(array_filter($client_payments_plucked));
                 $n = sizeof($arr); 
                 $ids = $client_payment_ids;
 
                 $results = collect($this->subsetSums($arr, $n, $ids))->sortBy('sum');
-               
+                
                 foreach ($results as $key => $result) {
                     $sum = number_format($result['sum'], 2, '.', '');
                     //this can happen multiple of times.. eg transaction_id 6230
@@ -680,13 +682,16 @@ class TransactionController extends Controller
                     }
                 }
 
-                $payment_array = collect($payment_results)[0]['transactions'];
+                $payment_results = collect($payment_results);
 
-                if(count($payment_results) == 1){
-                    foreach($payment_array as $payment){
-                        $save_payment = Payment::findOrFail($payment['client_payment_id']);
-                        $save_payment->transaction_id = $transaction->id;
-                        $save_payment->save();
+                if(!$payment_results->isEmpty()){
+                    $payment_array = $payment_results[0]['transactions'];
+                    if(count($payment_results) == 1){
+                        foreach($payment_array as $payment){
+                            $save_payment = Payment::findOrFail($payment['client_payment_id']);
+                            $save_payment->transaction_id = $transaction->id;
+                            $save_payment->save();
+                        }
                     }
                 }
             }
