@@ -118,6 +118,12 @@ return [
             'path' => storage_path('logs/hd_rebates_errors.log'),
             'level' => 'debug',
         ],
+
+        'plaid_adds' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/plaid_adds.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];

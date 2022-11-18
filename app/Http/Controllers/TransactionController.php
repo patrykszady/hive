@@ -16,234 +16,371 @@ use App\Models\VendorTransaction;
 
 use Carbon\Carbon;
 
+use Illuminate\Support\Facades\Log;
+
 class TransactionController extends Controller
 {
     //TEST ONLY //FOR DEVELOPER EXECUTION ONLY
     //only needed for test purposes...transactions update from Plaid.com webhooks
     //For use when Plaid API isn't acting as expected and can always be executed manually...
 
-    public function plaid_transactions_scheduled()
-    {        
-        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
+    // public function plaid_transactions_scheduled()
+    // {        
+    //     $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
 
-        foreach($banks as $bank){
-            $data = array(
-                "client_id" => env('PLAID_CLIENT_ID'),
-                "secret" => env('PLAID_SECRET'),
-                "access_token" => $bank->plaid_access_token,
-                "webhook_type" => 'TRANSACTIONS',
-                "webhook_code" => 'DEFAULT_UPDATE', //TRANSACTIONS_REMOVED
-                "new_transactions"=> 899
-            );
+    //     foreach($banks as $bank){
+    //         $data = array(
+    //             "client_id" => env('PLAID_CLIENT_ID'),
+    //             "secret" => env('PLAID_SECRET'),
+    //             "access_token" => $bank->plaid_access_token,
+    //             "webhook_type" => 'TRANSACTIONS',
+    //             "webhook_code" => 'DEFAULT_UPDATE', //TRANSACTIONS_REMOVED
+    //             "new_transactions"=> 899
+    //         );
   
-            $this->plaid_transactions($bank, $data);
-        }
-        // return Log::channel('plaid_institution_info')->info('finished plaid_transactions_scheduled');
-    }
+    //         $this->plaid_transactions($bank, $data);
+    //     }
+    //     // return Log::channel('plaid_institution_info')->info('finished plaid_transactions_scheduled');
+    // }
 
     //public function plaid_webhooks(Request $request)
 
-    public function plaid_transactions(Bank $bank, $data)
+    public function plaid_transactions_sync()
     {
-        for($i = 0; $i < $data['new_transactions'] + 100; $i+=100){
-            $new_data = array(
-                "client_id"=> env('PLAID_CLIENT_ID'),
-                "secret"=> env('PLAID_SECRET'),
-                "access_token"=> $bank->plaid_access_token,
-                "options" => array(
-                    "count"=> 90,
-                    "offset"=> $i
-                ),
-            );
+        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
+        $bank_accounts = BankAccount::all();
+        $transactions = Transaction::whereDate('transaction_date', '>=', '2021-01-01')->get();
 
-            if($data['webhook_type'] == 'TRANSACTIONS'){
-                if($data['webhook_code'] == 'HISTORICAL_UPDATE'){
-
-                }elseif($data['webhook_code'] == 'DEFAULT_UPDATE'){
-                    //4-11-2020: unless new vendor (45 days), use last Plaid Update Date for this Bank as start date
-                    // $bank_add_date = Carbon::create($bank->vendor->cliff_registration->vendor_registration_date);
-
-                    // if($bank_add_date->lessThan(today()->subDays(14))){
-                    //     $new_data['start_date'] = Carbon::now()->subDays(45)->toDateString();  
-                    // }else{
-                    //     $new_data['start_date'] = $bank_add_date->toDateString();
-                    // }
-
-                    $new_data['start_date'] = Carbon::now()->subDays(45)->toDateString(); 
-                    $new_data['end_date'] = Carbon::now()->toDateString();
-                }elseif($data['webhook_code'] == 'TRANSACTIONS_REMOVED'){
-                    dd('in transactions_removed');
-                    //remove these transactions (soft)
-                    // Log::channel('plaid')->info($data);
-                    // foreach($data['removed_transactions'] as $transaction_plaid_id){
-                    //     $transaction = Transaction::withoutGlobalScopes()->where('plaid_transaction_id', $transaction_plaid_id)->first()->delete();
-                    // }
-                }
-            }
-
-            $new_data = json_encode($new_data);
-
-            //initialize session
-            $ch = curl_init("https://" . env('PLAID_ENV') .  ".plaid.com/transactions/get");
-            //set options
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-                'Content-Type: application/json',
-                ));
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $new_data);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            //execute session
-            $result = curl_exec($ch);
-            //close session
-            curl_close($ch);
-
-            $result = json_decode($result, true);
-
-            // dd($result);
-         
-            //if institution is in error, continue loop
-            if(!isset($result['transactions'])){
-                //04-11-2022 SAVE INSTITITION ERROR TO LOG
-                continue;
-            }
-
-            //TEST ONLY! COMMENT OUT FOR PRODUCTION next 3 lines
-            // $transactions_per_bank_account = collect($result['transactions'])->where('account_id', 'oyBJqz36ROUqK7vbwwXEfVnnmyLnnLHB5aje0');
-            // dd($transactions_per_bank_account);
-            // $result['transactions'] = array($result['transactions'][7]);
-            // dd($result['transactions']);
-            // $transactions_found = collect($result['transactions']);
-            // dd($transactions_found->first()->account_id);
-
-            foreach($result['transactions'] as $key => $transaction)
-            {
-                //4-11-2022 -- only get transactions where the BankAccount matches instead of doing all these loops below to filter. $result['transactions'] should be an eloquent collection
-                $bank_account = BankAccount::withoutGlobalScopes()->where('plaid_account_id', $transaction['account_id'])->first();
-
-                if(is_null($bank_account)){
-                    //6-4-2022 LOG
-                    continue;
-                }
-
-                //$same_accounts = Bank::where('vendor_id', $bank->vendor_id)->where('plaid_ins_id', $result['item']['institution_id'])->pluck('id');
-                $same_accounts = BankAccount::withoutGlobalScopes()->where('vendor_id', $bank->vendor_id)->where('bank_id', $bank->id)->pluck('id');
-
-                $start_date = Carbon::parse($transaction['date'])->subDays(10)->format('Y-m-d');
-                $end_date = Carbon::parse($transaction['date'])->addDays(10)->format('Y-m-d');
-
-                $duplicate_transaction_id = Transaction::withoutGlobalScopes()->whereNotNull('plaid_transaction_id')->where('plaid_transaction_id', $transaction['transaction_id'])->first();
-                // dd($duplicate_transaction_id);
-                //if plaid_transaction_id not found... try to find the Plaid Transaction another way...
-                if(is_null($duplicate_transaction_id)){
-                    //get all transactions with same amount, simuilar date, and same Ins_id, exclude $this->bank_account->id
-                    $pending_transaction = Transaction::withoutGlobalScopes()->whereNotNull('plaid_transaction_id')->where('plaid_transaction_id', $transaction['pending_transaction_id'])->first();
-
-                    //if $transaction['merchant_name'] empty, use $transaction['name']
-                    if(isset($transaction['merchant_name'])){
-                        $transaction_plaid_merchant_name = $transaction['merchant_name'];
-                    }else{
-                        $transaction_plaid_merchant_name = $transaction['name'];
-                    }
-                    
-                    $transaction_plaid_merchant_desc = $transaction['name'];
-
-                    if(!is_null($pending_transaction)){
-                        $transaction_save = $pending_transaction;
-                        $transaction_save->plaid_transaction_id = $transaction['transaction_id'];
-                        if($transaction['pending'] == true){
-                            $transaction_save->posted_date = NULL;
-                        }else{
-                            $transaction_save->posted_date = $transaction['date'];
-                        }                      
-
-                        if($transaction['authorized_date'] == null){
-                            $transaction_save->transaction_date = $transaction['date'];
-                        }else{
-                            $transaction_save->transaction_date = $transaction['authorized_date'];
-                        }
-
-                        //plaid_transaction_id
-                        $transaction_save->amount = $transaction['amount'];
-                        $transaction_save->plaid_merchant_name = $transaction_plaid_merchant_name;
-                        $transaction_save->plaid_merchant_description = $transaction_plaid_merchant_desc;
-                        $transaction_save->save();
-                    }else{
-                        $transactions_search_and_database = collect($result['transactions'])->where('amount', $transaction['amount'])->pluck('transaction_id');
-
-                        // dd($transactions_search_and_database);
-                        $transactions_same_plaid_inst = Transaction::whereNotIn('plaid_transaction_id', $transactions_search_and_database)->whereIn('bank_account_id', $same_accounts)->where('amount', $transaction['amount'])->whereBetween('transaction_date', [$start_date, $end_date])->get();
-                        //whereNotIn('id', $transactions_search_and_database)
-                        // ->where('plaid_merchant_name', $transaction['name'])
-                        // ->where('plaid_transaction_id', '!=', $transaction['transaction_id'])
-                        // dd($transactions_same_plaid_inst);
-
-                        //no other transactions matching...save a new Transaction
-                        if($transactions_same_plaid_inst->isEmpty()){
-                            // dd('if');
-                            // dd($result);
-                            $transaction_save = new Transaction;
-
-                            if($transaction['pending'] == true){
-                                $transaction_save->posted_date = NULL;
-                            }else{
-                                $transaction_save->posted_date = $transaction['date'];
-                            }                      
-
-                            if($transaction['authorized_date'] == null){
-                                $transaction_save->transaction_date = $transaction['date'];
-                            }else{
-                                $transaction_save->transaction_date = $transaction['authorized_date'];
-                            }
-
-                            $transaction_save->amount = $transaction['amount'];
-                            $transaction_save->plaid_transaction_id = $transaction['transaction_id'];
-                            $transaction_save->bank_account_id = $bank_account->id;
-                            // $transaction_save->bank_id = $bank->id;
-
-                            $transaction_save->plaid_merchant_name = $transaction_plaid_merchant_name;
-                            $transaction_save->plaid_merchant_description = $transaction_plaid_merchant_desc;
-                            $transaction_save->save();
-                        }else{
-                            // dd($transaction);
-                            // dd($transactions_same_plaid_inst);
-                            //if 1 or none or mupliple found
-                            if($transactions_same_plaid_inst->count() >= 1){
-                                foreach($transactions_same_plaid_inst as $row_duplicate){
-                                    $row_duplicate->date_diff = $row_duplicate->transaction_date->floatDiffInDays($transaction['date']);    
-                                }
-
-                                $duplicate_row = $transactions_same_plaid_inst->sortBy('date_diff')->first();
-                                // dd($duplicate_row);
-                                $transaction_save = Transaction::findOrFail($duplicate_row->id);
-                                // dd(Transaction::where('id', $duplicate_row->id)->first());
-                                $transaction_save->plaid_transaction_id = $transaction['transaction_id'];
-                                $transaction_save->plaid_transaction_id = $transaction['transaction_id'];
-                                $transaction_save->posted_date = $transaction['date'];
-                                if($transaction['authorized_date'] == null){
-                                    $transaction_save->transaction_date = $transaction['date'];
-                                }
-                                // else{
-                                //     $transaction_save->transaction_date = $transaction['authorized_date'];
-                                // }
-                                $transaction_save->plaid_transaction_id = $transaction['transaction_id'];
-                                $transaction_save->plaid_merchant_name = $transaction_plaid_merchant_name;
-                                $transaction_save->plaid_merchant_description = $transaction_plaid_merchant_desc;
-                                $transaction_save->save();
-                                //if $transactions_same_plaid_inst->count() == more than 1 do more diagnostics..?
-                            }else{
-                                // dd('else else');
-                            }
-                        }
-                    }
-                }else{
-                    //check if the existing transaction id has nay changed info?
-                    //pending_transaction_id
-                    //dd(['in else else', $transaction]);
-                }
-                //otherwise if there's a dupliate, check if it's posted. if not posted yet, continue, if posted, save 'posted_date'
-            }
-        } //for loop  
+        foreach($banks as $bank){
+            $this->plaid_transactions_sync_bank($bank, $bank_accounts, $transactions);
+        }
     }
+
+    public function plaid_transactions_sync_bank(Bank $bank, $bank_accounts, $transactions)
+    {
+        ini_set('max_execution_time', '48000');
+
+        $new_data = array(
+            "client_id" => env('PLAID_CLIENT_ID'),
+            "secret" => env('PLAID_SECRET'),
+            "access_token" => $bank->plaid_access_token,
+            "cursor" => isset($bank->plaid_options->next_cursor) ? $bank->plaid_options->next_cursor : NULL,
+            "count" => 200,
+        );
+
+        $new_data = json_encode($new_data);
+        //initialize session
+        $ch = curl_init("https://" . env('PLAID_ENV') .  ".plaid.com/transactions/sync");
+        //set options
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            ));
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $new_data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        //execute session
+        $result = curl_exec($ch);
+        //close session
+        curl_close($ch);
+
+        $result = json_decode($result, true);
+
+        $next_cursor = array("next_cursor" => $result["next_cursor"],);
+        $bank->plaid_options = json_encode(array_merge(json_decode(json_encode($bank->plaid_options), true), $next_cursor));
+        $bank->save();
+
+        if($result['has_more'] == true){
+            $this->plaid_transactions_sync_bank($bank, $bank_accounts, $transactions);
+        }else{
+            Log::channel('plaid_adds')->info($result);
+            //added
+            foreach($result['added'] as $new_transaction){
+                // //make sure transaction_id does not exist yet.. if it does..update..
+                if($transactions->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first()){
+                    $transaction = $transactions->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first();
+                }elseif($transactions->where('plaid_transaction_id', $new_transaction['transaction_id'])->first()){
+                    $transaction = $transactions->where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
+                }else{
+                    $transaction = new Transaction;
+                }
+
+                //dates
+                if($new_transaction['pending'] == TRUE){
+                    $transaction->posted_date = NULL;
+                }else{
+                    $transaction->posted_date = $new_transaction['date'];
+                }                      
+
+                if($new_transaction['authorized_date'] == NULL){
+                    $transaction->transaction_date = $new_transaction['date'];
+                }else{
+                    $transaction->transaction_date = $new_transaction['authorized_date'];
+                }
+
+                //if $transaction['merchant_name'] empty, use $new_transaction['name']
+                if(isset($new_transaction['merchant_name'])){
+                    $transaction->plaid_merchant_name = $new_transaction['merchant_name'];
+                }else{
+                    // $transaction->plaid_merchant_name = $new_transaction['name'];
+                    $transaction->plaid_merchant_name = NULL;
+                }
+
+                $transaction->amount = $new_transaction['amount'];
+                $transaction->plaid_merchant_description = $new_transaction['name'];
+                $transaction->plaid_transaction_id = $new_transaction['transaction_id'];
+                $transaction->bank_account_id = $bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first()->id;
+                $transaction->save();
+            }
+
+            //modified
+            foreach($result['modified'] as $new_transaction){
+                //make sure transaction_id does not exist yet.. if it does..update..
+                if($transactions->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first()){
+                    $transaction = $transactions->where('plaid_transaction_id', $new_transaction['pending_transaction_id'])->first();
+                }elseif($transactions->where('plaid_transaction_id', $new_transaction['transaction_id'])->first()){
+                    $transaction = $transactions->where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
+                }
+
+                //dates
+                if($new_transaction['pending'] == TRUE){
+                    $transaction->posted_date = NULL;
+                }else{
+                    $transaction->posted_date = $new_transaction['date'];
+                }                      
+
+                if($new_transaction['authorized_date'] == NULL){
+                    $transaction->transaction_date = $new_transaction['date'];
+                }else{
+                    $transaction->transaction_date = $new_transaction['authorized_date'];
+                }
+
+                //if $transaction['merchant_name'] empty, use $new_transaction['name']
+                if(isset($new_transaction['merchant_name'])){
+                    $transaction->plaid_merchant_name = $new_transaction['merchant_name'];
+                }else{
+                    // $transaction->plaid_merchant_name = $new_transaction['name'];
+                    $transaction->plaid_merchant_name = NULL;
+                }
+
+                $transaction->amount = $new_transaction['amount'];
+                $transaction->plaid_merchant_description = $new_transaction['name'];
+                $transaction->plaid_transaction_id = $new_transaction['transaction_id'];
+                $transaction->bank_account_id = $bank_accounts->where('plaid_account_id', $new_transaction['account_id'])->first()->id;
+                $transaction->save();
+            }
+
+            //removed
+            foreach($result['removed'] as $new_transaction){
+                //make sure transaction_id does not exist yet.. if it does..update..
+                $transaction = $transactions->where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
+                
+                $transaction->deleted_at = now();
+                $transaction->save();
+            }
+        }
+    }
+
+    // public function plaid_transactions(Bank $bank, $data)
+    // {
+    //     for($i = 0; $i < $data['new_transactions'] + 100; $i+=100){
+    //         $new_data = array(
+    //             "client_id"=> env('PLAID_CLIENT_ID'),
+    //             "secret"=> env('PLAID_SECRET'),
+    //             "access_token"=> $bank->plaid_access_token,
+    //             "options" => array(
+    //                 "count"=> 90,
+    //                 "offset"=> $i
+    //             ),
+    //         );
+
+    //         if($data['webhook_type'] == 'TRANSACTIONS'){
+    //             if($data['webhook_code'] == 'HISTORICAL_UPDATE'){
+
+    //             }elseif($data['webhook_code'] == 'DEFAULT_UPDATE'){
+    //                 //4-11-2020: unless new vendor (45 days), use last Plaid Update Date for this Bank as start date
+    //                 // $bank_add_date = Carbon::create($bank->vendor->cliff_registration->vendor_registration_date);
+
+    //                 // if($bank_add_date->lessThan(today()->subDays(14))){
+    //                 //     $new_data['start_date'] = Carbon::now()->subDays(45)->toDateString();  
+    //                 // }else{
+    //                 //     $new_data['start_date'] = $bank_add_date->toDateString();
+    //                 // }
+
+    //                 $new_data['start_date'] = Carbon::now()->subDays(45)->toDateString(); 
+    //                 $new_data['end_date'] = Carbon::now()->toDateString();
+    //             }elseif($data['webhook_code'] == 'TRANSACTIONS_REMOVED'){
+    //                 dd('in transactions_removed');
+    //                 //remove these transactions (soft)
+    //                 // Log::channel('plaid')->info($data);
+    //                 // foreach($data['removed_transactions'] as $transaction_plaid_id){
+    //                 //     $transaction = Transaction::withoutGlobalScopes()->where('plaid_transaction_id', $transaction_plaid_id)->first()->delete();
+    //                 // }
+    //             }
+    //         }
+
+    //         $new_data = json_encode($new_data);
+
+    //         //initialize session
+    //         $ch = curl_init("https://" . env('PLAID_ENV') .  ".plaid.com/transactions/get");
+    //         //set options
+    //         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    //             'Content-Type: application/json',
+    //             ));
+    //         curl_setopt($ch, CURLOPT_POST, true);
+    //         curl_setopt($ch, CURLOPT_POSTFIELDS, $new_data);
+    //         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //         //execute session
+    //         $result = curl_exec($ch);
+    //         //close session
+    //         curl_close($ch);
+
+    //         $result = json_decode($result, true);
+
+    //         // dd($result);
+         
+    //         //if institution is in error, continue loop
+    //         if(!isset($result['transactions'])){
+    //             //04-11-2022 SAVE INSTITITION ERROR TO LOG
+    //             continue;
+    //         }
+
+    //         //TEST ONLY! COMMENT OUT FOR PRODUCTION next 3 lines
+    //         // $transactions_per_bank_account = collect($result['transactions'])->where('account_id', 'oyBJqz36ROUqK7vbwwXEfVnnmyLnnLHB5aje0');
+    //         // dd($transactions_per_bank_account);
+    //         // $result['transactions'] = array($result['transactions'][7]);
+    //         // dd($result['transactions']);
+    //         // $transactions_found = collect($result['transactions']);
+    //         // dd($transactions_found->first()->account_id);
+
+    //         foreach($result['transactions'] as $key => $transaction)
+    //         {
+    //             //4-11-2022 -- only get transactions where the BankAccount matches instead of doing all these loops below to filter. $result['transactions'] should be an eloquent collection
+    //             $bank_account = BankAccount::withoutGlobalScopes()->where('plaid_account_id', $transaction['account_id'])->first();
+
+    //             if(is_null($bank_account)){
+    //                 //6-4-2022 LOG
+    //                 continue;
+    //             }
+
+    //             //$same_accounts = Bank::where('vendor_id', $bank->vendor_id)->where('plaid_ins_id', $result['item']['institution_id'])->pluck('id');
+    //             $same_accounts = BankAccount::withoutGlobalScopes()->where('vendor_id', $bank->vendor_id)->where('bank_id', $bank->id)->pluck('id');
+
+    //             $start_date = Carbon::parse($transaction['date'])->subDays(10)->format('Y-m-d');
+    //             $end_date = Carbon::parse($transaction['date'])->addDays(10)->format('Y-m-d');
+
+    //             $duplicate_transaction_id = Transaction::withoutGlobalScopes()->whereNotNull('plaid_transaction_id')->where('plaid_transaction_id', $transaction['transaction_id'])->first();
+    //             // dd($duplicate_transaction_id);
+    //             //if plaid_transaction_id not found... try to find the Plaid Transaction another way...
+    //             if(is_null($duplicate_transaction_id)){
+    //                 //get all transactions with same amount, simuilar date, and same Ins_id, exclude $this->bank_account->id
+    //                 $pending_transaction = Transaction::withoutGlobalScopes()->whereNotNull('plaid_transaction_id')->where('plaid_transaction_id', $transaction['pending_transaction_id'])->first();
+
+    //                 //if $transaction['merchant_name'] empty, use $transaction['name']
+    //                 if(isset($transaction['merchant_name'])){
+    //                     $transaction_plaid_merchant_name = $transaction['merchant_name'];
+    //                 }else{
+    //                     $transaction_plaid_merchant_name = $transaction['name'];
+    //                 }
+                    
+    //                 $transaction_plaid_merchant_desc = $transaction['name'];
+
+    //                 if(!is_null($pending_transaction)){
+    //                     $transaction_save = $pending_transaction;
+    //                     $transaction_save->plaid_transaction_id = $transaction['transaction_id'];
+    //                     if($transaction['pending'] == true){
+    //                         $transaction_save->posted_date = NULL;
+    //                     }else{
+    //                         $transaction_save->posted_date = $transaction['date'];
+    //                     }                      
+
+    //                     if($transaction['authorized_date'] == null){
+    //                         $transaction_save->transaction_date = $transaction['date'];
+    //                     }else{
+    //                         $transaction_save->transaction_date = $transaction['authorized_date'];
+    //                     }
+
+    //                     //plaid_transaction_id
+    //                     $transaction_save->amount = $transaction['amount'];
+    //                     $transaction_save->plaid_merchant_name = $transaction_plaid_merchant_name;
+    //                     $transaction_save->plaid_merchant_description = $transaction_plaid_merchant_desc;
+    //                     $transaction_save->save();
+    //                 }else{
+    //                     $transactions_search_and_database = collect($result['transactions'])->where('amount', $transaction['amount'])->pluck('transaction_id');
+
+    //                     // dd($transactions_search_and_database);
+    //                     $transactions_same_plaid_inst = Transaction::whereNotIn('plaid_transaction_id', $transactions_search_and_database)->whereIn('bank_account_id', $same_accounts)->where('amount', $transaction['amount'])->whereBetween('transaction_date', [$start_date, $end_date])->get();
+    //                     //whereNotIn('id', $transactions_search_and_database)
+    //                     // ->where('plaid_merchant_name', $transaction['name'])
+    //                     // ->where('plaid_transaction_id', '!=', $transaction['transaction_id'])
+    //                     // dd($transactions_same_plaid_inst);
+
+    //                     //no other transactions matching...save a new Transaction
+    //                     if($transactions_same_plaid_inst->isEmpty()){
+    //                         // dd('if');
+    //                         // dd($result);
+    //                         $transaction_save = new Transaction;
+
+    //                         if($transaction['pending'] == true){
+    //                             $transaction_save->posted_date = NULL;
+    //                         }else{
+    //                             $transaction_save->posted_date = $transaction['date'];
+    //                         }                      
+
+    //                         if($transaction['authorized_date'] == null){
+    //                             $transaction_save->transaction_date = $transaction['date'];
+    //                         }else{
+    //                             $transaction_save->transaction_date = $transaction['authorized_date'];
+    //                         }
+
+    //                         $transaction_save->amount = $transaction['amount'];
+    //                         $transaction_save->plaid_transaction_id = $transaction['transaction_id'];
+    //                         $transaction_save->bank_account_id = $bank_account->id;
+    //                         // $transaction_save->bank_id = $bank->id;
+
+    //                         $transaction_save->plaid_merchant_name = $transaction_plaid_merchant_name;
+    //                         $transaction_save->plaid_merchant_description = $transaction_plaid_merchant_desc;
+    //                         $transaction_save->save();
+    //                     }else{
+    //                         // dd($transaction);
+    //                         // dd($transactions_same_plaid_inst);
+    //                         //if 1 or none or mupliple found
+    //                         if($transactions_same_plaid_inst->count() >= 1){
+    //                             foreach($transactions_same_plaid_inst as $row_duplicate){
+    //                                 $row_duplicate->date_diff = $row_duplicate->transaction_date->floatDiffInDays($transaction['date']);    
+    //                             }
+
+    //                             $duplicate_row = $transactions_same_plaid_inst->sortBy('date_diff')->first();
+    //                             // dd($duplicate_row);
+    //                             $transaction_save = Transaction::findOrFail($duplicate_row->id);
+    //                             // dd(Transaction::where('id', $duplicate_row->id)->first());
+    //                             $transaction_save->plaid_transaction_id = $transaction['transaction_id'];
+    //                             $transaction_save->plaid_transaction_id = $transaction['transaction_id'];
+    //                             $transaction_save->posted_date = $transaction['date'];
+    //                             if($transaction['authorized_date'] == null){
+    //                                 $transaction_save->transaction_date = $transaction['date'];
+    //                             }
+    //                             // else{
+    //                             //     $transaction_save->transaction_date = $transaction['authorized_date'];
+    //                             // }
+    //                             $transaction_save->plaid_transaction_id = $transaction['transaction_id'];
+    //                             $transaction_save->plaid_merchant_name = $transaction_plaid_merchant_name;
+    //                             $transaction_save->plaid_merchant_description = $transaction_plaid_merchant_desc;
+    //                             $transaction_save->save();
+    //                             //if $transactions_same_plaid_inst->count() == more than 1 do more diagnostics..?
+    //                         }else{
+    //                             // dd('else else');
+    //                         }
+    //                     }
+    //                 }
+    //             }else{
+    //                 //check if the existing transaction id has nay changed info?
+    //                 //pending_transaction_id
+    //                 //dd(['in else else', $transaction]);
+    //             }
+    //             //otherwise if there's a dupliate, check if it's posted. if not posted yet, continue, if posted, save 'posted_date'
+    //         }
+    //     } //for loop  
+    // }
 
     public function add_vendor_to_transactions()
     {     
@@ -736,8 +873,15 @@ class TransactionController extends Controller
 
     public function find_credit_payments_on_debit()
     {
+        // dd('in find_credit_payments_on_debit');
         //group bank_accounts per vendor
-        $vendors_credit_bank_accounts = BankAccount::withoutGlobalScopes()->where('deleted_at', NULL)->where('type', 'Credit')->get()->groupBy('vendor_id');
+        $vendors_credit_bank_accounts = 
+            BankAccount::
+                withoutGlobalScopes()
+                ->whereNull('deleted_at')
+                ->where('type', 'Credit')
+                ->get()
+                ->groupBy('vendor_id');
         // dd($vendors_credit_bank_accounts);
         foreach($vendors_credit_bank_accounts as $vendor_id => $vendor_bank_accounts){
             $vendor = Vendor::findOrFail($vendor_id);
@@ -757,7 +901,7 @@ class TransactionController extends Controller
                     ->orderBy('transaction_date', 'ASC')
                     ->get();
 
-            // dd($credit_transactions);
+            dd($credit_transactions);
 
             foreach($credit_transactions as $credit_transaction){
                 // dd($credit_transaction);

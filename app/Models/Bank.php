@@ -30,4 +30,26 @@ class Bank extends Model
     {
         return $this->hasMany(BankAccount::class);
     }
+
+    public function getPlaidOptionsAttribute($value)
+    {
+        if($value == NULL){
+            $plaid_options = NULL;
+        }else{
+            $plaid_options = json_decode($value);   
+        }
+        
+        return $plaid_options;
+    }
+
+    // public function getLastSuccessfulUpdate()
+    // {
+    //     if(isset($this->plaid_options->transactions->last_successful_update)){
+    //         $date = Carbon::parse($this->plaid_options->transactions->last_successful_update);
+    //     }else{
+    //         $date = false;
+    //     }
+
+    //     return $date;
+    // }
 }

@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
         // only in Production not in Development enviroment ... EVERYTHING EMAIL RELATED GOES HERE
         if(env('APP_ENV') == 'production'){
             $schedule->call('\App\Http\Controllers\ReceiptController@receipt_email')->everyMinute();  
-            $schedule->call('\App\Http\Controllers\TransactionController@plaid_transactions_scheduled')->hourly();
+            $schedule->call('\App\Http\Controllers\TransactionController@plaid_transactions_sync')->hourly();
             $schedule->call('\App\Http\Controllers\TransactionController@add_check_deposit_to_transactions')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_vendor_to_transactions')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_expense_to_transactions')->everyTenMinutes();
