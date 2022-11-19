@@ -160,7 +160,7 @@
 
 	<div class="col-span-4 lg:col-span-2 space-y-2">
 		{{-- ASSOCIATED EXPENSES --}}
-		@if(!$expense->associated->isEmpty())
+		@if(!$expense->associated_expenses->isEmpty())
 		<x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
 			<x-cards.heading>
 				<x-slot name="left">

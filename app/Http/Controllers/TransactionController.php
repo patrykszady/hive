@@ -44,6 +44,37 @@ class TransactionController extends Controller
     // }
 
     //public function plaid_webhooks(Request $request)
+    public function plaid_transactions_refresh()
+    {
+        $banks = Bank::withoutGlobalScopes()->whereNotNull('plaid_access_token')->get();
+
+        foreach($banks as $bank){
+            $new_data = array(
+                "client_id" => env('PLAID_CLIENT_ID'),
+                "secret" => env('PLAID_SECRET'),
+                "access_token" => $bank->plaid_access_token,
+            );
+    
+            $new_data = json_encode($new_data);
+            //initialize session
+            $ch = curl_init("https://" . env('PLAID_ENV') .  ".plaid.com/transactions/refresh");
+            //set options
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                'Content-Type: application/json',
+                ));
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $new_data);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            //execute session
+            $result = curl_exec($ch);
+            //close session
+            curl_close($ch);
+    
+            $result = json_decode($result, true);
+    
+            dd($result);
+        }
+    }
 
     public function plaid_transactions_sync()
     {
@@ -873,7 +904,6 @@ class TransactionController extends Controller
 
     public function find_credit_payments_on_debit()
     {
-        // dd('in find_credit_payments_on_debit');
         //group bank_accounts per vendor
         $vendors_credit_bank_accounts = 
             BankAccount::
@@ -882,7 +912,7 @@ class TransactionController extends Controller
                 ->where('type', 'Credit')
                 ->get()
                 ->groupBy('vendor_id');
-        // dd($vendors_credit_bank_accounts);
+
         foreach($vendors_credit_bank_accounts as $vendor_id => $vendor_bank_accounts){
             $vendor = Vendor::findOrFail($vendor_id);
             $vendor_office_distribution_id = Distribution::withoutGlobalScopes()->where('vendor_id', $vendor_id)->where('name', 'OFFICE')->first()->id;
@@ -892,30 +922,27 @@ class TransactionController extends Controller
             $credit_transactions = 
                 Transaction::
                     where('check_id', NULL)
-                    // ->where('id', 17095)
+                    // ->where('id', 17325)
                     ->where('expense_id', NULL)
                     ->where('check_number', NULL)
                     ->where('deposit', NULL)
                     ->whereNotNull('vendor_id')
+                    ->whereDate('transaction_date', '>=', '2022-10-07')
                     ->whereIn('bank_account_id', $bank_account_ids) //where bank_id_account is a credit card for this user
                     ->orderBy('transaction_date', 'ASC')
                     ->get();
 
-            dd($credit_transactions);
-
             foreach($credit_transactions as $credit_transaction){
-                // dd($credit_transaction);
                 $debit_transactions = 
                     Transaction::
                         where('amount', substr($credit_transaction->amount, 1))
                         ->where('vendor_id', $credit_transaction->vendor_id)
                         ->whereIn('bank_account_id', $vendors_debit_bank_accounts->pluck('id')) //and where bank_type = DEBIT
                         ->where('expense_id', NULL)
-                        ->whereBetween('transaction_date', [$credit_transaction->transaction_date->subDays(2), $credit_transaction->transaction_date->addDays(5)])
+                        //->subDays(2)
+                        ->whereBetween('transaction_date', [$credit_transaction->transaction_date, $credit_transaction->transaction_date->addDays(5)])
                         //where what else?
                         ->get();
-
-                // dd($debit_transactions);
 
                 //can we add a Model attribute in the above Where statement?! --I dont think so
                 foreach($debit_transactions as $debit_transaction){
@@ -927,7 +954,6 @@ class TransactionController extends Controller
                 if(is_null($debit_transaction)){
                     // continue;
                 }else{
-                    // dd('in else');
                     //create new expenses with associated_expense_id
 
                     //CREDIT CARD TRANSACTION
