@@ -19,12 +19,12 @@ class ExpensesShow extends Component
     {
         $this->authorize('view', $this->expense);
 
-        $receipts = $this->expense->receipts()->latest()->get();
+        $receipt = $this->expense->receipts()->latest()->first();
         $splits = $this->expense->splits()->with('project')->get();
     
         return view('livewire.expenses.show', [
             'expense' => $this->expense,
-            'receipts' => $receipts,
+            'receipt' => $receipt,
             'splits' => $splits,
         ]);
     }

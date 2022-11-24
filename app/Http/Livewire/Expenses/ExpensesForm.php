@@ -251,6 +251,10 @@ class ExpensesForm extends Component
     {
         $this->resetValidation();
         $this->check = NULL;
+        $this->check_input = FALSE;
+        $this->check_number = NULL;
+        $this->bank_account = NULL;
+        $this->payment_type = NULL;
 
         $this->expense = Expense::make();      
         $this->expense->amount = $amount;  
@@ -314,26 +318,36 @@ class ExpensesForm extends Component
         $this->authorize('create', Expense::class);
         $this->validate();
 
+        // dd($distribution_id);
+        // dd($this->expense);
+
         if(is_numeric($this->expense->project_id)){
             $project_id = $this->expense->project_id;
-            $vendor_id = $this->expense->vendor_id;
             $distribution_id = NULL;
-            $dist_user = NULL;
+            $vendor_id = $this->expense->vendor_id;
+            $dist_user = NULL;            
         }elseif($this->splits){
             $project_id = NULL;
             $distribution_id = NULL;
-            $vendor_id = $this->expense->vendor_id;
+            $vendor_id = $this->expense->vendor_id;            
             $dist_user = NULL;
         }elseif(is_null($this->expense->project_id)){
-            $project_id = NULL;
+            dd('in elseif');
+            $project_id = NULL;                      
             $distribution_id = NULL;
-            $vendor_id = NULL;
-            $dist_user = NULL;
+            $vendor_id = $this->expense->vendor_id;
+            $dist_user = $this->expense->vendor_id;
         }else{
-            $distribution_id = substr($this->expense->project_id, 2);
-            $dist_user = Distribution::findOrFail($distribution_id)->user_id;
             $project_id = NULL;
-            $vendor_id = NULL;
+            $distribution_id = substr($this->expense->project_id, 2);          
+            $vendor_id = $this->expense->vendor_id;
+
+            $distribution = Distribution::findOrFail($distribution_id)->user_id;
+            if($distribution != 0){
+                $dist_user = $distribution;
+            }else{
+                $dist_user = NULL;
+            }
         }
 
         // dd($this->expense->paid_by ? $this->expense->paid_by : NULL);

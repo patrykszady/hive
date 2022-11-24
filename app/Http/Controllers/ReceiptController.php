@@ -518,7 +518,6 @@ class ReceiptController extends Controller
         }
         // dd($receipt_start);
 
-
         if($receipt->options['receipt_end'] !== "0"){
             // store patter in datebase as $receipt->options['receipt_end']
             // $pattern = "/\d{4}\sPRO XTRA SPEND|PRO XTRA SPEND/m";

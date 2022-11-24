@@ -66,6 +66,8 @@ class Check extends Model
             $owner = $this->vendor->business_name;
         }elseif($this->user_id){
             $owner = $this->user->full_name;
+        }else{
+            $owner = NULL;
         }
 
         return $owner;
