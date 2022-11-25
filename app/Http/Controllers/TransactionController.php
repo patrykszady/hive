@@ -669,45 +669,81 @@ class TransactionController extends Controller
 
     public function add_transactions_to_check()
     {
-        $transactions = Transaction::withoutGlobalScopes()->whereNull('deleted_at')->whereNotNull('check_number')->whereNull('check_id')->orderBy('id', 'DESC')->get();
-
-        foreach($transactions as $transaction){
-            if($transaction->check_number == '1010101'){
-                $check_type = 'Transfer';
-            }elseif($transaction->check_number == '2020202'){
-                $check_type = 'Cash';
-            }elseif(is_numeric($transaction->check_number)){
-                $check_type = 'Check';
-            }else{
-                continue;
-            }
-
-            $transaction_checks = 
-                Check::withoutGlobalScopes()
+        $checks = Check::withoutGlobalScopes()
                 ->whereDoesntHave('transactions')
-                ->where('bank_account_id', $transaction->bank_account_id)
-                ->where('check_type', $check_type)
-                ->whereBetween('date', [
-                    $transaction->transaction_date->subDays(385)->format('Y-m-d'), 
-                    $transaction->transaction_date->format('Y-m-d')
-                    ])
-                ->orderBy('date', 'DESC');
-            
-            if($transaction_checks->get()->where('amount', str_replace('-','',$transaction->amount))){
-                $transaction_checks = $transaction_checks->get()->where('amount', str_replace('-','',$transaction->amount));
-            }elseif($transaction_checks->get()->where('amount', str_replace('-','',$transaction->amount))->isEmpty()){
-                $transaction_checks = $transaction_checks->get()->where('check_number', $transaction->check_number);
-            }else{
-                //only if check_type = Check do a check_number constraint
-                if($check_type == 'Check'){
-                    $transaction_checks = $transaction_checks->get()->where('check_number', $transaction->check_number);
-                }
-                
-                // else{
-                //     $transaction_checks = $transaction_checks->where('amount', str_replace('-','',$transaction->amount));
-                // }              
+                ->where('check_type', '!=', 'Cash')
+                ->where('id',2223)
+                // ->where('bank_account_id', $transaction->bank_account_id)
+                // ->where('check_type', $check_type)
+                // ->whereBetween('date', [
+                //     $transaction->transaction_date->subDays(385)->format('Y-m-d'), 
+                //     $transaction->transaction_date->format('Y-m-d')
+                //     ])
+                ->orderBy('date', 'DESC')->get();
+
+        foreach($checks as $check){
+            $transactions = Transaction::withoutGlobalScopes()
+                    ->whereNull('deleted_at')
+                    ->whereNotNull('check_number')
+                    ->whereNull('check_id')
+                    ->where('amount', $check->amount)
+                    ->orderBy('id', 'DESC')
+                    ->get();
+
+            if($transactions->count() == 1){
+                $transactions->first()->check()->associate($check)->save();
+
+                // $check = $transactions->first();
+                // // dd($check->amount . ' | ' .$transaction->amount);
+                // if(isset($check)){
+                //     $transaction->check()->associate($check);
+                //     $transaction->save();
+                // }
             }
-        }        
+        }
+
+
+
+
+        // $transactions = Transaction::withoutGlobalScopes()->whereNull('deleted_at')->whereNotNull('check_number')->whereNull('check_id')->orderBy('id', 'DESC')->get();
+
+        // foreach($transactions as $transaction){
+        //     if($transaction->check_number == '1010101'){
+        //         $check_type = 'Transfer';
+        //     }elseif($transaction->check_number == '2020202'){
+        //         $check_type = 'Cash';
+        //     }elseif(is_numeric($transaction->check_number)){
+        //         $check_type = 'Check';
+        //     }else{
+        //         continue;
+        //     }
+
+        //     $transaction_checks = 
+        //         Check::withoutGlobalScopes()
+        //         ->whereDoesntHave('transactions')
+        //         ->where('bank_account_id', $transaction->bank_account_id)
+        //         ->where('check_type', $check_type)
+        //         ->whereBetween('date', [
+        //             $transaction->transaction_date->subDays(385)->format('Y-m-d'), 
+        //             $transaction->transaction_date->format('Y-m-d')
+        //             ])
+        //         ->orderBy('date', 'DESC');
+            
+            // if($transaction_checks->get()->where('amount', str_replace('-','',$transaction->amount))){
+            //     $transaction_checks = $transaction_checks->get()->where('amount', str_replace('-','',$transaction->amount));
+            // }elseif($transaction_checks->get()->where('amount', str_replace('-','',$transaction->amount))->isEmpty()){
+            //     $transaction_checks = $transaction_checks->get()->where('check_number', $transaction->check_number);
+            // }else{
+            //     //only if check_type = Check do a check_number constraint
+            //     if($check_type == 'Check'){
+            //         $transaction_checks = $transaction_checks->get()->where('check_number', $transaction->check_number);
+            //     }
+                
+            //     // else{
+            //     //     $transaction_checks = $transaction_checks->where('amount', str_replace('-','',$transaction->amount));
+            //     // }              
+            // }
+        // }        
     }
 
     public function add_check_id_to_transactions()
