@@ -853,7 +853,7 @@ class TransactionController extends Controller
                     ->where('bank_account_id', $bank_account_id)
                     ->where('check_type', $check_type)
                     ->whereBetween('date', [$transaction->transaction_date->subDays(385)->format('Y-m-d'), $transaction->transaction_date->format('Y-m-d')])->get();
-                dd($transaction_checks);
+                
                 //match amount first
                 if($transaction_checks->where('amount', str_replace('-','',$transaction->amount))){
                     $transaction_checks = $transaction_checks->where('amount', str_replace('-','',$transaction->amount));
@@ -861,9 +861,11 @@ class TransactionController extends Controller
                     $transaction_checks = $transaction_checks->where('check_number', $transaction->check_number);
                 }else{
                     //only if check_type = Check do a check_number constraint
-                    if($check_type == 'Check'){
-                        $transaction_checks = $transaction_checks->where('check_number', $transaction->check_number);
-                    }
+                    // if($check_type == 'Check'){
+                    //     $transaction_checks = $transaction_checks->where('check_number', $transaction->check_number);
+                    // }else{
+                    //     continue;
+                    // }                   
                     
                     // else{
                     //     $transaction_checks = $transaction_checks->where('amount', str_replace('-','',$transaction->amount));
@@ -879,6 +881,7 @@ class TransactionController extends Controller
                         $transaction->check()->associate($check);
                         $transaction->save();
                     }else{
+                        continue;
                         //remove $transaction from $transactions collection
                         //is this needed?!
                         // $transactions->forget($key);
