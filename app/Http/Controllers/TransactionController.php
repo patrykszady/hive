@@ -673,11 +673,18 @@ class TransactionController extends Controller
             //using withoutGlobalScopes() in this function. Each of these queries MUST be accompanied by plaid_account_id to make sure vendor-specific data is compared.
             //1/18/2021 mutated values will break the code. Always $check->getRawOriginal('check') any mutated values....OR work that into Model code. Usually fails if the mudated value logic required Auth::user()
 
+        //->where('id', 16427)
         $transactions = Transaction::withoutGlobalScopes()->whereNull('deleted_at')->whereNotNull('check_number')->whereNull('check_id')->orderBy('id', 'DESC')->get();
-        foreach($transactions as $key => $transaction){
-            $check_type = NULL;
+
+        foreach($transactions as $transaction){
+            //bank_account no longer used ? bank_account id 8
+            if(is_null($transaction->bank_account)){
+                continue;
+            }
+
             //need a way to match checks and transactions, ignoring amount...opposite of the Else statement below that finds them by amount only.
             //get all $transaction->plaid_account_ids
+
             $bank = Bank::withoutGlobalScopes()->find($transaction->bank_account->bank_id)->plaid_ins_id;
             $banks = Bank::withoutGlobalScopes()->where('plaid_ins_id', $bank)->pluck('id');
             $bank_accounts = BankAccount::withoutGlobalScopes()->whereIn('bank_id', $banks)->pluck('id');
@@ -690,17 +697,36 @@ class TransactionController extends Controller
                 $check_type = 'Check';
             }
 
-            //10-22-2022 where trnsaction->date within 15 days of check->date
+            // dd($check_type);
 
-            $transaction_amount_checks = Check::withoutGlobalScopes()->whereDoesntHave('transactions')->whereIn('bank_account_id', $bank_accounts)->where('amount', str_replace('-','',$transaction->amount))->where('check_type', $check_type)->whereDate('date', '>', $transaction->transaction_date->subDays(15)->format('Y-m-d'))->get();
- 
-            //only if check_type = Check do a check_number constraint
-            if($check_type == 'Check'){
-                $transaction_amount_checks = $transaction_amount_checks->where('check_number', $transaction->check_number)->where('check_type', $check_type);
+            $transaction_checks = 
+                Check::withoutGlobalScopes()
+                ->whereDoesntHave('transactions')
+                ->whereIn('bank_account_id', $bank_accounts)
+                ->where('check_type', $check_type)
+                ->whereBetween('date', [$transaction->transaction_date->subDays(385)->format('Y-m-d'), $transaction->transaction_date->format('Y-m-d')])->get();
+            // dd($transaction_checks);
+            //match amount first
+            if($transaction_checks->where('amount', str_replace('-','',$transaction->amount))){
+                $transaction_checks = $transaction_checks->where('amount', str_replace('-','',$transaction->amount));
+            }elseif($transaction_checks->where('amount', str_replace('-','',$transaction->amount))->isEmpty()){
+                $transaction_checks = $transaction_checks->where('check_number', $transaction->check_number);
+            }else{
+                //only if check_type = Check do a check_number constraint
+                if($check_type == 'Check'){
+                    $transaction_checks = $transaction_checks->where('check_number', $transaction->check_number);
+                }
+                
+                // else{
+                //     $transaction_checks = $transaction_checks->where('amount', str_replace('-','',$transaction->amount));
+                // }              
             }
 
-            if($transaction_amount_checks->count() == 1){
-                $check = $transaction_amount_checks->first();
+            // dd($transaction_checks);
+            // dd('too faRR');            
+
+            if($transaction_checks->count() == 1){
+                $check = $transaction_checks->first();
                 // dd($check->amount . ' | ' .$transaction->amount);
                 if(isset($check)){
                     $transaction->check()->associate($check);
@@ -711,9 +737,15 @@ class TransactionController extends Controller
                     // $transactions->forget($key);
                 }
 
-            }else{
-                continue;
             }
+            
+            // else{
+
+            // }
+            
+            // else{
+            //     continue;
+            // }
 
             //when Institution/Bank check_number is not same as actual Check/Cliff Construction check_number but same Amount OR is the same (CASE STUDY: check #1737 from Citi / plaid_account_id = 4 ) but returned check happened and even a successful retry happened. All 3 transactions will link to the Check
             // $similar_check_numbers = collect();

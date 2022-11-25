@@ -556,6 +556,7 @@ class ReceiptController extends Controller
                 //remove images
                 $string = preg_replace("/<a.+?href.+?>.+?<\/a>/is","", $receipt_html_main);
 
+                // dd($message_type);
                 // print_r($string);
                 // dd();
 
@@ -949,7 +950,7 @@ class ReceiptController extends Controller
             if(isset($receipt->options['ocr'])){
                 //SAVE TEMP OCR RECEIPT TO EXPENSE
                 $filename = date('Y-m-d-H-i-s') . '-' . $expense->id . '.' . $receipt->options['image_extension'];
-                Storage::disk('files')->move('/_temp_ocr/' . $ocr_path, '/receipts/' . $filename);
+                Storage::disk('files')->move('/_temp_ocr/' . substr($ocr_path, 16), '/receipts/' . $filename);
                 //delete temp file...
             }else{
                 //same as above (line 750ish)

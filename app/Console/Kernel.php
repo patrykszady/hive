@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
             $schedule->call('\App\Http\Controllers\TransactionController@add_check_deposit_to_transactions')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_vendor_to_transactions')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_expense_to_transactions')->everyTenMinutes();
-            $schedule->call('\App\Http\Controllers\TransactionController@add_check_id_to_transactions')->twiceDaily(7, 19);
+            $schedule->call('\App\Http\Controllers\TransactionController@add_check_id_to_transactions')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@add_payments_to_transaction')->everyTenMinutes();
             $schedule->call('\App\Http\Controllers\TransactionController@find_credit_payments_on_debit')->hourly();
         }

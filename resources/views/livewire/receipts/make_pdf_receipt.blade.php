@@ -1,7 +1,4 @@
-@if($message_type == 'HTML')
-  {!! $string !!}
-  {{-- {!! $receipt_html_main !!} --}}
-@elseif($message_type == 'PLAIN')
+
   <!DOCTYPE html>
   <html lang="en">
     <head>
@@ -28,4 +25,4 @@
       }
   </style>
   </html>
-@endif
+
