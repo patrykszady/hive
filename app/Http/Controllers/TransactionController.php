@@ -841,12 +841,14 @@ class TransactionController extends Controller
             $bank_accounts_ids = BankAccount::withoutGlobalScopes()->whereIn('bank_id', $banks)->pluck('id');
 
             foreach($bank_account_transactions as $transaction){
-                if($transaction->check_number == 1010101){
+                if($transaction->check_number == '1010101'){
                     $check_type = 'Transfer';
-                }elseif($transaction->check_number == 2020202){
+                }elseif($transaction->check_number == '2020202'){
                     $check_type = 'Cash';
-                }else{
+                }elseif(is_numeric($transaction->check_number)){
                     $check_type = 'Check';
+                }else{
+                    continue;
                 }
 
                 // dd($check_type);
