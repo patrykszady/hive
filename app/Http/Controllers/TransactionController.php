@@ -855,22 +855,22 @@ class TransactionController extends Controller
                     ->whereBetween('date', [$transaction->transaction_date->subDays(385)->format('Y-m-d'), $transaction->transaction_date->format('Y-m-d')])->get();
                 // dd($transaction_checks);
                 //match amount first
-                if($transaction_checks->where('amount', str_replace('-','',$transaction->amount))){
-                    $transaction_checks = $transaction_checks->where('amount', str_replace('-','',$transaction->amount));
-                }elseif($transaction_checks->where('amount', str_replace('-','',$transaction->amount))->isEmpty()){
-                    $transaction_checks = $transaction_checks->where('check_number', $transaction->check_number);
-                }else{
-                    //only if check_type = Check do a check_number constraint
-                    if($check_type == 'Check'){
-                        $transaction_checks = $transaction_checks->where('check_number', $transaction->check_number);
-                    }
-                    
-                    // else{
-                    //     $transaction_checks = $transaction_checks->where('amount', str_replace('-','',$transaction->amount));
-                    // }              
-                }
 
-           
+
+                // dd($transaction_checks);
+
+                if($transaction_checks->count() == 1){
+                    $check = $transaction_checks->first();
+                    // dd($check->amount . ' | ' .$transaction->amount);
+                    if(isset($check)){
+                        $transaction->check()->associate($check);
+                        $transaction->save();
+                    }else{
+                        //remove $transaction from $transactions collection
+                        //is this needed?!
+                        // $transactions->forget($key);
+                    }
+                }
             }
         } //transactions foreach
     }
