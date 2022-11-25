@@ -672,10 +672,9 @@ class TransactionController extends Controller
         //NOTES: 
             //using withoutGlobalScopes() in this function. Each of these queries MUST be accompanied by plaid_account_id to make sure vendor-specific data is compared.
             //1/18/2021 mutated values will break the code. Always $check->getRawOriginal('check') any mutated values....OR work that into Model code. Usually fails if the mudated value logic required Auth::user()
-
-        //->where('id', 16427)
         $transactions = Transaction::withoutGlobalScopes()->whereNull('deleted_at')->whereNotNull('check_number')->whereNull('check_id')->orderBy('id', 'DESC')->get();
 
+        // dd($transactions);
         foreach($transactions as $transaction){
             //bank_account no longer used ? bank_account id 8
             if(is_null($transaction->bank_account)){
@@ -685,8 +684,8 @@ class TransactionController extends Controller
             //need a way to match checks and transactions, ignoring amount...opposite of the Else statement below that finds them by amount only.
             //get all $transaction->plaid_account_ids
 
-            $bank = Bank::withoutGlobalScopes()->find($transaction->bank_account->bank_id)->plaid_ins_id;
-            $banks = Bank::withoutGlobalScopes()->where('plaid_ins_id', $bank)->pluck('id');
+            $plaid_ins_id = Bank::withoutGlobalScopes()->find($transaction->bank_account->bank_id)->plaid_ins_id;
+            $banks = Bank::withoutGlobalScopes()->where('plaid_ins_id', $plaid_ins_id)->pluck('id');
             $bank_accounts = BankAccount::withoutGlobalScopes()->whereIn('bank_id', $banks)->pluck('id');
             
             if($transaction->check_number == 1010101){
@@ -723,7 +722,6 @@ class TransactionController extends Controller
             }
 
             // dd($transaction_checks);
-            // dd('too faRR');            
 
             if($transaction_checks->count() == 1){
                 $check = $transaction_checks->first();
@@ -736,7 +734,7 @@ class TransactionController extends Controller
                     //is this needed?!
                     // $transactions->forget($key);
                 }
-
+                $transaction = NULL;
             }
             
             // else{
