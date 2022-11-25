@@ -834,12 +834,6 @@ class TransactionController extends Controller
                 continue;
             }
 
-            //need a way to match checks and transactions, ignoring amount...opposite of the Else statement below that finds them by amount only.
-            //get all $transaction->plaid_account_ids
-            $plaid_ins_id = $bank_account->bank->plaid_ins_id;
-            $banks = Bank::withoutGlobalScopes()->where('plaid_ins_id', $plaid_ins_id)->pluck('id');
-            $bank_accounts_ids = BankAccount::withoutGlobalScopes()->whereIn('bank_id', $banks)->pluck('id');
-
             foreach($bank_account_transactions as $transaction){
                 if($transaction->check_number == '1010101'){
                     $check_type = 'Transfer';
@@ -856,7 +850,7 @@ class TransactionController extends Controller
                 $transaction_checks = 
                     Check::withoutGlobalScopes()
                     ->whereDoesntHave('transactions')
-                    ->whereIn('bank_account_id', $bank_accounts_ids)
+                    ->where('bank_account_id', $bank_account_id)
                     ->where('check_type', $check_type)
                     ->whereBetween('date', [$transaction->transaction_date->subDays(385)->format('Y-m-d'), $transaction->transaction_date->format('Y-m-d')])->get();
                 // dd($transaction_checks);
