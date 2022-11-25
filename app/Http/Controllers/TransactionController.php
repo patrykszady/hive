@@ -835,15 +835,15 @@ class TransactionController extends Controller
             }
 
             foreach($bank_account_transactions as $transaction){
-                if($transaction->check_number == '1010101'){
-                    $check_type = 'Transfer';
-                }elseif($transaction->check_number == '2020202'){
-                    $check_type = 'Cash';
-                }elseif(is_numeric($transaction->check_number)){
-                    $check_type = 'Check';
-                }else{
-                    continue;
-                }
+                // if($transaction->check_number == '1010101'){
+                //     $check_type = 'Transfer';
+                // }elseif($transaction->check_number == '2020202'){
+                //     $check_type = 'Cash';
+                // }elseif(is_numeric($transaction->check_number)){
+                //     $check_type = 'Check';
+                // }else{
+                //     continue;
+                // }
 
                 // dd($check_type);
 
@@ -851,7 +851,7 @@ class TransactionController extends Controller
                     Check::withoutGlobalScopes()
                     ->whereDoesntHave('transactions')
                     ->where('bank_account_id', $bank_account_id)
-                    ->where('check_type', $check_type)
+                    // ->where('check_type', $check_type)
                     ->whereBetween('date', [$transaction->transaction_date->subDays(385)->format('Y-m-d'), $transaction->transaction_date->format('Y-m-d')])->get();
                 // dd($transaction_checks);
                 //match amount first
