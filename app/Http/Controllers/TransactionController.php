@@ -581,7 +581,7 @@ class TransactionController extends Controller
                 ->where('belongs_to_vendor_id', $cliff_vendor->id)
                 ->whereNotNull('vendor_id')
                 //where transacitons->sum != $expense(item)->sum  \\ whereNull checked_at (transactions add up to expense)
-                ->whereDate('date', '>=', Carbon::now()->subMonths(48))
+                ->whereDate('date', '>=', Carbon::now()->subMonths(3))
                 // ->whereBetween('date', [$start_date, $end_date])
                 ->get();
 
@@ -1137,12 +1137,11 @@ class TransactionController extends Controller
             //Initialize the Credentials object. 
             $credentials = new \Aws\Credentials\Credentials($access_key, $secret_key); 
 
-            $start_date = Carbon::today()->subDays(45)->format('Y-m-d');
+            $start_date = Carbon::today()->subDays(60)->format('Y-m-d');
             $end_date = Carbon::today()->format('Y-m-d');
 
             //where amount doesnt start with a minus/return 
-            //->whereBetween('date', [$start_date, $end_date])
-            $expenses = Expense::where('vendor_id', 54)->whereNotNull('invoice')->whereDoesntHave('transactions')->where('amount', 'NOT LIKE', "-%")->get();
+            $expenses = Expense::where('vendor_id', 54)->whereNotNull('invoice')->whereDoesntHave('transactions')->whereBetween('date', [$start_date, $end_date])->where('amount', 'NOT LIKE', "-%")->get();
             // dd($expenses);
 
             foreach ($expenses as $expense) {
