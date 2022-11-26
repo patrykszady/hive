@@ -684,7 +684,7 @@ class ReceiptController extends Controller
         }
 
         if(isset($receipt->options['no_max'])){
-            $no_max = true;
+            $no_max = TRUE;
         }else{
             $no_max = NULL;
         }
@@ -843,17 +843,19 @@ class ReceiptController extends Controller
             $total_found[] = $match[0];
         }
 
-        // dd($total_found);
         $amount_group_count = array_count_values($max);
-        // dd($amount_group_count);
 
         //RIGHT NOW JUST FOR GROOT... AND amazon digital
         if(isset($no_max)){
             $amount = array_keys($amount_group_count, max($amount_group_count));
-            return $amount[0];    
+
+            if($receipt->id == 12){
+                return '-' . $amount[0];
+            }else{
+                return $amount[0]; 
+            }               
         }
 
-        // dd(max($max));
         if(!isset($max)){
             $amount = false;
             return $amount;
@@ -864,10 +866,7 @@ class ReceiptController extends Controller
         }else{
             $max = array_search(max($max), $max);
         }
-
-
-        // dd($max);
-        // dd($total_found);        
+   
         //if first character is "-" or "(", use min, if first char is numeric, user max
         if(is_numeric(substr($total_found[$max], 0, 1))){
             $amount = max($total_found);

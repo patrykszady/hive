@@ -12,6 +12,7 @@ use App\Models\Payment;
 use App\Models\Distribution;
 use App\Models\BankAccount;
 use App\Models\Transaction;
+use App\Models\ReceiptAccount;
 use App\Models\VendorTransaction;
 
 use Carbon\Carbon;
@@ -580,7 +581,7 @@ class TransactionController extends Controller
                 ->where('belongs_to_vendor_id', $cliff_vendor->id)
                 ->whereNotNull('vendor_id')
                 //where transacitons->sum != $expense(item)->sum  \\ whereNull checked_at (transactions add up to expense)
-                ->whereDate('date', '>=', Carbon::now()->subMonths(3))
+                ->whereDate('date', '>=', Carbon::now()->subMonths(48))
                 // ->whereBetween('date', [$start_date, $end_date])
                 ->get();
 
@@ -1117,6 +1118,66 @@ class TransactionController extends Controller
                     $debit_transaction->save();
                 }
             } 
+        }
+    }
+
+    public function amazon_order_api()
+    {
+        $amazon_vendor_accounts = ReceiptAccount::where('vendor_id', 54)->whereNotNull('options')->get();
+
+        foreach($amazon_vendor_accounts as $amazon_account){
+            //Configure the authorization parameters. 
+            $access_key = $amazon_account->options['access_key']; 
+            $secret_key = $amazon_account->options['secret_key']; 
+            $api_key = $amazon_account->options['api_key']; 
+            //This will vary depending on the API you are calling. In this case, we'll use the orders API. 
+            $endpoint_url = 'https://alcq0apxu3.execute-api.us-east-1.amazonaws.com';
+            $resource_path = '/v1/orders';
+            $region = 'us-east-1'; 
+            //Initialize the Credentials object. 
+            $credentials = new \Aws\Credentials\Credentials($access_key, $secret_key); 
+
+            $start_date = Carbon::today()->subDays(45)->format('Y-m-d');
+            $end_date = Carbon::today()->format('Y-m-d');
+
+            //where amount doesnt start with a minus/return 
+            //->whereBetween('date', [$start_date, $end_date])
+            $expenses = Expense::where('vendor_id', 54)->whereNotNull('invoice')->whereDoesntHave('transactions')->where('amount', 'NOT LIKE', "-%")->get();
+            // dd($expenses);
+
+            foreach ($expenses as $expense) {
+                $full_url = $endpoint_url .  $resource_path . '/' . $expense->invoice . '?includeCharges=true'; 
+                /*?includeLineItems=true&includeShipments=true&includeCharges=true*/
+                //Instantiate Client object with api key header. 
+                $client = new \GuzzleHttp\Client(['headers' => ['x-api-key' => $api_key]]); 
+                //Instantiate request object with http method and query string encoded URL. 
+                $request = new \GuzzleHttp\Psr7\Request('GET', $full_url); 
+                //Intialize the signer. 
+                $s4 = new \Aws\Signature\SignatureV4("execute-api", $region); 
+                //Build the signed request using the Credentials object. This is required in order to authenticate the call. 
+                $signedRequest = $s4->signRequest($request, $credentials); 
+                //Send the (signed) API request. 
+                $response = $client->send($signedRequest); 
+                //Print the response body. 
+                /*var_dump($response->getBody());*/
+                $order = collect(json_decode($response->getBody()->getContents(), true));
+
+                if(!empty($order['orders'])){
+                    foreach($order['orders'] as $order){
+                        if($order['orderStatus'] == 'Cancelled' AND $expense->amount != 0){
+                            $expense->amount = 0;
+                            $expense->note = 'Order Cancelled';
+                            $expense->delete();
+                            $expense->save();
+                        }elseif($expense->amount != $order['orderNetTotal']['amount']){
+                            $expense->amount = $order['orderNetTotal']['amount'];
+                            $expense->save();
+                        }
+                    }
+                }
+                sleep(1);
+            }
+            // Log::channel('amazon')->info('finished amazon_order_api');
         }
     }
 }

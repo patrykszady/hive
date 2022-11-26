@@ -88,6 +88,7 @@ Route::get('add_check_id_to_transactions', [TransactionController::class, 'add_c
 Route::get('add_check_to_transactions', [TransactionController::class, 'add_check_to_transactions']);
 Route::get('add_payments_to_transaction', [TransactionController::class, 'add_payments_to_transaction']);
 Route::get('find_credit_payments_on_debit', [TransactionController::class, 'find_credit_payments_on_debit']);
+Route::get('amazon_order_api', [TransactionController::class, 'amazon_order_api']);
 
 //plaid webhooks
 // Route::post('plaid_webhooks', 'TransactionController@plaid_webhooks');
