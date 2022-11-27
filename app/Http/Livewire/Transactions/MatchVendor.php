@@ -126,7 +126,7 @@ class MatchVendor extends Component
         //add vendor to transaction ...
 
         //6-8-2022 run in a queue?
-        // app('App\Http\Controllers\TransactionController')->add_vendor_to_transactions();
+        app('App\Http\Controllers\TransactionController')->add_vendor_to_transactions();
         // app('App\Http\Controllers\TransactionController')->add_check_deposit_to_transactions();
 
         return redirect(route('transactions.match_vendor'));

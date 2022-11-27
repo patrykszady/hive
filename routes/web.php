@@ -82,10 +82,8 @@ Route::get('plaid_transactions_refresh', [TransactionController::class, 'plaid_t
 Route::get('plaid_transactions_sync', [TransactionController::class, 'plaid_transactions_sync']);
 Route::get('add_vendor_to_transactions', [TransactionController::class, 'add_vendor_to_transactions']);
 Route::get('add_expense_to_transactions', [TransactionController::class, 'add_expense_to_transactions']);
-Route::get('add_transactions_to_check', [TransactionController::class, 'add_transactions_to_check']);
-Route::get('add_check_deposit_to_transactions', [TransactionController::class, 'add_check_deposit_to_transactions']);
 Route::get('add_check_id_to_transactions', [TransactionController::class, 'add_check_id_to_transactions']);
-Route::get('add_check_to_transactions', [TransactionController::class, 'add_check_to_transactions']);
+Route::get('add_check_deposit_to_transactions', [TransactionController::class, 'add_check_deposit_to_transactions']);
 Route::get('add_payments_to_transaction', [TransactionController::class, 'add_payments_to_transaction']);
 Route::get('find_credit_payments_on_debit', [TransactionController::class, 'find_credit_payments_on_debit']);
 Route::get('amazon_order_api', [TransactionController::class, 'amazon_order_api']);

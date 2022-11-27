@@ -124,6 +124,12 @@ return [
             'path' => storage_path('logs/plaid_adds.log'),
             'level' => 'debug',
         ],
+
+        'add_check_id_to_transactions' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/add_check_id_to_transactions.log'),
+            'level' => 'debug',
+        ],
     ],
 
 ];
