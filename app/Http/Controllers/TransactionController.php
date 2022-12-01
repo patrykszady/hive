@@ -673,8 +673,8 @@ class TransactionController extends Controller
         $checks = Check::withoutGlobalScopes()
                 ->whereDoesntHave('transactions')
                 ->where('check_type', '!=', 'Cash')
-                // ->where('id', 2187)
                 ->orderBy('date', 'DESC')
+                ->where('date', '>', '2019-01-01')
                 ->get();
 
         foreach($checks as $check){

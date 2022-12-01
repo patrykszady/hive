@@ -16,7 +16,9 @@ use Carbon\CarbonInterval;
 use Ddeboer\Imap\Server;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Intervention\Image\Facades\Image;
-use Nesk\Puphpeteer\Puppeteer;
+use Symfony\Component\Panther\Client;
+use Symfony\Component\Panther\DomCrawler\Crawler;
+// use Nesk\Puphpeteer\Puppeteer;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -24,124 +26,174 @@ use Illuminate\Support\Facades\Log;
 use File;
 use Response;
 use Storage;
+// use Goutte;
 
 class ReceiptController extends Controller
 {
     public function hd_rebates()
     {
-        ini_set('max_execution_time', '4800');
+        $client = Client::createChromeClient();
+        $crawler = $client->request('GET', 'https://www.homedepotrebates11percent.com/');
+        dd($crawler->html());
+        // $client = Client::createChromeClient();
 
-        $move_database = DB::connection('move_mysql');
-        dd('in hd_rebates');
-        $expenses =
-            Expense::withoutGlobalScopes()
-            ->where('belongs_to_vendor_id', 1)
-            ->with('receipts')
-            // ->where('id', '>', 15387)
-            ->where('vendor_id', 8)
-            ->whereBetween('date', [Carbon::create('09/25/2022'), Carbon::create('10/30/2022')])
-            ->where('amount', 'not like', '-%')
-            ->get();
+        // dd($client);
+        // // Or, if you care about the open web and prefer to use Firefox
+        // // $client = Client::createFirefoxClient();
+        
+        // $client->request('GET', 'https://api-platform.com'); // Yes, this website is 100% written in JavaScript
+        // $client->clickLink('Get started');
+        
+        // // Wait for an element to be present in the DOM (even if hidden)
+        // $crawler = $client->waitFor('#installing-the-framework');
+        // // Alternatively, wait for an element to be visible
+        // $crawler = $client->waitForVisibility('#installing-the-framework');
+        
+        // echo $crawler->filter('#installing-the-framework')->text();
+        // $client->takeScreenshot('screen.png'); // Yeah, screenshot!
 
-        // dd($expenses);
+        // dd('in hd rebates');
 
-        foreach($expenses as $expense){
-            // dd($expense);
-            if(!$expense->receipts->isEmpty()){
-                $receipt = $expense->receipts->first()->receipt_html;
-            }else{
-                Log::channel('hd_rebates_errors')->info([$expense->id]);
-                continue;
-            }
+        dd();
+    }
 
-            //receipt number
-            $re = '/\d{4}\s\d{5}\s\d{5}/m';
-            $str = $receipt;
-            preg_match($re, $str, $matches);
-            $receipt_number = str_replace(' ', '', $matches[0]);
+    // public function hd_rebates()
+    // {
+    //     $crawler = Goutte::request('GET', 'https://www.homedepotrebates11percent.com/');
 
-            //receipt date
-            $re = '/\d{2}\/\d{2}\/\d{2}/m';
-            $str = $receipt;
-            preg_match($re, $str, $date_matches);
-            $receipt_date = $date_matches[0];
+
+    //     return;
+    //     // $crawler = Goutte::request('GET', 'https://www.homedepotrebates11percent.com/#/home');
+    //     // // $crawler->selectButton('Continue');
+    //     // $crawler->type('2022-10-15', 'purchaseDateOnlyText');
+    //     // $website = $crawler->request('GET', 'https://www.businesslist.com.ng/category/interior-design/city:lagos');
+    
+    //     // echo $crawler->html();
+    //     // $crawler->setAttribute('purchaseDateOnlyText', '2022-10-15');
+    //     // return $crawler;
+    //     // dd($crawler);
+        
+    //     // $crawler->filter('.purchaseDateOnlyText')->each(function ($node) {
+    //     //   dump($node->text());
+    //     // });
+
+    //     // dd('in hd rebates');
+    // }
+    // public function hd_rebates()
+    // {
+    //     ini_set('max_execution_time', '4800');
+
+    //     $move_database = DB::connection('move_mysql');
+    //     dd('in hd_rebates');
+    //     $expenses =
+    //         Expense::withoutGlobalScopes()
+    //         ->where('belongs_to_vendor_id', 1)
+    //         ->with('receipts')
+    //         // ->where('id', '>', 15387)
+    //         ->where('vendor_id', 8)
+    //         ->whereBetween('date', [Carbon::create('09/25/2022'), Carbon::create('10/30/2022')])
+    //         ->where('amount', 'not like', '-%')
+    //         ->get();
+
+    //     // dd($expenses);
+
+    //     foreach($expenses as $expense){
+    //         // dd($expense);
+    //         if(!$expense->receipts->isEmpty()){
+    //             $receipt = $expense->receipts->first()->receipt_html;
+    //         }else{
+    //             Log::channel('hd_rebates_errors')->info([$expense->id]);
+    //             continue;
+    //         }
+
+    //         //receipt number
+    //         $re = '/\d{4}\s\d{5}\s\d{5}/m';
+    //         $str = $receipt;
+    //         preg_match($re, $str, $matches);
+    //         $receipt_number = str_replace(' ', '', $matches[0]);
+
+    //         //receipt date
+    //         $re = '/\d{2}\/\d{2}\/\d{2}/m';
+    //         $str = $receipt;
+    //         preg_match($re, $str, $date_matches);
+    //         $receipt_date = $date_matches[0];
             
-            //receipt total
-            $receipt_total = $expense->amount;
+    //         //receipt total
+    //         $receipt_total = $expense->amount;
 
-            $data = ['receipt_number' => $receipt_number, 'receipt_date' => $receipt_date, 'receipt_total' => $receipt_total];
+    //         $data = ['receipt_number' => $receipt_number, 'receipt_date' => $receipt_date, 'receipt_total' => $receipt_total];
 
-            // dd($data);
-            sleep(1);
-            $this->puphpeteer($data);
+    //         // dd($data);
+    //         sleep(1);
+    //         $this->puphpeteer($data);
 
-            //log expense_id and tracking #
-            Log::channel('hd_rebates')->info([$expense->id, $data]);
-            // dd();
-        }
-    }
+    //         //log expense_id and tracking #
+    //         Log::channel('hd_rebates')->info([$expense->id, $data]);
+    //         // dd();
+    //     }
+    // }
 
-    public function puphpeteer($data)
-    {
-        //foreach Home Depot receipt betweenDates ... run this now and then every home depot receipt thereafter.
-        $puppeteer = new Puppeteer;
-        $browser = $puppeteer->launch();
+    // public function puphpeteer($data)
+    // {
+    //     //foreach Home Depot receipt betweenDates ... run this now and then every home depot receipt thereafter.
+    //     $puppeteer = new Puppeteer;
+    //     $browser = $puppeteer->launch();
 
-        $page = $browser->newPage();
-        $page->goto('https://www.homedepotrebates11percent.com/#/home');
-        $page->waitForTimeout(500);
+    //     $page = $browser->newPage();
+    //     $page->goto('https://www.homedepotrebates11percent.com/#/home');
+    //     $page->waitForTimeout(500);
 
-        $page->type('#purchaseDateOnlyText', $data['receipt_date']);
-        $page->click('#home-offer-purchasedate-continue2');
-        $page->waitForTimeout(1000);
+    //     $page->type('#purchaseDateOnlyText', $data['receipt_date']);
+    //     $page->click('#home-offer-purchasedate-continue2');
+    //     $page->waitForTimeout(1000);
 
-        // $page->screenshot(['path' => 'example.png']);
-        // dd();
-        $page->click('#continueOrSubmitBtn');
-        $page->waitForTimeout(1000);
+    //     // $page->screenshot(['path' => 'example.png']);
+    //     // dd();
+    //     $page->click('#continueOrSubmitBtn');
+    //     $page->waitForTimeout(1000);
 
-        $page->type('#Receipt\ Number', $data['receipt_number']);
-        $page->type('#X\ CPR\ ID', '2249993880');
-        $page->type('#Gross\ Sales', $data['receipt_total']);
-        $page->click('#continueOrSubmitBtn');
-        $page->waitForTimeout(1000);
+    //     $page->type('#Receipt\ Number', $data['receipt_number']);
+    //     $page->type('#X\ CPR\ ID', '2249993880');
+    //     $page->type('#Gross\ Sales', $data['receipt_total']);
+    //     $page->click('#continueOrSubmitBtn');
+    //     $page->waitForTimeout(1000);
 
-        $page->click('#The\ Home\ Depot\ Physical\ Gift\ Card');
-        $page->click('#continueOrSubmitBtn');
-        $page->waitForTimeout(1000);
+    //     $page->click('#The\ Home\ Depot\ Physical\ Gift\ Card');
+    //     $page->click('#continueOrSubmitBtn');
+    //     $page->waitForTimeout(1000);
 
-        $page->type('input[name="firstName"]', 'Patryk');
-        $page->type('input[name="lastName"]', 'Szady');
-        $page->type('input[name="companyName"]', 'GS Construction');
-        $page->type('input[name="phoneNumber"]', '2249993880');
-        $page->type('input[name="email"]', 'patryk@gs.construction');
-        $page->type('input[name="confirmEmail"]', 'patryk@gs.construction');
-        $page->type('input[name="address1"]', '400 N Wheeling Rd');
-        $page->type('input[name="address2"]', '');
-        $page->type('input[name="postalCode"]', '60070');
+    //     $page->type('input[name="firstName"]', 'Patryk');
+    //     $page->type('input[name="lastName"]', 'Szady');
+    //     $page->type('input[name="companyName"]', 'GS Construction');
+    //     $page->type('input[name="phoneNumber"]', '2249993880');
+    //     $page->type('input[name="email"]', 'patryk@gs.construction');
+    //     $page->type('input[name="confirmEmail"]', 'patryk@gs.construction');
+    //     $page->type('input[name="address1"]', '400 N Wheeling Rd');
+    //     $page->type('input[name="address2"]', '');
+    //     $page->type('input[name="postalCode"]', '60070');
 
-        $page->waitForTimeout(500);
+    //     $page->waitForTimeout(500);
 
-        // $page->type('input[name="city"]', 'Prospect Heights');
-        $page->type('select[name="country"]', 'US');
-        $page->type('select[name="state"]', 'IL');
-        $page->click('button[aria-label="Verify\ Address"]');
+    //     // $page->type('input[name="city"]', 'Prospect Heights');
+    //     $page->type('select[name="country"]', 'US');
+    //     $page->type('select[name="state"]', 'IL');
+    //     $page->click('button[aria-label="Verify\ Address"]');
 
-        $page->waitForTimeout(1500);
+    //     $page->waitForTimeout(1500);
 
-        $page->click('#recommendedAddressBtn');
+    //     $page->click('#recommendedAddressBtn');
 
-        $page->waitForTimeout(3000);
+    //     $page->waitForTimeout(3000);
 
-        $page->click('#continueOrSubmitBtnBottom');
-        $page->waitForTimeout(1000);
+    //     $page->click('#continueOrSubmitBtnBottom');
+    //     $page->waitForTimeout(1000);
 
-        $page->screenshot(['path' => 'example.png']);
+    //     $page->screenshot(['path' => 'example.png']);
 
-        $browser->close();
+    //     $browser->close();
 
-        return;
-    }
+    //     return;
+    // }
 
     //06-21-2022 USING BOTH NEW_OCR AND OCR_SPACE.. why?.
     public function new_orc_status()
@@ -369,9 +421,7 @@ class ReceiptController extends Controller
                 $connection->expunge();
                 continue;
             }
-
             // dd($receipt_account);
-
             $this->dirty_work($message, $receipt, $receipt_account, $company_email, $connection, $amazon_orders_loop = NULL, $email_date);   
         }
     }
@@ -488,15 +538,10 @@ class ReceiptController extends Controller
                     );
 
                     $string = $this->new_ocr($ocr_filename);
-                    // dd('else if 458');
                 }else{
                     //continue + LOG
                 }
             }
-            // //if isset, $ocr_path, otherwise NULL
-            // if(!isset($ocr_path)){
-            //     $ocr_path = NULL;
-            // }
         }else{
             //remove images
             $string = preg_replace("/<a.+?href.+?>.+?<\/a>/is","", $string);
@@ -556,7 +601,6 @@ class ReceiptController extends Controller
                 //remove images
                 $string = preg_replace("/<a.+?href.+?>.+?<\/a>/is","", $receipt_html_main);
 
-                // dd($message_type);
                 // print_r($string);
                 // dd();
 
@@ -632,7 +676,7 @@ class ReceiptController extends Controller
         $result = htmlspecialchars($receipt_html);
         // print_r($result);
         // dd();
-        // dd($result);
+
         if(isset($receipt->options['invoice_text'])){
             $invoice_text = $receipt->options['invoice_text'];
             $invoice_end = $receipt->options['invoice_end'];
@@ -653,7 +697,6 @@ class ReceiptController extends Controller
         //Need to implement 08/12/2021
         //right now $email_date above
         // $receipt_date = $this->find_date($result);
-
 
         //FIND PO
         if(isset($receipt->options['po_text'])){
@@ -676,6 +719,7 @@ class ReceiptController extends Controller
 
         // print_r($receipt_html_main);
         // dd();
+
         //FIND AMOUNT
         if(isset($receipt->options['refund'])){
             $refund = true;
@@ -690,7 +734,6 @@ class ReceiptController extends Controller
         }
 
         $amount = $this->find_amount($receipt_html_main, $refund, $no_max, $receipt);
-        // dd($amount);
 
         //if amount not found
         if($amount == false) {
@@ -808,10 +851,15 @@ class ReceiptController extends Controller
 
     public function find_amount($receipt_html_main, $refund = NULL, $no_max = NULL, $receipt = NULL)
     {
-        // print_r($result);
-        // dd();
         $re = '/[$?|\s?]\d{1,3}[.]\d{1,2}|[\D]\d{1,3}[,]\d{1,3}[.]\d{1,2}[^\d|^pt|^Z|^I|^@|%]/';
-        $str = $receipt_html_main;
+
+        //Home Depot Receipt
+        if($receipt->id == 18){
+            $str = strstr($receipt_html_main, 'SUBTOTAL');
+        }else{
+            $str = $receipt_html_main;
+        }
+
         $primary_search = preg_match_all($re, $str, $matches, PREG_OFFSET_CAPTURE);
 
         //if an amount repeats more than once use that over the LARGEST amount (EG: Groot receipts)
@@ -823,6 +871,8 @@ class ReceiptController extends Controller
             $re = '/\d{1,6}[.]\d{1,2}|\d{1,3}[,]\d{1,3}[.]\d{1,2}/';
             $secondary_search = preg_match_all($re, $str, $matches, PREG_OFFSET_CAPTURE);
         }
+
+        // dd($matches);
 
         //HOME DEPOT ONLINE ORDERS ONLY
         if($receipt->id == 13){

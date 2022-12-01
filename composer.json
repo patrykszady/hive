@@ -8,6 +8,7 @@
         "php": "^7.3|^8.0",
         "aws/aws-sdk-php": "^3.247",
         "barryvdh/laravel-snappy": "^1.0",
+        "dbrekelmans/bdi": "^1.0",
         "ddeboer/imap": "^1.13",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
@@ -19,8 +20,7 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.6",
-        "regulus/tetra-text": "^0.6.16",
-        "spatie/browsershot": "^3.57"
+        "regulus/tetra-text": "^0.6.16"
     },
     "require-dev": {
         "spatie/laravel-ignition": "^1.0",
