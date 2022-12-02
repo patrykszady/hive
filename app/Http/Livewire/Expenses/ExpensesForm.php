@@ -355,7 +355,9 @@ class ExpensesForm extends Component
         //if check exists
         if($this->check->bank_account_id){
             //new or existing check
-            $existing_check = Check::where('bank_account_id', $this->check->bank_account_id)->where('check_number', $this->check->check_number)->first();
+            //only if check_type = Check
+            $existing_check = Check::where('bank_account_id', $this->check->bank_account_id)->where('check_type', 'Check')->where('check_number', $this->check->check_number)->first();
+
             if($existing_check){
                 $check_id = $existing_check->id;
             }else{

@@ -114,7 +114,7 @@
 
                     {{-- USER MODAL --}}
                     <x-forms.row
-                        wire:click="$emit('newMember')"
+                        wire:click="$emit('newMember', 'vendor')"
                         errorName=""
                         name="" 
                         text="Owner"
