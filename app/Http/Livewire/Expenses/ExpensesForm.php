@@ -211,9 +211,6 @@ class ExpensesForm extends Component
             // }
         // }
 
-
-        //account for Check info if isset
-
         if($transaction->check_number){
             if($transaction->check_number == '1010101'){
                 $check_type = 'Transfer';
@@ -400,6 +397,7 @@ class ExpensesForm extends Component
                 $this->transaction->vendor_id = $expense->vendor_id;
             }
             $this->transaction->expense_id = $expense->id;
+            $this->transaction->check_id = $check_id;
             $this->transaction->save();
         }
 

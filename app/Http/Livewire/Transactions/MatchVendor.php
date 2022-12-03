@@ -94,12 +94,16 @@ class MatchVendor extends Component
                     $deposit_check = NULL;                    
                     $vendor_id = $vendor_match['vendor_id'];                  
                 }
+
+                // dd($deposit_check);
                 
                 if(isset($vendor_match['bank_specific'])){
                     $institution_id = $this->merchant_names->values()[$key][0]['bank_account']['bank']['plaid_ins_id'];
                 }else{
                     $institution_id = NULL;
                 }
+
+                // dd($institution_id);
 
                 if(isset($vendor_match['options'])){
                     $options = json_encode($vendor_match['options'] . '/i');
@@ -127,7 +131,7 @@ class MatchVendor extends Component
 
         //6-8-2022 run in a queue?
         app('App\Http\Controllers\TransactionController')->add_vendor_to_transactions();
-        // app('App\Http\Controllers\TransactionController')->add_check_deposit_to_transactions();
+        app('App\Http\Controllers\TransactionController')->add_check_deposit_to_transactions();
 
         return redirect(route('transactions.match_vendor'));
     }

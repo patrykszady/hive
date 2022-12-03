@@ -7,7 +7,7 @@
 
         @can('create', App\Models\Expense::class)
         <x-slot name="right">
-            <x-cards.button href="{{route('expenses.create')}}">
+            <x-cards.button href="{{route('expenses.find')}}">
                 Create expense
             </x-cards.button>
         </x-slot>

@@ -494,15 +494,17 @@ class TransactionController extends Controller
     public function add_check_deposit_to_transactions()
     {
         $institutions = VendorTransaction::whereNotNull('plaid_inst_id')->groupBy('plaid_inst_id')->pluck('plaid_inst_id');
+
         //split by institution
         foreach($institutions as $institution){
-            //NEED TO SHARE THIS WITH TrancationController@store_csv_array.. same code x2 06/29/2021
+            //06/29/2021 NEED TO SHARE THIS WITH TrancationController@store_csv_array.. same code x2 
             $institution_bank_ids = Bank::withoutGlobalScopes()->where('plaid_ins_id', $institution)->pluck('id');
             $institution_bank_ids = BankAccount::whereIn('bank_id', $institution_bank_ids)->pluck('id');
 
             // dd($institution_bank_ids);
             $deposit_check_types = VendorTransaction::groupBy('deposit_check')->where('plaid_inst_id', $institution)->pluck('deposit_check');
 
+            // dd($deposit_check_types);
             //split by check_type of each institution (multiple of bank_ids)
             foreach($deposit_check_types as $deposit_check_type){
                 //same for type 2 and 3 (check and transfer)
@@ -526,6 +528,8 @@ class TransactionController extends Controller
                          }      
                     })
                     ->get();
+
+                // dd($transactions);
 
                 foreach($transactions as $transaction){
                     //preg here after $transactions are gathered or should it be before?...trying to do this in the LIKE statement above instead 6/10/2021
