@@ -15,6 +15,11 @@ class ClientsShow extends Component
 
     public Client $client;
 
+    public function mount()
+    {
+        $this->client->type = 'client';
+    }
+
     public function render()
     {
         $this->authorize('view', $this->client);

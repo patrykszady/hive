@@ -41,7 +41,9 @@ class ClientPolicy
      */
     public function create(User $user)
     {
-        //
+        if($user->vendor->user_role == 'Admin'){
+            return true;
+        }
     }
 
     /**

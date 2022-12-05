@@ -29,6 +29,7 @@ class VendorsForm extends Component
     protected function rules()
     {
         return [
+            'vendor.type' => 'nullable',
             'vendor.business_type' => 'required',
             'vendor.business_name' => 'required|min:3',
             'vendor.address' => 'required_unless:vendor.business_type,Retail|nullable|min:4',
@@ -43,11 +44,6 @@ class VendorsForm extends Component
             'user_vendor_id' => 'nullable',
         ];
     }
-
-    // protected $messages = 
-    // [
-
-    // ];
 
     public function updated($field) 
     {
@@ -106,18 +102,21 @@ class VendorsForm extends Component
         if(isset($this->vendor)){
             $this->vendor = $this->vendor;
             $this->view_text = [
-                'card_title' => 'Update vendor',
-                'button_text' => 'Update',
+                'card_title' => 'Update Vendor',
+                'button_text' => 'Update Vendor',
                 'form_submit' => 'update',             
             ];
         }else{
             $this->vendor = Vendor::make();
+            $this->vendor->add_type = 'NEW';
             $this->view_text = [
-                'card_title' => 'Create vendor',
-                'button_text' => 'Create',
+                'card_title' => 'Create Vendor',
+                'button_text' => 'Create Vendor',
                 'form_submit' => 'store',             
             ];
         }
+
+        $this->vendor->type = 'vendor';
     }
 
     public function userVendor(User $user)
@@ -163,7 +162,14 @@ class VendorsForm extends Component
             }
 
             // attach to new $vendor with role_id of 1/admin (default on Model)
-            $user->vendors()->attach($vendor->id);
+            // $user->vendors()->attach($vendor->id);
+            $user->vendors()->attach(
+                $vendor->id, [
+                    'role_id' => 1, //default on Model table
+                    'hourly_rate' => 0, 
+                    'start_date' => today()->format('Y-m-d')
+                ]
+            );
         }
 
         //session()->flash('notify-saved'); with amount of new expense and href to go to it route('expenses.show', $expense->id)

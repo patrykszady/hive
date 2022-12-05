@@ -45,6 +45,7 @@ use App\Http\Livewire\Checks\ChecksIndex;
 
 use App\Http\Livewire\Projects\ProjectsIndex;
 use App\Http\Livewire\Projects\ProjectsShow;
+use App\Http\Livewire\Projects\ProjectsForm;
 
 use App\Http\Livewire\Payments\PaymentsIndex;
 use App\Http\Livewire\Payments\PaymentsForm;
@@ -134,6 +135,7 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
 
     //PROJECTS
     Route::get('/projects', ProjectsIndex::class)->name('projects.index');
+    Route::get('/projects/create', ProjectsForm::class)->name('projects.create');
     Route::get('/projects/{project}', ProjectsShow::class)->name('projects.show');
 
     //TIMESHEETS

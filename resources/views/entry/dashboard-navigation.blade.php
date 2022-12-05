@@ -134,6 +134,12 @@
             <x-nav.section-dropdown href="{{route('clients.index')}}" :active="request()->routeIs('clients.index')">
                 All Clients
             </x-nav.new-section-dropdown>
+
+            @can('create', App\Models\Client::class)
+                <x-nav.section-dropdown href="{{route('clients.create')}}" :active="request()->routeIs('clients.create')">
+                    Create Client
+                </x-nav.new-section-dropdown>
+            @endcan
         </x-slot>
         <x-slot name="icon">
             M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z

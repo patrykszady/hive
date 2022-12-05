@@ -85,8 +85,10 @@
                         @can('create', App\Models\User::class)
                             <x-slot name="right">     
                                 @if($vendor->business_type == "Sub")                       
-                                    <x-cards.button wire:click="$emit('newMember', 'vendor', {{$vendor->id}})">
-                                        Add team member
+                                
+                                {{-- $emit('newMember', 'vendor', {{$vendor->id}}) --}}
+                                    <x-cards.button wire:click="$emit('newMember', {{$vendor}})">
+                                        Add Team Member
                                     </x-cards.button> 
                                 @endif
                                 @livewire('users.users-form')                
@@ -106,6 +108,7 @@
                             @endphp
                     
                             <x-lists.search_li
+                                wire:poll.750ms
                                 wire:click="$emit('showMember', {{$user->id}})"
                                 {{-- href="#" --}}
                                 :line_details="$line_details"

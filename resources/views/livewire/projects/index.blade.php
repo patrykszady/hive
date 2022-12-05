@@ -1,5 +1,3 @@
-{{-- xl:relative max-w-xl lg:max-w-5xl grid grid-cols-4 gap-4 sm:px-6 mx-auto --}}
-{{-- max-w-xl px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-3xl lg:px-8 pb-5 mb-1 --}}
 <x-cards.wrapper class="{{$view == NULL ? 'max-w-xl px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-3xl lg:px-8 pb-5 mb-1' : ''}}">
     {{-- HEADING --}}
     <x-cards.heading>
@@ -8,9 +6,11 @@
         </x-slot>
 
         <x-slot name="right">
-            {{-- <x-cards.button href="{{route('vendors.create')}}">
-                Create vendor
-            </x-cards.button> --}}
+            <x-cards.button 
+                wire:click="$emit('createProject', {{$client_id}})"
+                >
+                Create Project
+            </x-cards.button>
         </x-slot>
     </x-cards.heading>
 
@@ -135,3 +135,6 @@
         {{ $projects->links() }}
     </x-cards.footer>
 </x-cards.wrapper>
+
+{{-- NEW PROJECT MODAL --}}
+@livewire('projects.projects-form')

@@ -14,7 +14,7 @@ class ProjectsIndex extends Component
     use WithPagination, AuthorizesRequests;
 
     public $project_name_search = '';
-    public $client_id = '';
+    public $client_id = NULL;
     public $project_status_title = '';
     public $view;
     
@@ -60,9 +60,7 @@ class ProjectsIndex extends Component
             // })
             // ->orWhere('address', 'like', "%{$this->project_name}%")
             ->paginate(10);
-
-        // dd($projects);
-
+            
         return view('livewire.projects.index', [
             'projects' => $projects,
         ]);

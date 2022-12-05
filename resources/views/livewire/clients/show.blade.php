@@ -8,7 +8,7 @@
         >
     </x-page.top>
 
-    <div class="max-w-xl lg:max-w-3xl grid grid-cols-4 gap-4 sm:px-6 mx-auto">
+    <div class="max-w-xl lg:max-w-5xl grid grid-cols-4 gap-4 sm:px-6 mx-auto">
 		{{--  lg:h-32 lg:sticky lg:top-5 --}}
 		<div class="col-span-4 lg:col-span-2">
 			{{-- CLIENT DETAILS --}}
@@ -62,7 +62,7 @@
                     <x-slot name="right">
                         @can('create', App\Models\User::class)
                             {{-- trigger livewire component by clicking on button --}}
-                            <x-cards.button wire:click="$emit('newMember', 'client', {{$client->id}})">
+                            <x-cards.button wire:click="$emit('newMember', {{$client}})">
                                 Add Client Member
                             </x-cards.button>
                         @endcan        
@@ -83,8 +83,8 @@
                         @endphp
                 
                         <x-lists.search_li
-                            wire:click="$emit('showMember', {{$user->id}})"
-                            href="#"
+                            {{-- wire:click="$emit('showMember', {{$user->id}})"
+                            href="#" --}}
                             {{-- href="{{route('users.show', $user->id)}}" --}}
                             :line_details="$line_details"
                             :line_title="$user->full_name"
@@ -100,18 +100,25 @@
                 </x-lists.ul>
 			</x-cards.wrapper>
 		</div>
-	</div>
 
-    <br>
-
-    @if(!$client->projects->isEmpty())
-        <div class="max-w-xl lg:max-w-3xl grid grid-cols-4 gap-4 sm:px-6 mx-auto">
-            {{-- show only Client Projects... --}}
-            <div class="col-span-4">
+        {{-- show only Client Projects... --}}
+        @if(!$client->projects->isEmpty())
+            <div class="col-span-4 lg:col-span-3">
                 {{-- CLIENT PROJECT --}}
                 {{-- @livewire('expenses.expense-index', ['project' => $project->id]) --}}
                 @livewire('projects.projects-index', ['client_id' => $client->id, 'view' => 'clients.show'])
             </div>
-        </div>
-    @endif
+        @endif
+	</div>
+
+    {{-- <br> --}}
+
+    
+    {{-- <div class="max-w-xl lg:max-w-3xl grid grid-cols-4 gap-4 sm:px-6 mx-auto">
+ 
+    </div>
+     --}}
 </div>
+
+{{-- NEW PROJECT MODAL --}}
+{{-- @livewire('projects.projects-form', ['client_id' => $client->id]) --}}

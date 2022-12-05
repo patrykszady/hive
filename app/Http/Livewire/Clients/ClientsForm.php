@@ -15,115 +15,90 @@ class ClientsForm extends Component
     use AuthorizesRequests;
 
     public User $user;
+    public Client $client;
+    public $user_clients = NULL;
+    public $address = NULL;
 
-    public $user_cell = NULL;
-    public $user_form = NULL;
-    public $client_user_form = NULL;
+    protected $listeners = ['userClient'];
 
     protected function rules()
     {
         return [
-            'user_cell' => 'required|digits:10',
-            'user.first_name' => 'required|min:2',
-            'user.last_name' => 'required|min:2',
-            'user.full_name' => 'nullable',
-            'user.cell_phone' => [
-                'required',
-                'digits:10',
-                Rule::unique('users', 'cell_phone')->ignore($this->user->id),
-            ],
-            'user.email' => [
-                'required',
-                'email',
-                'min:6',
-                Rule::unique('users', 'email')->ignore($this->user->id),
-            ],
+            'client.business_name' => 'nullable|min:3',
+            'client.address' => 'required|min:4',
+            'client.address_2' => 'nullable',
+            'client.city' => 'required|min:4',
+            'client.state' => 'required|min:2|max:2',
+            'client.zip_code' => 'required|digits:5',
+
+            'user.id' => 'nullable',
+            'client' => 'nullable',
+            'address' => 'nullable',
+            'user_clients' => 'nullable',
         ];
     }
 
     protected $messages = 
     [
-        'user_cell.digits' => 'Phone number must be 10 digits',
+
     ];
+
+    public function userClient(User $user)
+    {
+        $this->user_clients = $user->clients;
+        $this->user = $user;
+        $this->address = TRUE;
+    }
 
     public function updated($field) 
     {
         $this->validateOnly($field);
     }
 
-    //SAME AS UsersForm::user_cell
-    public function user_cell()
-    {
-        $this->user_form = NULL;
-        $this->client_user_form = NULL;
-        $this->validateOnly('user_cell');
-
-        $user_exists = User::where('cell_phone', $this->user_cell)->first();
-
-        if($user_exists){
-            //show existing clients and/or vendors if any
-            // dd($user_exists->vendors);
-            $this->user = $user_exists;
-            $this->user->full_name = $user_exists->full_name;
-            $this->client_user_form = TRUE;
-        }else{
-            //new user
-            $this->user = User::make();
-            $this->user->cell_phone = $this->user_cell;
-
-            $this->user_form = TRUE;
-            $this->client_user_form = TRUE;
-        }
-    }
-
     public function mount()
     {  
         $this->user = User::make();
-        if(isset($this->client)){            
+
+        if(isset($this->client)){    
+            // $this->client = Client::find($this->client->add_type);        
+
             $this->view_text = [
                 'card_title' => 'Update Client',
                 'button_text' => 'Update Client',
                 'form_submit' => 'update',             
             ];
         }else{
+            $this->client = Client::make();
+            $this->client->add_type = 'NEW';
+
             $this->view_text = [
                 'card_title' => 'Create Client',
                 'button_text' => 'Create Client',
                 'form_submit' => 'store',             
             ];
         }
+
+        $this->client->type = 'client';
     }
 
     public function store()
     {
-        //authorize
+        //12-3-22 authorize
+        $this->validate();
 
-        //create new user
-        if(!$this->user->id){
-            $user = User::create([
-                'first_name' => $this->user->first_name,
-                'last_name' => $this->user->last_name,
-                'cell_phone' => $this->user->cell_phone,
-                'email' => $this->user->email
-            ]);
-        }else{
-            //existing User
-            $user = $this->user;
-        }
-
-        $client = Vendor::create([
-            'business_name' => $this->via_vendor->business_name,
-            'address' => $this->via_vendor->address,
-            'address_2' => $this->via_vendor->address_2,
-            'city' => $this->via_vendor->city,
-            'state' => $this->via_vendor->state,
-            'zip_code' => $this->via_vendor->zip_code,
+        $client = Client::create([
+            'business_name' => $this->client->business_name,
+            'address' => $this->client->address,
+            'address_2' => $this->client->address_2,
+            'city' => $this->client->city,
+            'state' => $this->client->state,
+            'zip_code' => $this->client->zip_code,
         ]);
 
-        //ADD VIA VENDOR TO VENDOR
-        $user->clients()->attach($client->id);
+        //ADD CLIENT TO USER
+        $this->user->clients()->attach($client->id);
 
-        return ;
+        return redirect()->route('clients.show', $client->id);
     }
     
     public function render()
