@@ -114,7 +114,7 @@
                                         id="server-size-1-description-0"
                                         >
                                         <p class="sm:inline">
-                                            {{$client->address}}
+                                            {{-- {{$client->address}} --}}
                                         </p>
                                         <span 
                                             class="hidden sm:inline sm:mx-1" 
