@@ -255,6 +255,7 @@ class ExpensesForm extends Component
 
         $this->expense = Expense::make();      
         $this->expense->amount = $amount;  
+        $this->expense->date = today()->format('Y-m-d');
 
         $this->check = Check::make();   
 

@@ -876,10 +876,12 @@ class TransactionController extends Controller
             ->where('deposit', 1)
             ->whereDoesntHave('payments')
             ->whereNull('expense_id')
+            // ->where('id', 17556)
             ->get();
 
         // dd($transactions);
         foreach($transactions as $transaction){
+            // dd($transaction);
             $vendor_id = $transaction->bank_account->bank->vendor_id;
             //reset payments variable?
             $payments = Payment::
@@ -895,6 +897,8 @@ class TransactionController extends Controller
                 //where parent_client_payment_id is not in json for this $transaction
                 // ->groupBy('parent_client_payment_id');
 
+            // dd($payments);
+
             if(!$payments->isEmpty()){
                 //try any of $payments->payment_total ($payment->sum('amount')) == $transaction->amount? if so and only one result..that's our guy. 
           
@@ -909,6 +913,8 @@ class TransactionController extends Controller
                 $ids = $client_payment_ids;
 
                 $results = collect($this->subsetSums($arr, $n, $ids))->sortBy('sum');
+
+                // dd($results);
                 
                 foreach ($results as $key => $result) {
                     $sum = number_format($result['sum'], 2, '.', '');
@@ -924,6 +930,8 @@ class TransactionController extends Controller
                 }
 
                 $payment_results = collect($payment_results);
+
+                // dd($payment_results);
 
                 if(!$payment_results->isEmpty()){
                     $payment_array = $payment_results[0]['transactions'];

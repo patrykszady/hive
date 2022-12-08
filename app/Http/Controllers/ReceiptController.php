@@ -856,6 +856,10 @@ class ReceiptController extends Controller
         //Home Depot Receipt
         if($receipt->id == 18){
             $str = strstr($receipt_html_main, 'SUBTOTAL');
+            $str_end_pos = strpos($str, 'CASH');
+            $str = substr($str, 0, $str_end_pos ? $str_end_pos : NULL);
+            
+            //12-07-2022 if cash, create transaction....
         }else{
             $str = $receipt_html_main;
         }

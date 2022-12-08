@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Projects;
 
-// use App\Models\User;
+use App\Models\ProjectStatus;
 use App\Models\Project;
 use App\Models\Client;
 use Livewire\Component;
@@ -14,12 +14,14 @@ class ProjectsForm extends Component
 {
     use AuthorizesRequests;
 
-    // public Client $client;
-    public $client = NULL;
+    public Client $client;
     public Project $project;
     
-    public $address = NULL;
+    public $address = FALSE;
+    public $new_address = FALSE;
     public $clients = NULL;
+    public $client_project_id_address = NULL;
+    public $addresses = [];
 
     public $modal_show = NULL;
 
@@ -34,11 +36,11 @@ class ProjectsForm extends Component
             'project.city' => 'required|min:4',
             'project.state' => 'required|min:2|max:2',
             'project.zip_code' => 'required|digits:5',
-            'client' => 'nullable',
+
             'client.id' => 'nullable',
             'client.address' => 'nullable',
-            'client.type' => 'nullable',
-            'address' => 'nullable'
+            'client.addresses' => 'nullable',
+            'client.project_id' => 'nullable'
         ];
     }
 
@@ -52,22 +54,41 @@ class ProjectsForm extends Component
         // $this->validate();
         $this->validateOnly($field);
         
-        // if($field == 'project.project_name'){
-        //     if(!is_null($this->project->project_name)){
-        //         $this->address = TRUE;
-        //     }else{
-        //         $this->address = NULL;
-        //     }
-        // }  
+        if($field == 'project.project_name'){
+            if(!is_null($this->project->project_name)){
+                $this->address = TRUE;
+            }else{
+                $this->address = NULL;
+            }
+        }  
         
         if($field == 'client.id'){
-            if(isset($this->client->id)){
+            $this->project->project_name = NULL;
+
+            if(!is_null($this->client->id)){
                 $this->client = Client::find($this->client->id);
-                // $this->client->type = 'Existing';
+                $this->addresses = $this->client->projects;
+                $this->address = TRUE;
+                // $this->client->project_id = $this->client_project_id_address;
+                // dd($this->client->addresses);
             }
+            
+            // else{
+            //     $this->client = Client::make();
+            //     $this->addresses = [];
+            //     $this->project = Project::make();
+            //     $this->address = FALSE;
+            // }            
         }
 
-        // dd($this->client);
+        if($field == 'client_project_id_address'){
+            if($this->client_project_id_address == 'NEW'){
+                $this->new_address = TRUE;
+            }else{
+                $this->new_address = FALSE;
+                //if is_numeric($client_project_id_address);
+            }
+        }
     }
 
     public function mount()
@@ -85,33 +106,44 @@ class ProjectsForm extends Component
 
     public function createProject($client_id = NULL)
     {
-        // dd($client_id);
         if(isset($client_id)){
             $this->client = Client::find($client_id);      
-            // dd($this->client->address);
-            $this->client->type = 'Existing'; 
-        }else{
-            $this->client = Client::make();
         }
-
+        
         $this->modal_show = TRUE;
     }
 
     public function store()
     {
-        $this->validate();
+        if(is_numeric($this->client_project_id_address)){
+            $project_address = Project::find($this->client_project_id_address);
+            $this->project->address = $project_address->address;
+            $this->project->address_2 = $project_address->address_2;
+            $this->project->city = $project_address->city;
+            $this->project->state = $project_address->state;
+            $this->project->zip_code = $project_address->zip_code;
+        }else{
+            //if $this->client_project_id_address = NEW;
+            //use $this->project;
+        }
 
-        dd($this);
+        $this->validate();
 
         $project = Project::create([
             'project_name' => $this->project->project_name,
             'client_id' => $this->client->id,
-            'address' => $this->client->address,
-            'address_2' => $this->client->address_2,
-            'city' => $this->client->city,
-            'state' => $this->client->state,
-            'zip_code' => $this->client->zip_code,
-            'belonges_to_vendor_id' => auth()->user()->vendor->id,
+            'address' => $project_address->address,
+            'address_2' => $project_address->address_2,
+            'city' => $project_address->city,
+            'state' => $project_address->state,
+            'zip_code' => $project_address->zip_code,
+            'belongs_to_vendor_id' => auth()->user()->vendor->id,
+        ]);
+        
+        ProjectStatus::create([
+            'project_id' => $project->id,
+            'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
+            'title' => 'Estimate',
         ]);
 
         //12-4-2022 NOTIFICATIONS PLEASE!!! EASYYY~~

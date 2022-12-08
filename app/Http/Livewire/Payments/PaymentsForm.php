@@ -22,7 +22,7 @@ class PaymentsForm extends Component
     protected function rules()
     {
         return [    
-            'payment_projects.*.amount' => 'required|numeric|min:0.01|regex:/^-?\d+(\.\d{1,2})?$/',
+            'payment_projects.*.amount' => 'required|numeric|regex:/^-?\d+(\.\d{1,2})?$/',
             'project_id' => 'nullable',
             'payment.date' => 'required|date|before_or_equal:today|after:2017-01-01',
             'payment.invoice' => 'nullable',
