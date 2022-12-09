@@ -72,42 +72,42 @@
                                     Active: "ring-2 ring-indigo-500"
                                 -->
                         {{-- Vendors where User is Admin --}}
-                        @foreach ($addresses as $project)
+                        @foreach ($addresses as $key => $address)
                         <label
-                            class="{{ $client_project_id_address == $project->id ? 'border-transparent ring-2 ring-indigo-500 ' : 'border-gray-300' }}
+                            class="{{ $client_project_id_address == $key ? 'border-transparent ring-2 ring-indigo-500 ' : 'border-gray-300' }}
                                     relative block bg-white border rounded-lg shadow-sm px-6 py-4 cursor-pointer sm:flex sm:justify-between focus:outline-none hover:bg-gray-50"
                             >
 
                             <input type="radio" name="server-size" class="sr-only" x-model="client_project_id_address"
-                                value="{{$project->id}}" aria-labelledby="{{$project->id}}"
-                                aria-describedby="server-size-{{$project->id}}-description-0 server-size-{{$project->id}}-description-1">
+                                value="{{$key}}" aria-labelledby="{{$key}}"
+                                aria-describedby="server-size-{{$key}}-description-0 server-size-{{$key}}-description-1">
 
                             <div class="flex items-center">
                                 <div class="text-sm">
-                                    <div id="server-size-{{$project->id}}-description-10" class="text-gray-500">
-                                        <p id="{{$project->id}}" class="sm:inline font-medium text-gray-900">{{$project->business_name}}</p>
-                                        <span class="hidden sm:inline sm:mx-1" aria-hidden="true">&middot;</span>
-                                        <p class="sm:inline">{{$project->business_name}}</p>
+                                    <div id="server-size-{{$key}}-description-10" class="text-gray-500">
+                                        <p id="{{$key}}" class="sm:inline font-medium text-gray-900">{{$address['address']}}</p>
+                                        {{-- <span class="hidden sm:inline sm:mx-1" aria-hidden="true">&middot;</span> --}}
+                                        {{-- <p class="sm:inline">{{$address['address']}}</p> --}}
                                     </div>
-                                    <div id="server-size-{{$project->id}}-description-0" class="text-gray-500">
-                                        <p class="sm:inline">{{$project->address}}</p>
+                                    <div id="server-size-{{$key}}-description-0" class="text-gray-500">
+                                        <p class="sm:inline">{{$address['address']}}</p>
                                         <span class="hidden sm:inline sm:mx-1" aria-hidden="true">&middot;</span>
-                                        <p class="sm:inline">{{$project->city . ', ' . $project->state . ' ' . $project->zip_code}}</p>
+                                        <p class="sm:inline">{{$address['city'] . ', ' . $address['state'] . ' ' . $address['zip_code']}}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div id="server-size-{{$project->id}}-description-1"
+                            <div id="server-size-{{$key}}-description-1"
                                 class="mt-2 flex text-sm sm:mt-0 sm:block sm:ml-4 sm:text-right">
-                                <div class="font-medium text-gray-900">{{ $project->business_name }}</div>
-                                <div class="ml-1 text-gray-500 sm:ml-0">Project {{$project->id}}</div>
+                                {{-- <div class="font-medium text-gray-900">{{ $address['type'] }}</div> --}}
+                                <div class="ml-1 text-gray-500 sm:ml-0">{{ $address['type'] }}</div>
                             </div>
                             <!--
                                 Active: "border", Not Active: "border-2"
                                 Checked: "border-indigo-500", Not Checked: "border-transparent"
                                 -->
                             <div class="
-                                        {{ $client_project_id_address == $project->id ? 'border-indigo-500 border' : 'border-transparent border-2' }}
+                                        {{ $client_project_id_address == $key ? 'border-indigo-500 border' : 'border-transparent border-2' }}
                                         absolute -inset-px rounded-lg pointer-events-none" aria-hidden="true">
                             </div>
                         </label>
@@ -128,11 +128,11 @@
                                         <span class="hidden sm:inline sm:mx-1" aria-hidden="true">&middot;</span>
                                         <p class="sm:inline">New Address</p>
                                     </div>
-                                    <div id="server-size-NEW-description-0" class="text-gray-500">
+                                    {{-- <div id="server-size-NEW-description-0" class="text-gray-500">
                                         <p class="sm:inline">New Address</p>
                                         <span class="hidden sm:inline sm:mx-1" aria-hidden="true">&middot;</span>
                                         <p class="sm:inline">New Address</p>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
 

@@ -102,13 +102,13 @@
 		</div>
 
         {{-- show only Client Projects... --}}
-        @if(!$client->projects->isEmpty())
+        {{-- @if(!$client->projects->isEmpty()) --}}
             <div class="col-span-4 lg:col-span-3">
                 {{-- CLIENT PROJECT --}}
                 {{-- @livewire('expenses.expense-index', ['project' => $project->id]) --}}
                 @livewire('projects.projects-index', ['client_id' => $client->id, 'view' => 'clients.show'])
             </div>
-        @endif
+        {{-- @endif --}}
 	</div>
 
     {{-- <br> --}}

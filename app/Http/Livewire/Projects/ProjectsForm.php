@@ -66,19 +66,19 @@ class ProjectsForm extends Component
             $this->project->project_name = NULL;
 
             if(!is_null($this->client->id)){
+                $this->addresses = [];
                 $this->client = Client::find($this->client->id);
-                $this->addresses = $this->client->projects;
+                // $this->addresses = $this->client->projects;
+                $this->getAddresses();
                 $this->address = TRUE;
                 // $this->client->project_id = $this->client_project_id_address;
                 // dd($this->client->addresses);
-            }
-            
-            // else{
-            //     $this->client = Client::make();
-            //     $this->addresses = [];
-            //     $this->project = Project::make();
-            //     $this->address = FALSE;
-            // }            
+            }else{
+                // $this->client = Client::make();
+                // $this->addresses = [];
+                // $this->project = Project::make();
+                // $this->address = FALSE;
+            }            
         }
 
         if($field == 'client_project_id_address'){
@@ -104,10 +104,42 @@ class ProjectsForm extends Component
         $this->client = Client::make(); 
     }
 
+    public function getAddresses()
+    {
+        //client projects addresses grouped
+        $project_addresses = $this->client->projects()->get()->groupBy('address');
+
+        foreach($project_addresses as $projects){
+            array_push($this->addresses, [
+                'address' => $projects->first()->address,
+                'address_2' => $projects->first()->address_2,
+                'city' => $projects->first()->city,
+                'state' => $projects->first()->state,
+                'zip_code' => $projects->first()->zip_code,
+                'type' => 'Project Address',
+            ]);
+        }
+
+        // client billing address
+        array_push($this->addresses, [
+            'address' => $this->client->address,
+            'address_2' => $this->client->address_2,
+            'city' => $this->client->city,
+            'state' => $this->client->state,
+            'zip_code' => $this->client->zip_code,
+            'type' => 'Billing Address',
+        ]);
+        
+        return $this->addresses;
+    }
+
     public function createProject($client_id = NULL)
     {
         if(isset($client_id)){
-            $this->client = Client::find($client_id);      
+            //coming from clients.show view / $client already set
+            $this->client = Client::find($client_id);  
+            $this->getAddresses();
+            $this->address = TRUE;  
         }
         
         $this->modal_show = TRUE;
@@ -116,12 +148,12 @@ class ProjectsForm extends Component
     public function store()
     {
         if(is_numeric($this->client_project_id_address)){
-            $project_address = Project::find($this->client_project_id_address);
-            $this->project->address = $project_address->address;
-            $this->project->address_2 = $project_address->address_2;
-            $this->project->city = $project_address->city;
-            $this->project->state = $project_address->state;
-            $this->project->zip_code = $project_address->zip_code;
+            $project_address = $this->addresses[$this->client_project_id_address];
+            $this->project->address = $project_address['address'];
+            $this->project->address_2 = $project_address['address_2'];
+            $this->project->city = $project_address['city'];
+            $this->project->state = $project_address['state'];
+            $this->project->zip_code = $project_address['zip_code'];
         }else{
             //if $this->client_project_id_address = NEW;
             //use $this->project;
@@ -132,11 +164,11 @@ class ProjectsForm extends Component
         $project = Project::create([
             'project_name' => $this->project->project_name,
             'client_id' => $this->client->id,
-            'address' => $project_address->address,
-            'address_2' => $project_address->address_2,
-            'city' => $project_address->city,
-            'state' => $project_address->state,
-            'zip_code' => $project_address->zip_code,
+            'address' => $this->project->address,
+            'address_2' => $this->project->address_2,
+            'city' => $this->project->city,
+            'state' => $this->project->state,
+            'zip_code' => $this->project->zip_code,
             'belongs_to_vendor_id' => auth()->user()->vendor->id,
         ]);
         
