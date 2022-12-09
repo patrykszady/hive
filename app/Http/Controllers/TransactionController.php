@@ -682,17 +682,19 @@ class TransactionController extends Controller
                 ->get();
 
         foreach($checks as $check){
+            // elseif($check->check_type == 'Cash'){
+            //     $check_number = '2020202';
+            // }
             if($check->check_type == 'Transfer'){
                 $check_number = '1010101';
-            }elseif($check->check_type == 'Cash'){
-                $check_number = '2020202';
             }elseif($check->check_type == 'Check'){
                 $check_number = $check->check_number;
             }else{
                 continue;
-            }
+            }            
 
-            $transactions = Transaction::withoutGlobalScopes()
+            if($check->check_type == 'Check'){
+                $transactions = Transaction::withoutGlobalScopes()
                     ->whereNull('deleted_at')
                     ->whereNull('check_id')
                     ->where('check_number', $check_number)
@@ -700,9 +702,25 @@ class TransactionController extends Controller
                             $check->date->format('Y-m-d'), 
                             $check->date->addDays(385)->format('Y-m-d')
                             ])
-                    //     ->where('amount', $check->amount)
                     ->orderBy('id', 'DESC')
                     ->get();
+            }elseif($check->check_type == 'Transfer'){
+                //if $check_number = Transfer
+                $transactions = Transaction::withoutGlobalScopes()
+                    ->whereNull('deleted_at')
+                    ->whereNull('check_id')
+                    ->where('check_number', $check_number)
+                    ->whereBetween('transaction_date', [
+                            $check->date->format('Y-m-d'), 
+                            $check->date->addDays(385)->format('Y-m-d')
+                            ])
+                    ->where('amount', $check->amount)
+                    ->orderBy('id', 'DESC')
+                    ->get();
+            }else{
+                Log::channel('add_check_id_to_transactions')->info($check);
+                continue;
+            }
 
             if($transactions->count() == 1){
                 //if check_number matches, that's the one
