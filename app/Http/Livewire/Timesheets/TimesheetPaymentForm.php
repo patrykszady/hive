@@ -217,7 +217,7 @@ class TimesheetPaymentForm extends Component
             $check->save();
         }
 
-        return redirect()->route('timesheets.show', $weekly_timesheet->id);
+        return redirect()->route('checks.show', $check->id);
     }
 
     public function render()

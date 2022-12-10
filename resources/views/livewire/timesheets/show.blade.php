@@ -74,7 +74,7 @@
             <x-cards.heading>
                 <x-slot name="left">
                     {{-- by project, not daily --}}
-                    <h1>Project Weekly Hours</h1>
+                    <h1>Weekly Hours</h1>
                 </x-slot>
             </x-cards.heading>
         
@@ -115,6 +115,7 @@
                         :line_details="$line_details"
                         :line_title="$timesheet->project->name"
                         :bubble_message="$timesheet->check ? 'Paid' : (!$timesheet->check && $timesheet->check_id ? 'Paid By' : 'Pay')"
+                        :bubble_color="$timesheet->check ? 'green' : 'yellow'"
                         >
                     </x-lists.search_li>
                 @endforeach
@@ -152,7 +153,7 @@
                                     ],
                                 2 => [
                                     'text' => $hour->project->name,
-                                    'icon' => 'M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z'
+                                    'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
                                     ],
                                 // 3 => [
                                 //     'text' => money($timesheet->amount),
@@ -164,7 +165,7 @@
                         <x-lists.search_li
                             {{-- href="{{ route('checks.show', $expense->check->id) }}" --}}
                             :line_details="$line_details"
-                            :line_title="'Hours | ' . $hour->hours"
+                            {{-- :line_title="'Hours | ' . $hour->hours" --}}
                             :bubble_message="'Hours'"
                             >
                         </x-lists.search_li>	

@@ -232,11 +232,13 @@
 					</x-slot>
 				
 					<x-slot name="right">
+						{{-- 12-09-22 modal emit!no refresh add just added Payment --}}
 						<x-cards.button href="{{route('payments.create', $project->client->id)}}">
 							Add Payment
 						</x-cards.button>
 					</x-slot>
 				</x-cards.heading>
+				
 				@if(!$project->payments->isEmpty())
 					<x-lists.ul>
 						@foreach($project->payments()->orderBy('date', 'DESC')->get() as $payment)

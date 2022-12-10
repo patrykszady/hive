@@ -195,9 +195,9 @@ class TransactionController extends Controller
                 }
 
                 //if database $transaction->check_number isset, make it null in case its 0000
-                if(isset($transaction->check_number)){
-                    $transaction->check_number = NULL;
-                }
+                // if(isset($transaction->check_number)){
+                //     $transaction->check_number = NULL;
+                // }
                 
                 if(isset($new_transaction['check_number'])){
                     $transaction->check_number = $new_transaction['check_number'];
@@ -595,9 +595,10 @@ class TransactionController extends Controller
       
                         if(isset($matches[0][0])){
                             $check_number = $matches[0][0];
-                            if($check_number != "0000"){
-                                $transaction->check_number = $check_number;
-                            }                          
+                            $transaction->check_number = $check_number;
+                            // if($check_number != "0000"){
+                            //     $transaction->check_number = $check_number;
+                            // }                          
                         }
 
                     //TRANSFER

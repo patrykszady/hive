@@ -108,7 +108,7 @@
                             <x-lists.ul :class="'mt-4'">
                                 @foreach ($transactions_found as $transaction_found)
                                     @php
-                                        $vendor_name = $transaction_found->vendor->business_name == "No Vendor" ? 'NO VENDOR <br> Maybe: ' . $transaction_found->plaid_merchant_name : $transaction_found->vendor->business_name;
+                                        $vendor_name = $transaction_found->vendor->business_name == "No Vendor" ? 'NO VENDOR <br> Maybe: <br>' . $transaction_found->plaid_merchant_description : $transaction_found->vendor->business_name;
                                         $line_details = [
                                             1 => [
                                                 'text' => $transaction_found->transaction_date->format('m/d/Y'),

@@ -62,7 +62,10 @@ class Check extends Model
 
     public function getOwnerAttribute()
     {
-        if($this->vendor_id){
+        //$vendor_id = belongs_to_user ($user_id) //distribution of user that belongs to vendor_id
+        if($this->vendor_id && $this->user_id){
+            $owner = $this->user->full_name;
+        }elseif($this->vendor_id){
             $owner = $this->vendor->business_name;
         }elseif($this->user_id){
             $owner = $this->user->full_name;
