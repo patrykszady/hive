@@ -194,6 +194,15 @@ class TransactionController extends Controller
                     $transaction->plaid_merchant_name = NULL;
                 }
 
+                //if database $transaction->check_number isset, make it null in case its 0000
+                if(isset($transaction->check_number)){
+                    $transaction->check_number = NULL;
+                }
+                
+                if(isset($new_transaction['check_number'])){
+                    $transaction->check_number = $new_transaction['check_number'];
+                }
+
                 $transaction->amount = $new_transaction['amount'];
                 $transaction->plaid_merchant_description = $new_transaction['name'];
                 $transaction->plaid_transaction_id = $new_transaction['transaction_id'];
@@ -210,6 +219,46 @@ class TransactionController extends Controller
                 $transaction->save();
             }
         }
+    }
+
+    //DIAGNOSE PLAID TRANSACTIONS
+    public function plaid_transactions_get()
+    {
+        $new_data = array(
+            "client_id"=> env('PLAID_CLIENT_ID'),
+            "secret"=> env('PLAID_SECRET'),
+            //bank access token
+            "access_token"=> "access-production-ee3181e2-45b1-430a-a202-8d881aa1ff7c",
+            "options" => array(
+                "count"=> 90,
+                "offset"=> 0
+            ),
+        );
+
+        $new_data['start_date'] = Carbon::now()->subDays(45)->toDateString(); 
+        $new_data['end_date'] = Carbon::now()->toDateString();
+
+        $new_data = json_encode($new_data);
+
+        //initialize session
+        $ch = curl_init("https://" . env('PLAID_ENV') .  ".plaid.com/transactions/get");
+        //set options
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            ));
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $new_data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        //execute session
+        $result = curl_exec($ch);
+        //close session
+        curl_close($ch);
+
+        $result = json_decode($result, true);
+
+        $transactions = collect($result['transactions']);
+
+        dd($transactions->where('transaction_id', '1ad455BJeaUgXYL0pR1Kugkjzy46AZsjJy3Eb'));
     }
 
     // public function plaid_transactions(Bank $bank, $data)
@@ -495,6 +544,7 @@ class TransactionController extends Controller
     {
         $institutions = VendorTransaction::whereNotNull('plaid_inst_id')->groupBy('plaid_inst_id')->pluck('plaid_inst_id');
 
+        // dd($institutions);
         //split by institution
         foreach($institutions as $institution){
             //06/29/2021 NEED TO SHARE THIS WITH TrancationController@store_csv_array.. same code x2 
@@ -544,8 +594,10 @@ class TransactionController extends Controller
                         preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
       
                         if(isset($matches[0][0])){
-                            $check = $matches[0][0];
-                            $transaction->check_number = $check;
+                            $check_number = $matches[0][0];
+                            if($check_number != "0000"){
+                                $transaction->check_number = $check_number;
+                            }                          
                         }
 
                     //TRANSFER
