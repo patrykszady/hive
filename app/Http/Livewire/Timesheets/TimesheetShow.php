@@ -20,7 +20,7 @@ class TimesheetShow extends Component
         $this->authorize('view', $this->timesheet);
         $weekly_hours = 
             Timesheet::
-                with('check')->withoutGlobalScopes()
+                with('check')
                 ->orderBy('date', 'DESC')
                 ->where('date', $this->timesheet->date->format('Y-m-d'))
                 ->where('user_id', $this->timesheet->user_id)

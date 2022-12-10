@@ -81,6 +81,7 @@ class TimesheetPaymentForm extends Component
                 ->whereNull('check_id')
                 ->whereNull('paid_by')
                 ->whereNull('deleted_at')
+                ->orderBy('date', 'DESC')
                 ->get()
                 ->each(function ($item, $key) {
                     $item->checkbox = true;
@@ -97,6 +98,7 @@ class TimesheetPaymentForm extends Component
                 ->where('paid_by', $this->user->id)
                 ->whereNull('check_id')
                 ->whereNull('deleted_at')
+                ->orderBy('date', 'DESC')
                 ->get()
                 ->each(function ($item, $key) {
                     $item->checkbox = true;
@@ -107,6 +109,7 @@ class TimesheetPaymentForm extends Component
             Expense::
                 where('paid_by', $this->user->id)
                 ->whereNull('check_id')
+                ->orderBy('date', 'DESC')
                 ->get()
                 ->each(function ($item, $key) {
                     $item->checkbox = true;
