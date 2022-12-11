@@ -121,15 +121,14 @@
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Estimate'"
-							{{-- href="{{route('clients.show', $project->client)}}" --}}
-							:line_data="money($project->bids()->where('vendor_id', auth()->user()->vendor->id)->where('type', 1)->sum('amount'))"
+							:line_data="money($finances['estimate'])"
 							>
 						</x-lists.search_li>
 
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Change Order'"
-							:line_data="money($project->bids()->where('vendor_id', auth()->user()->vendor->id)->where('type', 2)->sum('amount'))"
+							:line_data="money($finances['change_orders'])"
 							>
 						</x-lists.search_li>
 
@@ -138,7 +137,7 @@
 							:line_title="'Reimbursements'"
 							href="{{route('print_reimbursment', $project->id)}}"
 							:href_target="'blank'"							
-							:line_data="money($reimbursment_sum)"
+							:line_data="money($finances['reimbursments'])"
 							>
 						</x-lists.search_li>
 
@@ -147,25 +146,21 @@
 							:bold=true
 							{{-- make gray --}}
 							:line_title="'TOTAL PROJECT'"						
-							:line_data="money(
-										$reimbursment_sum +
-										$project->bids()->where('type', 2)->sum('amount') +
-										$project->bids()->where('type', 1)->sum('amount')
-									)"
+							:line_data="money($finances['total_project'])"
 							>
 						</x-lists.search_li>
 
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Expenses'"
-							:line_data="money($project->expenses->sum('amount'))"
+							:line_data="money($finances['expenses'])"
 							>
 						</x-lists.search_li>
 
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Timesheets'"
-							:line_data="money($project->timesheets->sum('amount'))"
+							:line_data="money($finances['timesheets'])"
 							>
 						</x-lists.search_li>
 
@@ -174,17 +169,14 @@
 							:bold=true
 							{{-- make gray --}}
 							:line_title="'TOTAL COST'"						
-							:line_data="money(
-										$project->timesheets->sum('amount') +
-										$project->expenses->sum('amount')
-									)"
+							:line_data="money($finances['total_cost'])"
 							>
 						</x-lists.search_li>
 
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Payments'"
-							:line_data="money($project->payments->sum('amount'))"
+							:line_data="money($finances['payments'])"
 							>
 						</x-lists.search_li>
 						
@@ -194,14 +186,7 @@
 								:bold=true
 								{{-- make gray --}}
 								:line_title="'PROFIT'"						
-								:line_data="money(
-											($project->expenses()->where('reimbursment', 'Client')->sum('amount') +
-											$project->bids()->where('type', 2)->sum('amount') +
-											$project->bids()->where('type', 1)->sum('amount')) - 
-
-											($project->timesheets->sum('amount') +
-											$project->expenses->sum('amount'))
-										)"
+								:line_data="money($finances['profit'])"
 								>
 							</x-lists.search_li>
 						@endif
@@ -210,12 +195,7 @@
 							:basic=true
 							{{-- make gray --}}
 							:line_title="'Balance'"						
-							:line_data="money(											
-											($project->expenses()->where('reimbursment', 'Client')->sum('amount') +
-											$project->bids()->where('type', 2)->sum('amount') +
-											$project->bids()->where('type', 1)->sum('amount')) -
-											$project->payments->sum('amount')
-										)"
+							:line_data="money($finances['balance'])"
 							>
 						</x-lists.search_li>
 					</x-lists.ul>

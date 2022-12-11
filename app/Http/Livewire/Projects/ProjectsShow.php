@@ -15,6 +15,7 @@ class ProjectsShow extends Component
 
     public Project $project;
 
+    public $finances = [];
     public $project_status = NULL;
     
     // protected function rules()
@@ -28,9 +29,19 @@ class ProjectsShow extends Component
     {
         $this->project_status = $this->project->project_status ? $this->project->project_status->title : NULL;
 
-        $expenses_sum = floatval($this->project->expenses()->where('reimbursment', 'Client')->sum('amount'));
-        $splits_sum = floatval($this->project->expenseSplits()->where('reimbursment', 'Client')->sum('amount'));
-        $this->reimbursment_sum = $splits_sum + $expenses_sum;
+        $expenses_sum = $this->project->expenses()->where('reimbursment', 'Client')->sum('amount');
+        $splits_sum = $this->project->expenseSplits()->where('reimbursment', 'Client')->sum('amount');
+
+        $this->finances['estimate'] = $this->project->bids()->where('vendor_id', auth()->user()->vendor->id)->where('type', 1)->sum('amount');
+        $this->finances['change_orders'] = $this->project->bids()->where('vendor_id', auth()->user()->vendor->id)->where('type', 2)->sum('amount');
+        $this->finances['reimbursments'] = $splits_sum + $expenses_sum;
+        $this->finances['total_project'] = $this->finances['reimbursments'] + $this->finances['estimate'] + $this->finances['change_orders'];
+        $this->finances['expenses'] = $this->project->expenses->sum('amount') + $this->project->expenseSplits->sum('amount');
+        $this->finances['timesheets'] = $this->project->timesheets->sum('amount');
+        $this->finances['total_cost'] = $this->finances['timesheets'] + $this->finances['expenses'];
+        $this->finances['payments'] = $this->project->payments->sum('amount');
+        $this->finances['profit'] = $this->finances['total_project'] - $this->finances['total_cost'];
+        $this->finances['balance'] = $this->finances['total_project'] - $this->finances['payments'];        
     }
 
     // public funpction updated($field) 
@@ -66,7 +77,7 @@ class ProjectsShow extends Component
         $this->authorize('view', $this->project);
 
         return view('livewire.projects.show', [
-            'project' => $this->project,
+            // 'project' => $this->project,
         ]);
     }
 }
