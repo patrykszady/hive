@@ -14,7 +14,19 @@ class ExpensesShow extends Component
     use AuthorizesRequests;
 
     public Expense $expense;
+
+    // protected $listeners = ['showExpense'];
  
+    // public function showExpense()
+    // {
+    //     dd('in showExpense');
+    //     $this->emit('showExpense');
+    //     // dd($expense);
+    //     //emit showExpense expenses.show
+
+    //     //open expense.show modal
+    // }
+
     public function render()
     {
         $this->authorize('view', $this->expense);

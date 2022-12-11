@@ -17,8 +17,10 @@
     ])
     >
     <a
-        wire:click="{{ $attributes['wire:click'] }}"
-        @if($attributes['href'] == "")
+        @if(isset($attributes['wire:click']))
+            href="#"
+            wire:click="{{ $attributes['wire:click'] }}";
+        @elseif($attributes['href'] == "")
             
         @else
             href="{{ $attributes['href'] }}"

@@ -87,16 +87,16 @@ class Project extends Model
 
     public function getNameAttribute()
     {
-        if($this->project_name == 'Expense is Split' || $this->project_name == 'No Project'){
+        if($this->project_name == 'EXPENSE SPLIT' || $this->project_name == 'NO PROJECT'){
+            $name = $this->project_name;
+        }elseif($this->distribution == TRUE){
+            // dd($this->distribution_id);
             $name = $this->project_name;
         }else{
             $name = $this->address . ' | ' . $this->project_name;
         }
         
         return $name;
-
-
-
 
         // if($this->project_name == 'Expense is Split' || $this->project_name == 'No Project'){
         //     $name = $this->project_name;

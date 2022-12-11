@@ -30,18 +30,15 @@ class Expense extends Model
     
     public function project()
     {
-        //if "Expense is SPlit..." ...if project_id = 0 AND NO SPLITS = NO PROJECT..>ENTER!!
-        // return $this->belongsTo(Project::class)->withDefault([
-        //     //if expense has splits.. otherwise NULL?
-        //     'project_name' => 'Expense is Split',
-        // ]);
-
         //1-4-2022 below creates an N + 1 problem
         return $this->belongsTo(Project::class)->withDefault(function ($project, $expense) {
             if($expense->splits()->exists()){
-                $project->project_name = 'Expense is Split';
+                $project->project_name = 'EXPENSE SPLIT';
+            }elseif($expense->distribution){
+                $project->project_name = $expense->distribution->name;
+                $project->distribution = TRUE;
             }else{
-                $project->project_name = 'No Project';
+                $project->project_name = 'NO PROJECT';
                 //1/3/2022 else shoud behave as regular belongsTo method with no withDefault()
                 // throw new \Exception("Attempt to read property project_name on null");
             }

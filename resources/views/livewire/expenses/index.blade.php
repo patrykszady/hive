@@ -8,11 +8,10 @@
         @can('create', App\Models\Expense::class)
         <x-slot name="right">
             <x-cards.button href="{{route('expenses.find')}}">
-                Create expense
+                Create Expense
             </x-cards.button>
         </x-slot>
         @endcan
-        {{-- @endcan --}}
     </x-cards.heading>
 
     {{-- SUB-HEADING --}}
@@ -108,6 +107,19 @@
                     @endforeach
                 </select>
             </div>
+
+            {{-- <div>
+                <select
+                    wire:model="status"
+                    id="status" 
+                    name="status"
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                    >
+                    <option value="" readonly>Status</option>
+                    <option value="Complete">Complete</option>
+                    <option value="Missing">Missing Info</option>
+                </select>
+            </div> --}}
             {{-- perfect dropdown sitewide! --}}
             {{-- <div class="max-w-xs">
                 <div x-data="
@@ -291,12 +303,10 @@
                         1 => [
                             'text' => $expense->date->format('m/d/Y'),
                             'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
-
                             ],
                         2 => [
                             'text' => $expense->vendor->business_name,
                             'icon' => 'M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z'
-
                             ],
                         ];
                     }else{
@@ -304,29 +314,32 @@
                         1 => [
                             'text' => $expense->date->format('m/d/Y'),
                             'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
-
                             ],
                         2 => [
                             'text' => $expense->vendor->business_name,
                             'icon' => 'M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z'
-
                             ],
                         3 => [
-                            'text' => $expense->distribution ? $expense->distribution->name : $expense->project->name,
+                            'text' => $expense->project->name,
                             'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-
                             ],
                         ];
                     }
                 @endphp
-    
+        {{-- @dd($expense->complete == false) --}}
                 <x-lists.search_li
                     href="{{route('expenses.show', $expense->id)}}"
+                    href_target="_blank"
+                    {{-- href="#" --}}
+                    {{-- wire:click="clickexpense({{$expense->id}})" --}}
+                    {{-- wire:click="$emit('clickExpense', {{$expense->id}})" --}}
                     :line_details="$line_details"
                     {{-- :no_hover=true --}}
                     :line_title="money($expense->amount)"
-                    :bubble_message="'Success'"
+                    :bubble_message="$expense->complete == true ? 'Complete' : 'Missing Info'"
+                    :bubble_color="$expense->complete == true ? 'green' : 'red'"
                     >
+                    
                 </x-lists.search_li>
             @endforeach
         </x-lists.ul>
@@ -336,6 +349,9 @@
     <x-cards.footer>
         {{-- 10/14/21 change/customize links view in resources/views/vendor/pagination/tailwind.blade.php to match our
         theme --}}
+        
         {{ $expenses->links() }}
     </x-cards.footer>
 </x-cards.wrapper>
+
+{{-- @include('livewire.expenses._show') --}}
