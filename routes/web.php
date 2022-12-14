@@ -16,6 +16,8 @@ use App\Http\Livewire\Vendors\VendorsForm;
 use App\Http\Livewire\Vendors\VendorPaymentForm;
 use App\Http\Livewire\Vendors\VendorsShow;
 
+use App\Http\Livewire\Distributions\DistributionsShow;
+
 use App\Http\Livewire\Clients\ClientsIndex;
 use App\Http\Livewire\Clients\ClientsShow;
 use App\Http\Livewire\Clients\ClientsForm;
@@ -112,6 +114,9 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     Route::get('/expenses/{expense}/edit', ExpensesForm::class)->name('expenses.edit');
     Route::get('/expenses/{expense}/udpate', ExpensesForm::class)->name('expenses.update');
     // Route::resource('expenses', ExpenseController::class);
+
+    //DISTRIBUTIONS
+    Route::get('/distributions/{distribution}', DistributionsShow::class)->name('distributions.show');
 
     //VENDORS
     Route::get('/vendors', VendorsIndex::class)->name('vendors.index');

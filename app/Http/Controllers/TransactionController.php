@@ -258,7 +258,7 @@ class TransactionController extends Controller
 
         $transactions = collect($result['transactions']);
 
-        dd($transactions->where('transaction_id', '1ad455BJeaUgXYL0pR1Kugkjzy46AZsjJy3Eb'));
+        dd($transactions->where('transaction_id', '48LJ55K6Q8S7YoQRaD4YSqzMvVzeq5SqPbjN7'));
     }
 
     // public function plaid_transactions(Bank $bank, $data)
@@ -596,9 +596,10 @@ class TransactionController extends Controller
                         if(isset($matches[0][0])){
                             $check_number = $matches[0][0];
                             $transaction->check_number = $check_number;
-                            // if($check_number != "0000"){
-                            //     $transaction->check_number = $check_number;
-                            // }                          
+                            
+                            if($check_number != "0000"){
+                                $transaction->check_number = $check_number;
+                            }                          
                         }
 
                     //TRANSFER

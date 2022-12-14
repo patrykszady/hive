@@ -212,12 +212,14 @@ class TimesheetPaymentForm extends Component
             $expense->save();
         }
 
-        if($check){
+        if(isset($check)){
             $check->amount = $check->expenses->sum('amount') + $check->timesheets->sum('amount');
             $check->save();
-        }
 
-        return redirect()->route('checks.show', $check->id);
+            return redirect()->route('checks.show', $check->id);
+        }else{
+            return redirect()->route('timesheets.payments');
+        }
     }
 
     public function render()
@@ -226,13 +228,11 @@ class TimesheetPaymentForm extends Component
         
         $bank_accounts = BankAccount::where('type', 'Checking')->get();
 
-        // dd($this->employee_weekly_timesheets->where('checkbox', 'true'));
         //if $this->employee_weekly_timesheets is not empty... disable "paid_by"
         if(!$this->employee_weekly_timesheets->isEmpty()){
             $employees = [];
         }else{
             $employees = $this->user->vendor->users()->where('is_employed', 1)->whereNot('users.id', $this->user->id)->get();
-            // $employees = $payment_vendor->users()->where('is_employed', 1)->whereNot('users.id', $this->user->id)->get();
         }        
 
         //07/16/2022: what about distributions.. would distributions ever end up here?
