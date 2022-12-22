@@ -50,7 +50,6 @@ class ExpenseSplitsForm extends Component
         if($field == 'expense_splits.' . $index . '.amount'){
             if($value == "" || $value == 0 || $value == 0.0 || $value == 0.00){
                 $this->expense_splits[$index] = 0;
-                
             }      
         }        
     }

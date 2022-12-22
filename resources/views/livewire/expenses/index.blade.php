@@ -324,15 +324,18 @@
                             'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
                             ],
                         ];
+
+                        if(isset($expense->note)){
+                            array_push($line_details, [
+                                'text' => $expense->note,
+                                'icon' => 'M5.433 13.917l1.262-3.155A4 4 0 017.58 9.42l6.92-6.918a2.121 2.121 0 013 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 01-.65-.65z M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0010 3H4.75A2.75 2.75 0 002 5.75v9.5A2.75 2.75 0 004.75 18h9.5A2.75 2.75 0 0017 15.25V10a.75.75 0 00-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5z'					
+                            ]);    
+                        }                        
                     }
                 @endphp
-        {{-- @dd($expense->complete == false) --}}
+                {{-- @dd($expense->complete == false) --}}
                 <x-lists.search_li
-                    href="{{route('expenses.show', $expense->id)}}"
-                    href_target="_blank"
-                    {{-- href="#" --}}
-                    {{-- wire:click="clickexpense({{$expense->id}})" --}}
-                    {{-- wire:click="$emit('clickExpense', {{$expense->id}})" --}}
+                    wire:click="$emitTo('expenses.expenses-new-form', 'editExpense', {{$expense->id}})"
                     :line_details="$line_details"
                     {{-- :no_hover=true --}}
                     :line_title="money($expense->amount)"
@@ -354,4 +357,5 @@
     </x-cards.footer>
 </x-cards.wrapper>
 
-{{-- @include('livewire.expenses._show') --}}
+@livewire('expenses.expenses-new-form')
+{{-- @include('livewire.expenses.new-form') --}}

@@ -57,7 +57,7 @@
 							{{-- href="{{route('projects.show', $expense->project->id)}}" --}}
 							>
 						</x-lists.search_li>
-					@elseif($expense->project->name == 'No Project')
+					@elseif($expense->project->name == 'NO PROJECT')
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Project'"

@@ -16,6 +16,8 @@ use App\Http\Livewire\Vendors\VendorsForm;
 use App\Http\Livewire\Vendors\VendorPaymentForm;
 use App\Http\Livewire\Vendors\VendorsShow;
 
+use App\Http\Livewire\Distributions\DistributionsIndex;
+// use App\Http\Livewire\Distributions\DistributionsForm;
 use App\Http\Livewire\Distributions\DistributionsShow;
 
 use App\Http\Livewire\Clients\ClientsIndex;
@@ -39,6 +41,7 @@ use App\Http\Livewire\Transactions\MatchVendor;
 use App\Http\Livewire\Expenses\ExpenseIndex;
 use App\Http\Livewire\Expenses\ExpensesEdit;
 use App\Http\Livewire\Expenses\ExpensesForm;
+use App\Http\Livewire\Expenses\ExpensesNewForm;
 use App\Http\Livewire\Expenses\ExpensesShow;
 use App\Http\Livewire\Expenses\ExpensesFind;
 
@@ -109,6 +112,7 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     //EXPENSES
     Route::get('/expenses', ExpenseIndex::class)->name('expenses.index');
     Route::get('/expenses/create', ExpensesForm::class)->name('expenses.create');
+    Route::get('/expenses/new', ExpensesNewForm::class)->name('expenses.new');
     Route::get('/expenses/find', ExpensesFind::class)->name('expenses.find');
     Route::get('/expenses/{expense}', ExpensesShow::class)->name('expenses.show');
     Route::get('/expenses/{expense}/edit', ExpensesForm::class)->name('expenses.edit');
@@ -116,6 +120,8 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     // Route::resource('expenses', ExpenseController::class);
 
     //DISTRIBUTIONS
+    Route::get('/distributions', DistributionsIndex::class)->name('distributions.index');
+    // Route::get('/distributions/create', DistributionsForm::class)->name('distributions.create');
     Route::get('/distributions/{distribution}', DistributionsShow::class)->name('distributions.show');
 
     //VENDORS
@@ -138,7 +144,6 @@ Route::middleware(['auth', 'user.vendor'])->group(function(){
     Route::get('/clients/create', ClientsForm::class)->name('clients.create');
     Route::get('/clients/{client}', ClientsShow::class)->name('clients.show');
     
-
     //PROJECTS
     Route::get('/projects', ProjectsIndex::class)->name('projects.index');
     Route::get('/projects/create', ProjectsForm::class)->name('projects.create');

@@ -35,7 +35,6 @@ class ExpensesShow extends Component
         $splits = $this->expense->splits()->with('project')->get();
     
         return view('livewire.expenses.show', [
-            'expense' => $this->expense,
             'receipt' => $receipt,
             'splits' => $splits,
         ]);

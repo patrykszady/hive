@@ -38,6 +38,23 @@ class MoveController extends Controller
         //open old database
         $move_database = DB::connection('move_mysql');
 
+        //DISTRIBUTION_PROJECT
+        $dis_projects = $move_database->select('select * from distribution_project');
+
+        foreach($dis_projects as $project_dis){
+            $project = Project::withoutGlobalScopes()->find($project_dis->project_id);
+
+            $project->distributions()->attach($project_dis->distribution_id, array(
+                'id' => $project_dis->id,
+                'percent' => $project_dis->percent,
+                'amount' => $project_dis->amount,
+                'created_at' => $project_dis->created_at,
+                'updated_at' => $project_dis->updated_at,
+            ));
+        }
+
+        dd('past DISTRIBUTION_PROJECT');
+
         // //add check totals
         // $checks = Check::withoutGlobalScopes()->get();
 

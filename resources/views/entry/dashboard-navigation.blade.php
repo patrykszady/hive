@@ -32,7 +32,7 @@
     </x-nav.section>
 
     @canany(['viewAny', 'create'], App\Models\Expense::class)
-    <x-nav.section :active="request()->routeIs('expenses.*')">
+    <x-nav.section :active="request()->routeIs('expenses.*') || request()->routeIs('checks.*')">
         <x-slot name="name">
             Expenses
         </x-slot>
@@ -49,6 +49,9 @@
             </x-nav.new-section-dropdown>
             @endcan
 
+            <x-nav.section-dropdown href="{{route('checks.index')}}" :active="request()->routeIs('checks.index')">
+                Checks
+            </x-nav.new-section-dropdown>
         </x-slot>
         <x-slot name="icon">
             M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z
@@ -100,18 +103,20 @@
         </x-slot>
     </x-nav.section>
 
-    <x-nav.section :active="request()->routeIs('banks.*') || request()->routeIs('transactions.*') || request()->routeIs('checks.*')">
+    <x-nav.section :active="request()->routeIs('banks.*') || request()->routeIs('transactions.*') || request()->routeIs('distributions.*')">
         <x-slot name="name">
             Finance
         </x-slot>
-        <x-slot name="links">
-            <x-nav.section-dropdown href="{{route('checks.index')}}" :active="request()->routeIs('checks.index')">
-                Checks
-            </x-nav.new-section-dropdown>
-            
+        <x-slot name="links">            
             @can('create', App\Models\Bank::class)
             <x-nav.section-dropdown href="{{route('banks.index')}}" :active="request()->routeIs('banks.index')">
                 Banks
+            </x-nav.new-section-dropdown>
+            @endcan
+
+            @can('viewAny', App\Models\Distribution::class)
+            <x-nav.section-dropdown href="{{route('distributions.index')}}" :active="request()->routeIs('distributions.index')">
+                Distributions
             </x-nav.new-section-dropdown>
             @endcan
 

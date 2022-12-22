@@ -20,6 +20,11 @@ class Project extends Model
         static::addGlobalScope(new ProjectScope);
     }
 
+    public function distributions()
+    {
+        return $this->belongsToMany(Distribution::class)->withPivot('percent', 'amount')->withTimestamps();
+    }
+
     public function expenses()
     {
         return $this->hasMany(Expense::class);
@@ -73,9 +78,29 @@ class Project extends Model
         } else {
             $address1 = $this->address . '<br>' . $this->address_2;
         }
-            $address2 = $this->city . ', ' . $this->state . ' ' . $this->zip_code;
+        
+        $address2 = $this->city . ', ' . $this->state . ' ' . $this->zip_code;
 
-            return $address1 . '<br>' .  $address2;
+        return $address1 . '<br>' .  $address2;
+    }
+
+    public function getFinancesAttribute()
+    {
+        $expenses_sum = $this->expenses()->where('reimbursment', 'Client')->sum('amount');
+        $splits_sum = $this->expenseSplits()->where('reimbursment', 'Client')->sum('amount');
+
+        $finances['estimate'] = $this->bids()->where('vendor_id', auth()->user()->vendor->id)->where('type', 1)->sum('amount');
+        $finances['change_orders'] = $this->bids()->where('vendor_id', auth()->user()->vendor->id)->where('type', 2)->sum('amount');
+        $finances['reimbursments'] = $splits_sum + $expenses_sum;
+        $finances['total_project'] = $finances['reimbursments'] + $finances['estimate'] + $finances['change_orders'];
+        $finances['expenses'] = $this->expenses->sum('amount') + $this->expenseSplits->sum('amount');
+        $finances['timesheets'] = $this->timesheets->sum('amount');
+        $finances['total_cost'] = $finances['timesheets'] + $finances['expenses'];
+        $finances['payments'] = $this->payments->sum('amount');
+        $finances['profit'] = $finances['total_project'] - $finances['total_cost'];
+        $finances['balance'] = $finances['total_project'] - $finances['payments'];
+
+        return $finances;
     }
 
     public function getAddressMapURI()

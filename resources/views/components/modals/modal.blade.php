@@ -1,3 +1,4 @@
+{{-- adopted from https://alpinejs.dev/component/modal --}}
 <div
     x-data="{open: @entangle('modal_show')}" 
     x-show="open"

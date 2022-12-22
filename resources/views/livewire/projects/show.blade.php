@@ -121,14 +121,14 @@
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Estimate'"
-							:line_data="money($finances['estimate'])"
+							:line_data="money($project->finances['estimate'])"
 							>
 						</x-lists.search_li>
 
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Change Order'"
-							:line_data="money($finances['change_orders'])"
+							:line_data="money($project->finances['change_orders'])"
 							>
 						</x-lists.search_li>
 
@@ -137,7 +137,7 @@
 							:line_title="'Reimbursements'"
 							href="{{route('print_reimbursment', $project->id)}}"
 							:href_target="'blank'"							
-							:line_data="money($finances['reimbursments'])"
+							:line_data="money($project->finances['reimbursments'])"
 							>
 						</x-lists.search_li>
 
@@ -146,21 +146,21 @@
 							:bold=true
 							{{-- make gray --}}
 							:line_title="'TOTAL PROJECT'"						
-							:line_data="money($finances['total_project'])"
+							:line_data="money($project->finances['total_project'])"
 							>
 						</x-lists.search_li>
 
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Expenses'"
-							:line_data="money($finances['expenses'])"
+							:line_data="money($project->finances['expenses'])"
 							>
 						</x-lists.search_li>
 
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Timesheets'"
-							:line_data="money($finances['timesheets'])"
+							:line_data="money($project->finances['timesheets'])"
 							>
 						</x-lists.search_li>
 
@@ -169,14 +169,14 @@
 							:bold=true
 							{{-- make gray --}}
 							:line_title="'TOTAL COST'"						
-							:line_data="money($finances['total_cost'])"
+							:line_data="money($project->finances['total_cost'])"
 							>
 						</x-lists.search_li>
 
 						<x-lists.search_li
 							:basic=true
 							:line_title="'Payments'"
-							:line_data="money($finances['payments'])"
+							:line_data="money($project->finances['payments'])"
 							>
 						</x-lists.search_li>
 						
@@ -186,7 +186,7 @@
 								:bold=true
 								{{-- make gray --}}
 								:line_title="'PROFIT'"						
-								:line_data="money($finances['profit'])"
+								:line_data="money($project->finances['profit'])"
 								>
 							</x-lists.search_li>
 						@endif
@@ -195,7 +195,7 @@
 							:basic=true
 							{{-- make gray --}}
 							:line_title="'Balance'"						
-							:line_data="money($finances['balance'])"
+							:line_data="money($project->finances['balance'])"
 							>
 						</x-lists.search_li>
 					</x-lists.ul>
@@ -203,6 +203,41 @@
 			</x-cards.wrapper>
 
 			<br>
+
+			{{-- PROJECT DISTRIBUTIONS --}}
+			{{-- @dd($this->project->distributions) --}}
+			@if(!$this->project->distributions->isEmpty())
+				<x-cards.wrapper>
+					<x-cards.heading>
+						<x-slot name="left">
+							<h1 class="text-lg">Project Distributions</b></h1>
+						</x-slot>
+				
+						{{-- <x-slot name="right">
+							<x-cards.button
+								wire:click="$emitTo('bids.bids-form', 'addBids', {{$project}}, {{auth()->user()->vendor}})"
+								>
+								Edit Bid
+							</x-cards.button>
+						</x-slot> --}}
+					</x-cards.heading>
+					<x-cards.body>
+						<x-lists.ul>
+							@foreach($this->project->distributions as $distribution)
+							{{-- @dd($distribution) --}}
+								<x-lists.search_li
+									:basic=true
+									:line_title="$distribution->name"
+									:line_data="money($distribution->pivot->amount) . ' | ' . $distribution->pivot->percent . '%'"
+									>
+								</x-lists.search_li>
+							@endforeach
+						</x-lists.ul>
+					</x-cards.body>
+				</x-cards.wrapper>
+
+				<br>
+			@endif
 
 			{{-- PROJECT PAYMENTS --}}
 			<x-cards.wrapper class="col-span-4 lg:col-span-2 lg:col-start-3">
@@ -257,4 +292,3 @@
 
 	@livewire('bids.bids-form')
 </div>
-

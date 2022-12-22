@@ -1,3 +1,4 @@
+{{-- button.blade is similar with href and wire:click --}}
 @props([
     'noHover' => false,
     'checkbox' => false,

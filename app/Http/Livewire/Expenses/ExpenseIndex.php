@@ -21,9 +21,6 @@ class ExpenseIndex extends Component
     public $vendor = '';
     public $status = NULL;
     public $view = NULL;
-    // public $modal_show = FALSE;
-
-    // protected $listeners = ['clickExpense'];
 
     protected $queryString = [
         'amount' => ['except' => ''],
@@ -143,6 +140,7 @@ class ExpenseIndex extends Component
         //calculate if expense is complete 
         // $expense->transactions->isNotEmpty() && $expense->project != '0' ? 'Complete' : 'Missing Info'
         $expenses->getCollection()->each(function ($expense, $key) use ($expenses){
+                // || isset($expense->paid_by)
                 if($expense->project_id != "0" && ($expense->transactions->isNotEmpty() || isset($expense->check_id))){
                     // if($this->status == "Missing"){
                     //     //exclude from collection

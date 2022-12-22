@@ -38,7 +38,6 @@ class BidsForm extends Component
 
     public function updated($field) 
     {
-        // $this->validate();
         $this->validateOnly($field);
     }
 
@@ -47,7 +46,6 @@ class BidsForm extends Component
         $this->project = $project;
         $this->vendor = $vendor;
 
-        //->withoutGlobalScopes()
         $this->bids = $this->project->bids()->where('vendor_id', $vendor->id)->orderBy('type')->get()->toArray();
 
         if(!$this->bids){
@@ -123,15 +121,12 @@ class BidsForm extends Component
         if($route_name == 'vendors.payment'){
             $this->emit('updateProjectBids', $this->project->id);
         }elseif($route_name == 'projects.show'){
-            // return back();
-            return redirect()->route('projects.show', $this->project);
+            $this->emitTo('projects.projects-show', 'refreshComponent');
         }else{
             //throw error 404
             abort(404);
         }
-
-        // $this->project->refresh();
-        // $this->project->bids()->refresh();
+        
         $this->modal_show = FALSE;        
     }
 

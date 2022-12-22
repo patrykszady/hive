@@ -17,6 +17,17 @@ class Distribution extends Model
     {
         static::addGlobalScope(new DistributionScope);
     }
+
+    public function getBalancesAttribute($value)
+    {
+        $balances = json_decode($value);
+        return $balances;
+    }
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class)->withPivot('percent', 'amount')->withTimestamps();
+    }
     
     public function expenses()
     {
