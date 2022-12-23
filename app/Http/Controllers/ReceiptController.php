@@ -217,6 +217,7 @@ class ReceiptController extends Controller
 
             $result_recognized[] = $result_recognize['data']['text'];
         }
+        // dd($result_recognized);
 
         return collect($result_recognized)->implode("\n");
     }
@@ -536,7 +537,7 @@ class ReceiptController extends Controller
                         storage_path($ocr_filename),
                         $attachment->getDecodedContent()
                     );
-
+                    
                     $string = $this->new_ocr($ocr_filename);
                 }else{
                     //continue + LOG
@@ -734,6 +735,7 @@ class ReceiptController extends Controller
         }
 
         $amount = $this->find_amount($receipt_html_main, $refund, $no_max, $receipt);
+        // dd($amount);
 
         //if amount not found
         if($amount == false) {
@@ -865,6 +867,7 @@ class ReceiptController extends Controller
         }
 
         $primary_search = preg_match_all($re, $str, $matches, PREG_OFFSET_CAPTURE);
+        // dd($matches);
 
         //if an amount repeats more than once use that over the LARGEST amount (EG: Groot receipts)
 
@@ -932,6 +935,7 @@ class ReceiptController extends Controller
             $amount = '-' . $amount;
         }
 
+        // dd($amount);
         return $amount;
     }
 

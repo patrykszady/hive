@@ -42,6 +42,11 @@ class ExpenseIndex extends Component
         // }
     }
 
+    // public function mount()
+    // {
+    //     $this->expense_vendors = Vendor::orderBy('business_name')->get(['id', 'business_name']);
+    // }
+
     // public function clickExpense(Expense $expense)
     // {
     //     // dd('clickExpense');

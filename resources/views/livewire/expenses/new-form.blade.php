@@ -1,5 +1,5 @@
 <x-modals.modal>
-    {{-- @if(isset($expense)) --}}
+    @if(isset($expense))
         <form wire:submit.prevent="{{$view_text['form_submit']}}">
             {{-- HEADER --}}
             <x-cards.heading>
@@ -56,58 +56,87 @@
                 </x-forms.row>
 
                 {{-- PROJECT --}}
-                <x-forms.row
-                    wire:model.debounce.250ms="expense.project_id" 
-                    x-bind:disabled="split"
-                    errorName="expense.project_id" 
-                    name="project_id" 
-                    text="Project" 
-                    type="dropdown" 
-                    radioHint="Split"
+                <div 
+                    x-data="{ open: @entangle('expense.vendor_id'), split: @entangle('split') }" 
+                    x-show="open" 
+                    x-transition.duration.150ms
+                    >
+                    <x-forms.row
+                        wire:model.debounce.250ms="expense.project_id" 
+                        x-bind:disabled="split"
+                        errorName="expense.project_id" 
+                        name="project_id" 
+                        text="Project" 
+                        type="dropdown" 
+                        radioHint="Split"
+                        >
+
+                        {{-- default $slot x-slot --}}
+                        <option 
+                            value="" 
+                            readonly 
+                            x-text="split == true ? 'Expense is Split' : 'Select Project'"
+                            >
+                        </option>
+
+                        @foreach ($projects as $index => $project)
+                            <option 
+                                value="{{$project->id}}"
+                                >
+                                {{$project->name}}
+                            </option>
+                        @endforeach
+
+                        <option disabled>----------</option>
+                        
+                        @foreach ($distributions as $index => $distribution)
+                            <option 
+                                value="D:{{$distribution->id}}"
+                                >
+                                {{$distribution->name}}
+                            </option>
+                        @endforeach
+
+                        <x-slot name="radio">
+                            <input 
+                                wire:model="split" 
+                                id="split" 
+                                name="split" 
+                                value="true" 
+                                type="checkbox"
+                                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded ml-2"
+                                >
+                        </x-slot>
+                    </x-forms.row>
+                </div>
+                {{-- SPLITS--}}
+                <div 
+                    x-data="{ open: @entangle('split'), splits: @entangle('splits') }" 
+                    x-show="open" 
+                    x-transition.duration.250ms
                     >
 
-                    {{-- default $slot x-slot --}}
-                    <option 
-                        value="" 
-                        readonly 
-                        x-text="split == true || split == 'true' ? 'Expense is Split' : 'Select Project'"
-                        >
-                    </option>
+                    <x-forms.row
+                        wire:click="$emit('addSplits', {{$expense->amount}})"
+                        errorName="" 
+                        name=""
+                        text="Splits"
+                        type="button"
+                        {{-- buttonText="Add Splits"  --}}
+                        {{-- IF has splits VS no splits --}}
+                        x-text="splits == true ? 'Edit Splits' : 'Add Splits'"
+                        >    
+                    </x-forms.row>
+                    {{-- SPLITS MODAL --}}
+                    @livewire('expenses.expense-splits-form', ['expense_splits' => $expense_splits])
+                </div>
 
-                    @foreach ($projects as $index => $project)
-                        <option 
-                            value="{{$project->id}}"
-                            >
-                            {{$project->name}}
-                        </option>
-                    @endforeach
-
-                    <option disabled>----------</option>
-                    
-                    @foreach ($distributions as $index => $distribution)
-                        <option 
-                            value="D:{{$distribution->id}}"
-                            >
-                            {{$distribution->name}}
-                        </option>
-                    @endforeach
-
-                    <x-slot name="radio">
-                        <input 
-                            wire:model="split" 
-                            id="split" 
-                            name="split" 
-                            value="true" 
-                            type="checkbox"
-                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded ml-2"
-                            >
-                    </x-slot>
-                </x-forms.row>
+                {{-- 04-09-2022 SHOW ALL SPLITS IN A UL/LI --}}
             </x-cards.body>
 
             <x-cards.footer>
                 <button 
-                    {{-- wire:click="$emit('resetModal')" --}}
+                    wire:click="$emitTo('expenses.expenses-new-form', 'resetModal')"
                     type="button"
                     x-on:click="open = false"
                     class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -125,5 +154,5 @@
                 </button>    
             </x-cards.footer> 
         </form>
-    {{-- @endif --}}
+    @endif
 </x-modals.modal>

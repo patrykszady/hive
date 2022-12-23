@@ -51,7 +51,7 @@ return [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
-            'days' => 14,
+            'days' => 90,
         ],
 
         'slack' => [
@@ -111,24 +111,28 @@ return [
             'driver' => 'single',
             'path' => storage_path('logs/hd_rebates.log'),
             'level' => 'debug',
+            'days' => 90,
         ],
 
         'hd_rebates_errors' => [
             'driver' => 'single',
             'path' => storage_path('logs/hd_rebates_errors.log'),
             'level' => 'debug',
+            'days' => 90,
         ],
 
         'plaid_adds' => [
             'driver' => 'single',
             'path' => storage_path('logs/plaid_adds.log'),
             'level' => 'debug',
+            'days' => 90,
         ],
 
         'add_check_id_to_transactions' => [
             'driver' => 'single',
             'path' => storage_path('logs/add_check_id_to_transactions.log'),
             'level' => 'debug',
+            'days' => 90,
         ],
     ],
 

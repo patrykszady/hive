@@ -20,10 +20,14 @@ class ExpensesNewForm extends Component
 
     public Expense $expense;
     public $split = NULL;
+    public $splits = NULL;
+    public $expense_splits = [];
+
     public $modal_show = FALSE;
+    // public bool $loadData = TRUE;
 
     //resetModal
-    protected $listeners = ['editExpense'];
+    protected $listeners = ['editExpense', 'resetModal'];
 
     protected function rules()
     {
@@ -78,11 +82,17 @@ class ExpensesNewForm extends Component
         'receipt_file.required_if' => 'Receipt is required if Expense is Reimbursed or has Splits',
     ];
 
+    // public function init()
+    // {
+    //     $this->loadData = TRUE;
+    // }
+
     public function mount()
     {   
-        $this->vendors = Vendor::orderBy('business_name')->get();
-        $this->projects = Project::orderBy('created_at', 'DESC')->get();
-        $this->distributions = Distribution::all();
+        // $this->vendors = $this->vendors;
+        $this->vendors = Vendor::orderBy('business_name')->get(['id', 'business_name']);
+        $this->projects = Project::orderBy('created_at', 'DESC')->get(['id', 'project_name']);
+        $this->distributions = Distribution::all(['id', 'name']);
 
         $this->view_text = [
             'card_title' => 'Create Expense',
@@ -161,26 +171,64 @@ class ExpensesNewForm extends Component
         //     }
         // }
 
-        $this->validateOnly($field);
+        // $this->validateOnly($field);
+    }
+
+    public function hasSplits($splits)
+    {
+        $this->expense_splits = $splits;
+        $this->splits = TRUE;
     }
 
     public function editExpense(Expense $expense)
     {
         $this->expense = $expense;
+
         $this->view_text = [
             'card_title' => 'Update Expense',
             'button_text' => 'Update',
             'form_submit' => 'update',             
         ];
 
+        if($this->expense->distribution){
+            $this->expense->project_id = 'D:' . $this->expense->distribution_id;
+        }
+
+        if($this->expense->splits()->exists()){
+            $this->split = TRUE;
+            $this->splits = TRUE;
+            $this->expense_splits = $this->expense->splits;
+
+            foreach($this->expense_splits as $split){
+                if($split->distribution){
+                    $split->project_id = 'D:' . $split->distribution_id;
+                }
+            }
+        }     
+        
+        if($this->expense->check){
+            // $this->emit('hasCheck');
+            $this->check = $this->expense->check;
+            if($this->check->check_number){
+                $this->check_input = TRUE;
+            }
+            
+        }else{
+            $this->check = Check::make();
+        }
+
         $this->modal_show = TRUE;
     }
 
-    // public function resetModal()
-    // {
-    //     // Public functions should be reset here
-    //     // $this->modal_show = FALSE;
-    // }
+    public function resetModal()
+    {
+        // Public functions should be reset here
+        $this->modal_show = FALSE;
+        $this->expense = Expense::make();
+        $this->split = NULL;
+        $this->splits = NULL;
+        $this->expense_splits = [];
+    }
 
     public function update()
     {

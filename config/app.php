@@ -123,6 +123,8 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
+    'log_max_files' => 180,
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
@@ -230,5 +232,4 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
     ],
-
 ];

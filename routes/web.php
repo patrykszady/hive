@@ -66,7 +66,7 @@ Route::middleware('guest')->group(function(){
     });
 });
 
-Route::get('/move', [MoveController::class, 'move'])->name('move');
+// Route::get('/move', [MoveController::class, 'move'])->name('move');
 
 //SOLVED: 3-29-2022 :it passes auth BUT FAILS user.vendor middleware, send to /vendor_selection if passes both..send to /dashboard
 Route::get('/vendor_selection', VendorSelection::class)->middleware('auth')->name('vendor_selection');

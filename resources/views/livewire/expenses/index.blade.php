@@ -341,8 +341,7 @@
                     :line_title="money($expense->amount)"
                     :bubble_message="$expense->complete == true ? 'Complete' : 'Missing Info'"
                     :bubble_color="$expense->complete == true ? 'green' : 'red'"
-                    >
-                    
+                    >                    
                 </x-lists.search_li>
             @endforeach
         </x-lists.ul>
@@ -357,5 +356,6 @@
     </x-cards.footer>
 </x-cards.wrapper>
 
+{{-- , ['vendors' => $vendors] --}}
 @livewire('expenses.expenses-new-form')
 {{-- @include('livewire.expenses.new-form') --}}
