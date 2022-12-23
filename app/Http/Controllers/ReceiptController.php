@@ -909,7 +909,7 @@ class ReceiptController extends Controller
 
         //Home Depot Receipt
         if($receipt->id == 18){
-            $str = strstr($receipt_html_main, ' TOTAL');
+            $str = strstr($receipt_html_main, 'TOTAL');
             $str_end_pos = strpos($str, 'CASH');
             $str = substr($str, 0, $str_end_pos ? $str_end_pos : NULL);
             
@@ -917,6 +917,8 @@ class ReceiptController extends Controller
         }else{
             $str = $receipt_html_main;
         }
+
+        // dd($str);
 
         $primary_search = preg_match_all($re, $str, $matches, PREG_OFFSET_CAPTURE);
         // dd($matches);
