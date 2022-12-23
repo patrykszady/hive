@@ -787,7 +787,6 @@ class ReceiptController extends Controller
         }
 
         $amount = $this->find_amount($receipt_html_main, $refund, $no_max, $receipt);
-        dd($amount);
 
         //if amount not found
         if($amount == false) {
@@ -907,11 +906,21 @@ class ReceiptController extends Controller
     {
         $re = '/[$?|\s?]\d{1,3}[.]\d{1,2}|[\D]\d{1,3}[,]\d{1,3}[.]\d{1,2}[^\d|^pt|^Z|^I|^@|%]/';
 
+        // print_r($receipt_html_main);
+        // dd();
         //Home Depot Receipt
         if($receipt->id == 18){
-            $str = strstr($receipt_html_main, 'TOTAL');
+            $re = '/\sTOTAL/m';
+            $str = $receipt_html_main;
+
+            preg_match_all($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
+
+            // Print the entire match result
+            // dd($matches[0][0][1]);
+
+            // $str = strstr($receipt_html_main, 'TOTAL');
             $str_end_pos = strpos($str, 'CASH');
-            $str = substr($str, 0, $str_end_pos ? $str_end_pos : NULL);
+            $str = substr($str, $matches[0][0][1], $str_end_pos ? $str_end_pos : NULL);
             
             //12-07-2022 if cash, create transaction....
         }else{
