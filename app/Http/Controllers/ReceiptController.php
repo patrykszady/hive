@@ -787,7 +787,7 @@ class ReceiptController extends Controller
         }
 
         $amount = $this->find_amount($receipt_html_main, $refund, $no_max, $receipt);
-        // dd($amount);
+        dd($amount);
 
         //if amount not found
         if($amount == false) {
