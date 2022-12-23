@@ -110,7 +110,7 @@
 
 					<x-slot name="right">
 						<x-cards.button
-							wire:click="$emitTo('bids.bids-form', 'addBids', {{$project}}, {{auth()->user()->vendor}})"
+							wire:click="$emitTo('bids.bids-form', 'addBids', {{$project->id}}, {{auth()->user()->vendor->id}})"
 							>
 							Edit Bid
 						</x-cards.button>
@@ -205,7 +205,6 @@
 			<br>
 
 			{{-- PROJECT DISTRIBUTIONS --}}
-			{{-- @dd($this->project->distributions) --}}
 			@if(!$this->project->distributions->isEmpty())
 				<x-cards.wrapper>
 					<x-cards.heading>

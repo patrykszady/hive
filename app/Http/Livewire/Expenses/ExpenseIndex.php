@@ -22,6 +22,9 @@ class ExpenseIndex extends Component
     public $status = NULL;
     public $view = NULL;
 
+    //wire:poll instead
+    // protected $listeners = ['refreshComponent' => '$refresh'];
+
     protected $queryString = [
         'amount' => ['except' => ''],
         'project' => ['except' => ''],
@@ -34,17 +37,21 @@ class ExpenseIndex extends Component
         $this->resetPage();
     }
 
-    public function updated($field) 
-    {
-        // $this->resetPage();
-        // if($field == 'status'){
-        //     // dd($this->status);
-        // }
-    }
+    // public function updated($field) 
+    // {
+    //     // $this->resetPage();
+    //     // if($field == 'status'){
+    //     //     // dd($this->status);
+    //     // }
+    // }
 
     // public function mount()
     // {
-    //     $this->expense_vendors = Vendor::orderBy('business_name')->get(['id', 'business_name']);
+    //     // $this->expense_vendors = Vendor::orderBy('business_name')->get(['id', 'business_name']);
+    //     // 11/4/2021 if project is selected only query vendors that that have expenses for that project. if vendor is selected only query projects that have expenses from that vendor... date, amount, etc.
+    //     // $this->projects = Project::whereHas('expenses')->orderBy('created_at', 'DESC')->get();
+    //     // $this->distributions = Distribution::all();
+    //     // $this->vendors = Vendor::whereHas('expenses')->orderBy('business_name')->get();                
     // }
 
     // public function clickExpense(Expense $expense)
@@ -66,7 +73,6 @@ class ExpenseIndex extends Component
         }else{
             $paginate_number = 5;
         }
-
         // $expense_ids_excluded = [];
         //11/4/2021 where year, where sort, where date_between.. default date = YTD
         //09/22/22 ... what about searchinf for individual expense_splits?
@@ -139,9 +145,6 @@ class ExpenseIndex extends Component
             //$expenes must be a query NOT a collection
             ->paginate($paginate_number);
 
-        
-        // dd($expenses);
-
         //calculate if expense is complete 
         // $expense->transactions->isNotEmpty() && $expense->project != '0' ? 'Complete' : 'Missing Info'
         $expenses->getCollection()->each(function ($expense, $key) use ($expenses){
@@ -163,12 +166,9 @@ class ExpenseIndex extends Component
                 }
             });
 
-        // dd($expenses);
-        
-        // 11/4/2021 if project is selected only query vendors that that have expenses for that project. if vendor is selected only query projects that have expenses from that vendor... date, amount, etc.
-        $projects = Project::whereHas('expenses')->orderBy('created_at', 'DESC')->get();
-        $distributions = Distribution::all();
-        $vendors = Vendor::whereHas('expenses')->orderBy('business_name')->get();
+            $projects = Project::whereHas('expenses')->orderBy('created_at', 'DESC')->get();
+            $distributions = Distribution::all();
+            $vendors = Vendor::whereHas('expenses')->orderBy('business_name')->get();
         
         return view('livewire.expenses.index', [
             'expenses' => $expenses,

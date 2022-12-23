@@ -10,7 +10,9 @@
 
 				@can('update', $expense)
 					<x-slot name="right">
-						<x-cards.button href="{{ route('expenses.edit', $expense->id) }}">
+						<x-cards.button 
+							wire:click="$emitTo('expenses.expenses-new-form', 'editExpense', {{$expense->id}})"
+							>
 							Edit Expense
 						</x-cards.button>
 					</x-slot>

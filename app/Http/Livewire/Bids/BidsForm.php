@@ -44,6 +44,7 @@ class BidsForm extends Component
     public function addBids(Project $project, Vendor $vendor)
     {    
         $this->project = $project;
+        //auth()->user()->vendor->id
         $this->vendor = $vendor;
 
         $this->bids = $this->project->bids()->where('vendor_id', $vendor->id)->orderBy('type')->get()->toArray();

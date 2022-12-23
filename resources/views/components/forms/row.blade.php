@@ -8,6 +8,7 @@
     'textSize' => 'sm',
     'titleslot' => null,
     'buttonText' => null,
+    'bottom' => null,
 ])
 
 @php
@@ -149,8 +150,10 @@
                 @endif              
             </div>
 
-                {{-- slot for span below file upload input --}}
-                {{ $titleslot }}
+            {{-- slot for span below file upload input --}}
+            {{ $titleslot }}
+
+            {{ $bottom }}
            
             <x-forms.error errorName="{{$errorName}}" />
         </div>

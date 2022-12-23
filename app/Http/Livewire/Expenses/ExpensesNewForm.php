@@ -7,6 +7,9 @@ use App\Models\Vendor;
 use App\Models\Expense;
 use App\Models\Check;
 use App\Models\Distribution;
+use App\Models\BankAccount;
+use App\Models\ExpenseSplits;
+use App\Models\ExpenseReceipts;
 
 use Livewire\WithFileUploads;
 use Livewire\Component;
@@ -23,10 +26,17 @@ class ExpensesNewForm extends Component
     public $splits = NULL;
     public $expense_splits = [];
 
+    public $check_input = FALSE;
+    public $check_number = NULL;
+
+    public $bank_account = NULL;
+    public $payment_type = NULL;
+
+    public $receipt_file = NULL;
+
     public $modal_show = FALSE;
     // public bool $loadData = TRUE;
 
-    //resetModal
     protected $listeners = ['editExpense', 'resetModal'];
 
     protected function rules()
@@ -89,10 +99,17 @@ class ExpensesNewForm extends Component
 
     public function mount()
     {   
-        // $this->vendors = $this->vendors;
+        //11-10-21 or authorize UPDATE if update method
+        $this->authorize('create', Expense::class);
+
         $this->vendors = Vendor::orderBy('business_name')->get(['id', 'business_name']);
         $this->projects = Project::orderBy('created_at', 'DESC')->get(['id', 'project_name']);
         $this->distributions = Distribution::all(['id', 'name']);
+        $this->employees = auth()->user()->vendor->users()->where('is_employed', 1)->get();
+        $this->bank_accounts = BankAccount::with('bank')->where('type', 'Checking')
+            ->whereHas('bank', function ($query) {
+                return $query->whereNotNull('plaid_access_token');
+            })->get();
 
         $this->view_text = [
             'card_title' => 'Create Expense',
@@ -146,32 +163,32 @@ class ExpensesNewForm extends Component
             }
         }
 
-        // if($field == 'expense.paid_by'){
-        //     $this->check->bank_account_id = NULL;
-        //     $this->check->check_type = NULL;
-        //     $this->check->check_number = NULL;
-        //     $this->check_input = FALSE;
-        // }
+        if($field == 'expense.paid_by'){
+            $this->check->bank_account_id = NULL;
+            $this->check->check_type = NULL;
+            $this->check->check_number = NULL;
+            $this->check_input = FALSE;
+        }
 
-        // if($field == 'check.check_type'){
-        //     if($this->check->check_type == 'Check'){
-        //         $this->check_input = TRUE;
-        //     }else{
-        //         $this->check->check_number = NULL;
-        //         $this->check_input = FALSE;
-        //     }
-        // }
+        if($field == 'check.check_type'){
+            if($this->check->check_type == 'Check'){
+                $this->check_input = TRUE;
+            }else{
+                $this->check->check_number = NULL;
+                $this->check_input = FALSE;
+            }
+        }
 
-        // if($field == 'check.bank_account_id'){
-        //     if($this->check->bank_account_id == NULL){
-        //         $this->check->bank_account_id = NULL;
-        //         $this->check->check_type = NULL;
-        //         $this->check->check_number = NULL;
-        //         $this->check_input = FALSE;
-        //     }
-        // }
+        if($field == 'check.bank_account_id'){
+            if($this->check->bank_account_id == NULL){
+                $this->check->bank_account_id = NULL;
+                $this->check->check_type = NULL;
+                $this->check->check_number = NULL;
+                $this->check_input = FALSE;
+            }
+        }
 
-        // $this->validateOnly($field);
+        $this->validateOnly($field);
     }
 
     public function hasSplits($splits)
@@ -182,7 +199,8 @@ class ExpensesNewForm extends Component
 
     public function editExpense(Expense $expense)
     {
-        $this->expense = $expense;
+        // $this->resetModal();
+        $this->expense = $expense;        
 
         $this->view_text = [
             'card_title' => 'Update Expense',
@@ -224,7 +242,7 @@ class ExpensesNewForm extends Component
     {
         // Public functions should be reset here
         $this->modal_show = FALSE;
-        $this->expense = Expense::make();
+        // $this->expense = Expense::make();
         $this->split = NULL;
         $this->splits = NULL;
         $this->expense_splits = [];
@@ -232,17 +250,153 @@ class ExpensesNewForm extends Component
 
     public function update()
     {
+        $this->validate();
+        $this->authorize('update', $this->expense);
 
+        if(is_numeric($this->expense->project_id)){
+            $project_id = $this->expense->project_id;
+            $distribution_id = NULL;
+        }elseif(is_null($this->expense->project_id)){
+            $project_id = NULL;
+            $distribution_id = NULL;
+        }else{
+            $distribution_id = substr($this->expense->project_id, 2);
+            $project_id = NULL;
+        }
+
+        $this->expense->fill($this->expense->getAttributes());
+        $this->expense->project_id = $project_id;
+        $this->expense->distribution_id = $distribution_id;
+        $this->expense->save();
+
+        //if existing expense has a check... update exisitng check. if existing expense DOESNT have a Check but is added.. create a new one
+
+        if($this->check->bank_account_id){
+            if($this->expense->check){
+                //09-28-2022 edit existing check?
+            }else{            
+                $check = Check::create([
+                    'check_type' => $this->check->check_type,
+                    'check_number' => $this->check->check_number,
+                    'date' => $this->expense->date,
+                    'bank_account_id' => $this->check->bank_account_id,
+                    //user_id
+                    'vendor_id' => $this->expense->vendor_id,
+                    'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
+                    'created_by_user_id' => auth()->user()->id,                
+                ]);    
+                
+                $this->expense->check_id = $check->id;
+                $this->expense->save();
+            }
+        }else{
+            //disassociate
+            if($this->expense->check && !$this->check->bank_account_id){
+                $this->expense->check->delete();
+            }
+        }
+
+        // if($this->check){
+        //     $check = Check::create([
+        //         'check_type' => $this->check->check_type,
+        //         'check_number' => $this->check->check_number,
+        //         'date' => $this->expense->date,
+        //         'bank_account_id' => $this->check->bank_account_id,
+        //         //user_id if expense project = distribution
+        //         'user_id' => $dist_user,
+        //         'vendor_id' => $vendor_id,
+        //         'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
+        //         'created_by_user_id' => auth()->user()->id,                
+        //     ]);
+            
+        //     $check_id = $check->id;
+        // }else{
+        //     $check_id = NULL;
+        // }
+
+        if($this->split){
+            $expense_split_database = collect($this->expense_splits)->pluck('id')->toArray();
+
+            //if $expense->split no longer in $this->expense_splits (removed by enduser in the update form)
+            foreach($this->expense->splits as $split){
+                if(!in_array($split->id, $expense_split_database)){
+                    $split->delete();
+                }
+            }
+    
+            //new splits created during Expense Update ($this->expense_splits) that do not have an ID (taken care of above) ELSE update existing $expense->splits
+            foreach($this->expense_splits as $expense_split){
+                if(is_numeric($expense_split['project_id'])){
+                    $split_project_id = $expense_split['project_id'];
+                    $split_distribution_id = NULL;
+                }else{
+                    $split_project_id = NULL;
+                    $split_distribution_id = substr($expense_split['project_id'], 2);                    
+                }
+
+                if(isset($expense_split['id'])){
+                    $expense_split_database = ExpenseSplits::findOrFail($expense_split['id']);
+                    $expense_split_database->update([
+                        'amount' => $expense_split['amount'],
+                        'project_id' => $split_project_id,
+                        'distribution_id' => $split_distribution_id,
+                        'reimbursment' => isset($expense_split['reimbursment']) ? $expense_split['reimbursment'] : null,
+                        'note' => isset($expense_split['note']) ? $expense_split['note'] : null,
+                        //12-1-21 really updaed_by_user_id now in update.. can of worms for another time... track ALL Model updates over time..
+                        'created_by_user_id' => auth()->user()->id,
+                    ]);
+                }else{
+                    ExpenseSplits::create([
+                        'amount' => $expense_split['amount'],
+                        'expense_id' => $this->expense->id,
+                        'project_id' => $split_project_id,
+                        'distribution_id' => $split_distribution_id,
+                        'reimbursment' => isset($expense_split['reimbursment']) ? $expense_split['reimbursment'] : null,
+                        'note' => isset($expense_split['note']) ? $expense_split['note'] : null,
+                        'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,
+                        'created_by_user_id' => auth()->user()->id,
+                    ]);
+                }
+            }
+        }else{
+            foreach($this->expense->splits as $split){
+                $split->delete();
+            }
+        }
+
+        //new/first or additional receipt files added during Update
+        //1/3/2022 DUPLICATE FROM CREATE!
+        if($this->receipt_file){
+            $filename = $this->expense->id . '_' . date('Y-m-d-H-i-s') . '.' . $this->receipt_file->getClientOriginalExtension();
+
+            $this->receipt_file->storeAs('receipts', $filename, 'files');
+
+            $ocr_path = 'files/receipts/' . $filename;
+            $result = app('App\Http\Controllers\ReceiptController')->ocr_space($ocr_path);
+
+            ExpenseReceipts::create([
+                'expense_id' => $this->expense->id,
+                'receipt_filename' => $filename,
+                'receipt_html' => $result,
+            ]);
+            //1/3/2022 Laravel queue $receipt_file HTML... 
+        }
+
+        $this->modal_show = FALSE;
+        $this->emitTo('expenses.expense-index', 'refreshComponent');
+        // $this->emitTo('expenses.expenses-show', 'refreshComponent');
+        $this->emitSelf('resetModal');
+        //emit and refresh so expenses-new-form removes/refreshes
+        //coming from different components expenses-show, expenses-index....
+
+        
+        //NOTIFICATIONS!
+        //session()->flash('notify-saved'); "This expense was updated.. go back to results href with button)
     }
 
     public function render()
     {        
         return view('livewire.expenses.new-form', [
-            // 'projects' => Project::orderBy('created_at', 'DESC')->get(),
-            // 'distributions' => Distribution::all(),
-            // 'bank_accounts' => $bank_accounts,
-            // 'employees' => $employees,
-            // 'vendors' => $vendors
         ]);
     }
 }

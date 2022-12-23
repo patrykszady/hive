@@ -15,28 +15,19 @@ class ExpensesShow extends Component
 
     public Expense $expense;
 
-    // protected $listeners = ['showExpense'];
+    protected $listeners = ['refreshComponent' => '$refresh'];
  
-    // public function showExpense()
-    // {
-    //     dd('in showExpense');
-    //     $this->emit('showExpense');
-    //     // dd($expense);
-    //     //emit showExpense expenses.show
-
-    //     //open expense.show modal
-    // }
-
-    public function render()
+    public function mount()
     {
         $this->authorize('view', $this->expense);
 
-        $receipt = $this->expense->receipts()->latest()->first();
-        $splits = $this->expense->splits()->with('project')->get();
-    
+        $this->receipt = $this->expense->receipts()->latest()->first();
+        $this->splits = $this->expense->splits()->with('project')->get();
+    }
+
+    public function render()
+    {    
         return view('livewire.expenses.show', [
-            'receipt' => $receipt,
-            'splits' => $splits,
         ]);
     }
 }

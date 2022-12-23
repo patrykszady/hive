@@ -30,32 +30,32 @@ use Storage;
 
 class ReceiptController extends Controller
 {
-    public function hd_rebates()
-    {
-        $client = Client::createChromeClient();
-        $crawler = $client->request('GET', 'https://www.homedepotrebates11percent.com/');
-        dd($crawler->html());
-        // $client = Client::createChromeClient();
+    // public function hd_rebates()
+    // {
+    //     $client = Client::createChromeClient();
+    //     $crawler = $client->request('GET', 'https://www.homedepotrebates11percent.com/');
+    //     dd($crawler->html());
+    //     // $client = Client::createChromeClient();
 
-        // dd($client);
-        // // Or, if you care about the open web and prefer to use Firefox
-        // // $client = Client::createFirefoxClient();
+    //     // dd($client);
+    //     // // Or, if you care about the open web and prefer to use Firefox
+    //     // // $client = Client::createFirefoxClient();
         
-        // $client->request('GET', 'https://api-platform.com'); // Yes, this website is 100% written in JavaScript
-        // $client->clickLink('Get started');
+    //     // $client->request('GET', 'https://api-platform.com'); // Yes, this website is 100% written in JavaScript
+    //     // $client->clickLink('Get started');
         
-        // // Wait for an element to be present in the DOM (even if hidden)
-        // $crawler = $client->waitFor('#installing-the-framework');
-        // // Alternatively, wait for an element to be visible
-        // $crawler = $client->waitForVisibility('#installing-the-framework');
+    //     // // Wait for an element to be present in the DOM (even if hidden)
+    //     // $crawler = $client->waitFor('#installing-the-framework');
+    //     // // Alternatively, wait for an element to be visible
+    //     // $crawler = $client->waitForVisibility('#installing-the-framework');
         
-        // echo $crawler->filter('#installing-the-framework')->text();
-        // $client->takeScreenshot('screen.png'); // Yeah, screenshot!
+    //     // echo $crawler->filter('#installing-the-framework')->text();
+    //     // $client->takeScreenshot('screen.png'); // Yeah, screenshot!
 
-        // dd('in hd rebates');
+    //     // dd('in hd rebates');
 
-        dd();
-    }
+    //     dd();
+    // }
 
     // public function hd_rebates()
     // {
@@ -79,6 +79,7 @@ class ReceiptController extends Controller
 
     //     // dd('in hd rebates');
     // }
+
     // public function hd_rebates()
     // {
     //     ini_set('max_execution_time', '4800');
@@ -132,68 +133,119 @@ class ReceiptController extends Controller
     //         // dd();
     //     }
     // }
+    public function hd_rebates()
+    {
+        ini_set('max_execution_time', '4800');
 
-    // public function puphpeteer($data)
-    // {
-    //     //foreach Home Depot receipt betweenDates ... run this now and then every home depot receipt thereafter.
-    //     $puppeteer = new Puppeteer;
-    //     $browser = $puppeteer->launch();
+        $expenses =
+            Expense::
+                where('belongs_to_vendor_id', 1)
+                ->with('receipts')
+                ->where('id', '>', 15874)
+                ->where('vendor_id', 8)
+                ->whereBetween('date', [Carbon::create('11/08/2022'), Carbon::create('11/23/2022')])
+                ->where('amount', 'not like', '-%')
+                ->get();
 
-    //     $page = $browser->newPage();
-    //     $page->goto('https://www.homedepotrebates11percent.com/#/home');
-    //     $page->waitForTimeout(500);
+        foreach($expenses as $expense){
+            dd($expense);
+            if(!$expense->receipts->isEmpty()){
+                $receipt = $expense->receipts->first()->receipt_html;
+            }else{
+                Log::channel('hd_rebates_errors')->info([$expense->id]);
+                continue;
+            }
 
-    //     $page->type('#purchaseDateOnlyText', $data['receipt_date']);
-    //     $page->click('#home-offer-purchasedate-continue2');
-    //     $page->waitForTimeout(1000);
+            // dd($expense);
 
-    //     // $page->screenshot(['path' => 'example.png']);
-    //     // dd();
-    //     $page->click('#continueOrSubmitBtn');
-    //     $page->waitForTimeout(1000);
+            //receipt number
+            $re = '/\d{4}\s\d{5}\s\d{5}/m';
+            $str = $receipt;
+            preg_match($re, $str, $matches);
+            $receipt_number = str_replace(' ', '', $matches[0]);
 
-    //     $page->type('#Receipt\ Number', $data['receipt_number']);
-    //     $page->type('#X\ CPR\ ID', '2249993880');
-    //     $page->type('#Gross\ Sales', $data['receipt_total']);
-    //     $page->click('#continueOrSubmitBtn');
-    //     $page->waitForTimeout(1000);
+            //receipt date
+            $re = '/\d{2}\/\d{2}\/\d{2}/m';
+            $str = $receipt;
+            preg_match($re, $str, $date_matches);
+            $receipt_date = $date_matches[0];
+            
+            //receipt total
+            $receipt_total = $expense->amount;
 
-    //     $page->click('#The\ Home\ Depot\ Physical\ Gift\ Card');
-    //     $page->click('#continueOrSubmitBtn');
-    //     $page->waitForTimeout(1000);
+            $data = ['receipt_number' => $receipt_number, 'receipt_date' => $receipt_date, 'receipt_total' => $receipt_total];
 
-    //     $page->type('input[name="firstName"]', 'Patryk');
-    //     $page->type('input[name="lastName"]', 'Szady');
-    //     $page->type('input[name="companyName"]', 'GS Construction');
-    //     $page->type('input[name="phoneNumber"]', '2249993880');
-    //     $page->type('input[name="email"]', 'patryk@gs.construction');
-    //     $page->type('input[name="confirmEmail"]', 'patryk@gs.construction');
-    //     $page->type('input[name="address1"]', '400 N Wheeling Rd');
-    //     $page->type('input[name="address2"]', '');
-    //     $page->type('input[name="postalCode"]', '60070');
+            // dd($data);
+            sleep(1);
+            $this->puphpeteer($data);
 
-    //     $page->waitForTimeout(500);
+            //log expense_id and tracking #
+            Log::channel('hd_rebates')->info([$expense->id, $data]);
+            // dd();
+        }
+    }
 
-    //     // $page->type('input[name="city"]', 'Prospect Heights');
-    //     $page->type('select[name="country"]', 'US');
-    //     $page->type('select[name="state"]', 'IL');
-    //     $page->click('button[aria-label="Verify\ Address"]');
+    public function puphpeteer($data)
+    {
+        //foreach Home Depot receipt betweenDates ... run this now and then every home depot receipt thereafter.
+        $puppeteer = new Puppeteer;
+        $browser = $puppeteer->launch();
 
-    //     $page->waitForTimeout(1500);
+        $page = $browser->newPage();
+        $page->goto('https://www.homedepotrebates11percent.com/#/home');
+        $page->waitForTimeout(500);
 
-    //     $page->click('#recommendedAddressBtn');
+        $page->type('#purchaseDateOnlyText', $data['receipt_date']);
+        $page->click('#home-offer-purchasedate-continue2');
+        $page->waitForTimeout(1000);
 
-    //     $page->waitForTimeout(3000);
+        // $page->screenshot(['path' => 'example.png']);
+        // dd();
+        $page->click('#continueOrSubmitBtn');
+        $page->waitForTimeout(1000);
 
-    //     $page->click('#continueOrSubmitBtnBottom');
-    //     $page->waitForTimeout(1000);
+        $page->type('#Receipt\ Number', $data['receipt_number']);
+        $page->type('#X\ CPR\ ID', '2249993880');
+        $page->type('#Gross\ Sales', $data['receipt_total']);
+        $page->click('#continueOrSubmitBtn');
+        $page->waitForTimeout(1000);
 
-    //     $page->screenshot(['path' => 'example.png']);
+        $page->click('#The\ Home\ Depot\ Physical\ Gift\ Card');
+        $page->click('#continueOrSubmitBtn');
+        $page->waitForTimeout(1000);
 
-    //     $browser->close();
+        $page->type('input[name="firstName"]', 'Patryk');
+        $page->type('input[name="lastName"]', 'Szady');
+        $page->type('input[name="companyName"]', 'GS Construction');
+        $page->type('input[name="phoneNumber"]', '2249993880');
+        $page->type('input[name="email"]', 'patryk@gs.construction');
+        $page->type('input[name="confirmEmail"]', 'patryk@gs.construction');
+        $page->type('input[name="address1"]', '400 N Wheeling Rd');
+        $page->type('input[name="address2"]', '');
+        $page->type('input[name="postalCode"]', '60070');
 
-    //     return;
-    // }
+        $page->waitForTimeout(500);
+
+        // $page->type('input[name="city"]', 'Prospect Heights');
+        $page->type('select[name="country"]', 'US');
+        $page->type('select[name="state"]', 'IL');
+        $page->click('button[aria-label="Verify\ Address"]');
+
+        $page->waitForTimeout(1500);
+
+        $page->click('#recommendedAddressBtn');
+
+        $page->waitForTimeout(3000);
+
+        $page->click('#continueOrSubmitBtnBottom');
+        $page->waitForTimeout(1000);
+
+        $page->screenshot(['path' => 'example.png']);
+
+        $browser->close();
+
+        return;
+    }
 
     //06-21-2022 USING BOTH NEW_OCR AND OCR_SPACE.. why?.
     public function new_orc_status()
@@ -235,7 +287,7 @@ class ReceiptController extends Controller
         return $result;
     }
 
-    //Show full-size receipt to anyone with a link | No middleware or policies
+    //Show full-size receipt to anyone with a link | No Middleware or Policies | PUBLIC AS FUCK! BE CAREFUL!
     public function original_receipt($receipt)
     {
         $path = storage_path('files/receipts/' . $receipt);
@@ -857,7 +909,7 @@ class ReceiptController extends Controller
 
         //Home Depot Receipt
         if($receipt->id == 18){
-            $str = strstr($receipt_html_main, 'SUBTOTAL');
+            $str = strstr($receipt_html_main, 'TOTAL');
             $str_end_pos = strpos($str, 'CASH');
             $str = substr($str, 0, $str_end_pos ? $str_end_pos : NULL);
             

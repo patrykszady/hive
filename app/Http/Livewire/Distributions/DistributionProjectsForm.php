@@ -109,8 +109,8 @@ class DistributionProjectsForm extends Component
         $this->emitTo('distributions.distributions-index', 'refreshComponent');
         //reset modal data
         $this->emitSelf('resetModal');
-
-        //NOTIFICATIONS!   
+        
+        //NOTIFICATIONS!
     }
 
     public function render()
