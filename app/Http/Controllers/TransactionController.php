@@ -501,7 +501,10 @@ class TransactionController extends Controller
 
             //Alter $transactions variable/results based on the if statement below
 
+            // dd($vendor_transaction);
             foreach($transactions as $vendor_name => $plaid_name_transactions){
+                // dd($vendor_name);
+                // dd($plaid_name_transactions);
                 // if($vendor_transaction->plaid_inst_id){
                 //     //6-11-2022 way too code heavy!!!...!!!
                 //     $vendor_inst_id = $plaid_name_transactions->first()->bank_account->bank->plaid_ins_id;
@@ -519,7 +522,7 @@ class TransactionController extends Controller
                 // }
 
                 // $vendor_desc = $plaid_name_transactions->first()->plaid_merchant_description;
-            
+                $vendor_name = $vendor_name . ' ' . $plaid_name_transactions->first()->plaid_merchant_name;
                 //decode json on VendorTrasaction Model
                 $preg = json_decode($vendor_transaction->options);
                 preg_match('/'. $vendor_transaction->desc . $preg, $vendor_name, $matches, PREG_UNMATCHED_AS_NULL);

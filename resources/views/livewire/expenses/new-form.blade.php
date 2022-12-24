@@ -19,17 +19,26 @@
                 {{-- ROWS --}}
                 <x-cards.body :class="'space-y-4 my-4'">
                     {{-- AMOUNT --}}
-                    <x-forms.row 
-                        wire:model="expense.amount" 
-                        errorName="expense.amount" 
-                        name="amount"
-                        text="Amount"
-                        type="number" 
-                        hint="$" 
-                        textSize="xl" 
-                        disabled
-                        > 
-                    </x-forms.row>
+                    <div
+                        x-data="{ amount_disabled: @entangle('amount_disabled') }"
+                        >
+                        <x-forms.row  
+                            wire:model="expense.amount" 
+                            errorName="expense.amount" 
+                            name="amount"
+                            text="Amount"
+                            type="number" 
+                            hint="$" 
+                            textSize="xl" 
+                            placeholder="00.00" 
+                            inputmode="decimal" 
+                            pattern="[0-9]*"
+                            step="0.01"
+                            autofocus
+                            x-bind:disabled="amount_disabled"
+                            > 
+                        </x-forms.row>
+                    </div>
     
                     {{-- DATE --}}
                     <x-forms.row 

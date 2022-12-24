@@ -8,8 +8,10 @@
 
             @can('create', App\Models\Expense::class)
                 <x-slot name="right">
-                    <x-cards.button href="{{route('expenses.find')}}">
-                        Create Expense
+                    <x-cards.button 
+                        wire:click="$emitTo('expenses.expenses-new-form', 'newExpense')"
+                        >
+                        New Expense
                     </x-cards.button>
                 </x-slot>
             @endcan
