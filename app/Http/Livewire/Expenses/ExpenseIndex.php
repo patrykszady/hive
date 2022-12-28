@@ -6,6 +6,7 @@ use App\Models\Vendor;
 use App\Models\Expense;
 use App\Models\Project;
 use App\Models\Distribution;
+use App\Models\Transaction;
 
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -76,8 +77,10 @@ class ExpenseIndex extends Component
         // $expense_ids_excluded = [];
         //11/4/2021 where year, where sort, where date_between.. default date = YTD
         //09/22/22 ... what about searchinf for individual expense_splits?
-        $expenses = Expense::orderBy('date', 'DESC')
+        $expenses = Expense::
+            orderBy('date', 'DESC')
             ->with(['project', 'distribution', 'vendor', 'splits', 'transactions'])
+            // ->whereBetween('date', [today()->subYear(1), today()])
             ->where('amount', 'like', "%{$this->amount}%")
             ->when($this->project == 'SPLIT', function ($query) {
                 return $query->has('splits');
@@ -96,6 +99,40 @@ class ExpenseIndex extends Component
             ->when($this->vendor != NULL, function ($query, $vendor) {
                 return $query->where('vendor_id', 'like', "{$this->vendor}");
             })
+            // ->count();
+            ->paginate($paginate_number);
+            // ->take(100)
+            // ->get();
+
+        // dd($expenses);
+
+        // $transactions = Transaction::
+        //     orderBy('transaction_date', 'DESC')
+        //     ->whereBetween('transaction_date', [today()->subYear(1), today()])
+        //     ->where('amount', 'like', "{$this->amount}%")
+        //     // ->whereNotNull('vendor_id')
+        //     //transaction_date as date
+
+        //     //create scope for Transaction... only query transactions that belong to auth()->user()->vendor->id
+        //     ->select('transactions.*', 'transaction_date as date')
+        //     ->whereNull('expense_id')
+        //     ->whereNull('check_id')
+        //     ->whereNull('deposit')
+        //     // ->paginate($paginate_number);
+        //     ->take(100)
+        //     ->get();
+
+        // dd($transactions);
+        //
+        //
+        // $expenses = $expenses->merge($transactions)->sortByDesc('date')->paginatee(20);
+        // dd($expenses);
+
+            //$expenes must be a query NOT a collection
+            // ->paginate($paginate_number);
+
+
+
             // ->when($this->status == "Complete", function ($query) {
             //     //->orWhere('distribution_id', '!=', NULL)
             //     $query->where('project_id', '!=', "0")->orWhere('check_id', '!=', NULL);
@@ -142,11 +179,11 @@ class ExpenseIndex extends Component
             //     // }               
             // })
             
-            //$expenes must be a query NOT a collection
-            ->paginate($paginate_number);
+            
 
         //calculate if expense is complete 
         // $expense->transactions->isNotEmpty() && $expense->project != '0' ? 'Complete' : 'Missing Info'
+
         $expenses->getCollection()->each(function ($expense, $key) use ($expenses){
                 // || isset($expense->paid_by)
                 if($expense->project_id != "0" && ($expense->transactions->isNotEmpty() || isset($expense->check_id))){

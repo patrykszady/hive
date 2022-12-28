@@ -377,6 +377,7 @@ class ExpensesNewForm extends Component
 
             $this->receipt_file->storeAs('receipts', $filename, 'files');
 
+            //1/3/2022 Laravel queue $receipt_file HTML... 
             $ocr_path = 'files/receipts/' . $filename;
             $result = app('App\Http\Controllers\ReceiptController')->ocr_space($ocr_path);
 
@@ -385,7 +386,6 @@ class ExpensesNewForm extends Component
                 'receipt_filename' => $filename,
                 'receipt_html' => $result,
             ]);
-            //1/3/2022 Laravel queue $receipt_file HTML... 
         }
 
         if($expense->check){
@@ -406,8 +406,10 @@ class ExpensesNewForm extends Component
 
     public function update()
     {
-        $this->validate();
-        $this->authorize('update', $this->expense);
+        // $this->validate();
+        // $this->authorize('update', $this->expense);
+
+        // dd($this->expense_splits);
 
         if(is_numeric($this->expense->project_id)){
             $project_id = $this->expense->project_id;
@@ -469,7 +471,8 @@ class ExpensesNewForm extends Component
                     $split_distribution_id = NULL;
                 }else{
                     $split_project_id = NULL;
-                    $split_distribution_id = substr($expense_split['project_id'], 2);                    
+                    //substr($expense_split['project_id'], 2)
+                    $split_distribution_id = $expense_split['distribution_id'];                    
                 }
 
                 if(isset($expense_split['id'])){

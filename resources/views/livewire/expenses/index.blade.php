@@ -356,8 +356,7 @@
         {{-- FOOTER --}}
         <x-cards.footer>
             {{-- 10/14/21 change/customize links view in resources/views/vendor/pagination/tailwind.blade.php to match our
-            theme --}}
-            
+            theme --}}            
             {{ $expenses->links() }}
         </x-cards.footer>
     </x-cards.wrapper>

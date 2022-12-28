@@ -43,11 +43,11 @@
             </x-nav.new-section-dropdown>
             @endcan
 
-            @can('create', App\Models\Expense::class)
+            {{-- @can('create', App\Models\Expense::class)
             <x-nav.section-dropdown href="{{route('expenses.find')}}" :active="request()->routeIs('expenses.find')">
                 Create Expense
             </x-nav.new-section-dropdown>
-            @endcan
+            @endcan --}}
 
             <x-nav.section-dropdown href="{{route('checks.index')}}" :active="request()->routeIs('checks.index')">
                 Checks

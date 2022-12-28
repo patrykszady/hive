@@ -788,6 +788,8 @@ class ReceiptController extends Controller
 
         $amount = $this->find_amount($receipt_html_main, $refund, $no_max, $receipt);
 
+        
+
         //if amount not found
         if($amount == false) {
             //move to failed folder
@@ -904,33 +906,12 @@ class ReceiptController extends Controller
 
     public function find_amount($receipt_html_main, $refund = NULL, $no_max = NULL, $receipt = NULL)
     {
-        $re = '/[$?|\s?]\d{1,3}[.]\d{1,2}|[\D]\d{1,3}[,]\d{1,3}[.]\d{1,2}[^\d|^pt|^Z|^I|^@|%]/';
-
-        // print_r($receipt_html_main);
+        // print_r($result);
         // dd();
-        //Home Depot Receipt
-        if($receipt->id == 18){
-            $re = '/\sTOTAL/m';
-            $str = $receipt_html_main;
-
-            preg_match_all($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
-
-            // Print the entire match result
-            // dd($matches[0][0][1]);
-
-            // $str = strstr($receipt_html_main, 'TOTAL');
-            $str_end_pos = strpos($str, 'CASH');
-            $str = substr($str, $matches[0][0][1], $str_end_pos ? $str_end_pos : NULL);
-            
-            //12-07-2022 if cash, create transaction....
-        }else{
-            $str = $receipt_html_main;
-        }
-
-        // dd($str);
-
+        // dd($receipt->id);
+        $re = '/[$?|\s?]\d{1,3}[.]\d{1,2}|[\D]\d{1,3}[,]\d{1,3}[.]\d{1,2}[^\d|^pt|^Z|^I|^@|%]/';
+        $str = $receipt_html_main;
         $primary_search = preg_match_all($re, $str, $matches, PREG_OFFSET_CAPTURE);
-        // dd($matches);
 
         //if an amount repeats more than once use that over the LARGEST amount (EG: Groot receipts)
 
@@ -941,8 +922,6 @@ class ReceiptController extends Controller
             $re = '/\d{1,6}[.]\d{1,2}|\d{1,3}[,]\d{1,3}[.]\d{1,2}/';
             $secondary_search = preg_match_all($re, $str, $matches, PREG_OFFSET_CAPTURE);
         }
-
-        // dd($matches);
 
         //HOME DEPOT ONLINE ORDERS ONLY
         if($receipt->id == 13){
@@ -963,19 +942,17 @@ class ReceiptController extends Controller
             $total_found[] = $match[0];
         }
 
+        // dd($total_found);
         $amount_group_count = array_count_values($max);
+        // dd($amount_group_count);
 
         //RIGHT NOW JUST FOR GROOT... AND amazon digital
         if(isset($no_max)){
             $amount = array_keys($amount_group_count, max($amount_group_count));
-
-            if($receipt->id == 12){
-                return '-' . $amount[0];
-            }else{
-                return $amount[0]; 
-            }               
+            return $amount[0];    
         }
 
+        // dd(max($max));
         if(!isset($max)){
             $amount = false;
             return $amount;
@@ -986,7 +963,10 @@ class ReceiptController extends Controller
         }else{
             $max = array_search(max($max), $max);
         }
-   
+
+
+        // dd($max);
+        // dd($total_found);        
         //if first character is "-" or "(", use min, if first char is numeric, user max
         if(is_numeric(substr($total_found[$max], 0, 1))){
             $amount = max($total_found);
@@ -998,7 +978,6 @@ class ReceiptController extends Controller
             $amount = '-' . $amount;
         }
 
-        // dd($amount);
         return $amount;
     }
 

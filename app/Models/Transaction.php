@@ -10,7 +10,7 @@ class Transaction extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $dates = ['transaction_date', 'posted_date', 'deleted_at'];
+    protected $dates = ['transaction_date', 'posted_date', 'date', 'deleted_at'];
 
     protected $guarded = [];
 
