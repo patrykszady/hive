@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Log;
 use File;
 use Response;
 use Storage;
+// use Http;
 // use Goutte;
 
 class ReceiptController extends Controller
@@ -245,6 +246,49 @@ class ReceiptController extends Controller
         $browser->close();
 
         return;
+    }
+
+    public function azure_receipts()
+    {
+        //start ORC
+        $ch = curl_init();
+        $post = '{"urlSource":"https://dashboard.hive.contractors/expenses/original_receipts/16123_2023-01-03-13-26-25.pdf"}';
+        $document_model = 'prebuilt-receipt';
+        $azure_api_key = env('AZURE_RECEIPTS_KEY');
+        $azure_api_version = env('AZURE_RECEIPTS_VERSION');
+
+        curl_setopt($ch, CURLOPT_URL, "https://" . env('AZURE_RECEIPTS_URL') . "/formrecognizer/documentModels/" . $document_model . ":analyze?api-version=" . $azure_api_version . " ");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json',
+            "Ocp-Apim-Subscription-Key: $azure_api_key",
+            ));
+        
+        $location_result = curl_exec($ch);
+        curl_close($ch);
+
+        // $location_result = json_decode($location_result, true);
+        // print_r($location_result);
+        // dd();
+        $re = '/(\d|\D){8}-(\d|\D){4}-(\d|\D){4}-(\d|\D){4}-(\d|\D){12}/m';
+        $str = $location_result;
+        preg_match($re, $str, $matches, PREG_OFFSET_CAPTURE, 0);
+
+        $operation_location_id = $matches[0][0];
+        // dd($operation_location_id);
+        sleep(5);
+        
+        //get ORC result 
+        $result = exec('curl -v -X GET "https://' . env('AZURE_RECEIPTS_URL') . '/formrecognizer/documentModels/' . $document_model . '/analyzeResults/' . $operation_location_id . '?api-version=' . $azure_api_version . '" -H "Ocp-Apim-Subscription-Key: ' . $azure_api_key . '"');
+        $result = json_decode($result, true);
+
+        //['analyzeResult']['content] OR ['documents']
+        // dd($result);
+        dd($result['analyzeResult']);
     }
 
     //06-21-2022 USING BOTH NEW_OCR AND OCR_SPACE.. why?.

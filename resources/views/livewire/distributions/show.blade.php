@@ -34,7 +34,7 @@
                         </x-lists.search_li>
                         <x-lists.search_li
                             basic=true
-                            line_title="Paid"
+                            line_title="Paid YTD"
                             line_data="{{money($distribution->paid)}}"
                             >
                         </x-lists.search_li>

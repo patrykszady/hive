@@ -16,6 +16,19 @@ class DistributionsShow extends Component
     use AuthorizesRequests, WithPagination;
 
     public Distribution $distribution;
+    public $year = NULL;
+    public $date = [];
+
+    public function mount()
+    {
+        if(is_null($this->year)){
+            //if $this->year = NULL = YTD
+            $this->date['start'] = today()->subYear()->format('Y-m-d');
+            $this->date['end'] = today()->format('Y-m-d');
+        }else{
+            dd('year isset/not null');
+        }
+    }
 
     public function render()
     {
@@ -25,7 +38,7 @@ class DistributionsShow extends Component
 
         $distribution_expenses_vendors = 
             $this->distribution->expenses()->with(['vendor'])
-                ->whereYear('date', today('Y'))
+                ->whereBetween('date', [$this->date['start'], $this->date['end']])
                 ->get();
 
         $distribution_splits_vendors =

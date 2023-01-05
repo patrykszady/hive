@@ -748,7 +748,7 @@ class TransactionController extends Controller
                 $check_number = $check->check_number;
             }else{
                 continue;
-            }            
+            }          
 
             if($check->check_type == 'Check'){
                 $transactions = Transaction::withoutGlobalScopes()
@@ -768,8 +768,8 @@ class TransactionController extends Controller
                     ->whereNull('check_id')
                     ->where('check_number', $check_number)
                     ->whereBetween('transaction_date', [
-                            $check->date->format('Y-m-d'), 
-                            $check->date->addDays(385)->format('Y-m-d')
+                            $check->date->subDays(30)->format('Y-m-d'), 
+                            $check->date->addDays(365)->format('Y-m-d')
                             ])
                     ->where('amount', $check->amount)
                     ->orderBy('id', 'DESC')
@@ -777,7 +777,7 @@ class TransactionController extends Controller
             }else{
                 Log::channel('add_check_id_to_transactions')->info($check);
                 continue;
-            }
+            }            
 
             if($transactions->count() == 1){
                 //if check_number matches, that's the one
@@ -795,7 +795,6 @@ class TransactionController extends Controller
             //using withoutGlobalScopes() in this function. Each of these queries MUST be accompanied by plaid_account_id to make sure vendor-specific data is compared.
             //1/18/2021 mutated values will break the code. Always $check->getRawOriginal('check') any mutated values....OR work that into Model code. Usually fails if the mudated value logic required Auth::user()
         $transactions = Transaction::withoutGlobalScopes()->whereNull('deleted_at')->whereNotNull('check_number')->whereNull('check_id')->orderBy('id', 'DESC')->get();
-        // dd($transactions);
 
         foreach($transactions as $transaction){
             //bank_account no longer used ? bank_account id 8
@@ -805,7 +804,6 @@ class TransactionController extends Controller
 
             //need a way to match checks and transactions, ignoring amount...opposite of the Else statement below that finds them by amount only.
             //get all $transaction->plaid_account_ids
-
             $plaid_ins_id = Bank::withoutGlobalScopes()->find($transaction->bank_account->bank_id)->plaid_ins_id;
             $banks = Bank::withoutGlobalScopes()->where('plaid_ins_id', $plaid_ins_id)->pluck('id');
             $bank_accounts = BankAccount::withoutGlobalScopes()->whereIn('bank_id', $banks)->pluck('id');
@@ -817,7 +815,6 @@ class TransactionController extends Controller
             }else{
                 $check_type = 'Check';
             }
-            // dd($check_type);
 
             $transaction_checks = 
                 Check::withoutGlobalScopes()
@@ -825,7 +822,6 @@ class TransactionController extends Controller
                 ->whereIn('bank_account_id', $bank_accounts)
                 ->where('check_type', $check_type)
                 ->whereBetween('date', [$transaction->transaction_date->subDays(385)->format('Y-m-d'), $transaction->transaction_date->format('Y-m-d')])->get();
-            // dd($transaction_checks);
             //match amount first
             if($transaction_checks->where('amount', str_replace('-','',$transaction->amount))){
                 $transaction_checks = $transaction_checks->where('amount', str_replace('-','',$transaction->amount));
@@ -840,7 +836,6 @@ class TransactionController extends Controller
                 //     $transaction_checks = $transaction_checks->where('amount', str_replace('-','',$transaction->amount));
                 // }              
             }
-            // dd($transaction_checks);
 
             if($transaction_checks->count() == 1){
                 $check = $transaction_checks->first();

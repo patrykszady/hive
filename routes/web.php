@@ -74,6 +74,7 @@ Route::get('/vendor_selection', VendorSelection::class)->middleware('auth')->nam
 //1-5-2022 not working..almost
 Route::get('expenses/original_receipts/{receipt}', [ReceiptController::class, 'original_receipt'])->name('expenses.original_receipt');
 
+Route::get('receipts/azure_receipts', [ReceiptController::class, 'azure_receipts'])->name('azure_receipts');
 Route::get('receipts/receipt_email', [ReceiptController::class, 'receipt_email'])->name('receipt_email');
 Route::get('new_orc_status', [ReceiptController::class, 'new_orc_status'])->name('new_orc_status');
 Route::get('hd_rebates', [ReceiptController::class, 'hd_rebates'])->name('hd_rebates');

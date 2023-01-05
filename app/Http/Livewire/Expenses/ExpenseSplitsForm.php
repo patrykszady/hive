@@ -77,7 +77,6 @@ class ExpenseSplitsForm extends Component
     public function getSplitsSumProperty()
     {
         $this->splits_total = collect($this->expense_splits)->sum('amount');
-
         return round($this->expense_total - $this->splits_total, 2);
     }
 
@@ -87,9 +86,9 @@ class ExpenseSplitsForm extends Component
         if($this->splits_sum != 0){
             $this->addError('expense_splits_total_match', 'Expense Amount and Splits Amounts must match');
         }else{
-            // //save without expense_id..send split_ids to ExpenseForm
-            // //send all SPLITS data back to ExpenseForm view!!!
-            // //send back to ExpenseForm... all validated and tested here
+            //save without expense_id..send split_ids to ExpenseForm
+            //send all SPLITS data back to ExpenseForm view!
+            //send back to ExpenseForm... all validated and tested here
             $this->emit('hasSplits', $this->expense_splits);
             $this->modal_show = NULL;
         }
@@ -134,8 +133,10 @@ class ExpenseSplitsForm extends Component
 
     public function resetSplits()
     {
-        $this->splits_count = 0;
-        $this->expense_splits = [];
+        if(empty($this->expense_splits)){
+            $this->splits_count = 0;
+            $this->expense_splits = [];
+        }        
     }
 
     public function render()

@@ -37,7 +37,7 @@ class ExpensesNewForm extends Component
     public $modal_show = FALSE;
     // public bool $loadData = TRUE;
 
-    protected $listeners = ['resetModal', 'editExpense', 'newExpense'];
+    protected $listeners = ['resetModal', 'editExpense', 'newExpense', 'hasSplits'];
 
     protected function rules()
     {
@@ -215,6 +215,7 @@ class ExpensesNewForm extends Component
         }
 
         if($this->expense->splits()->exists()){
+            // dd($this->expense->splits);
             $this->split = TRUE;
             $this->splits = TRUE;
             $this->expense_splits = $this->expense->splits;
@@ -225,6 +226,8 @@ class ExpensesNewForm extends Component
                     $split->project_id = 'D:' . $split->distribution_id;
                 }
             }
+
+            // dd($this->expense_splits);
         }     
         
         if($this->expense->check){
@@ -396,9 +399,12 @@ class ExpensesNewForm extends Component
 
         //emit and refresh so expenses-new-form removes/refreshes
         //coming from different components expenses-show, expenses-index....
-        $this->emitTo('expenses.expense-index', 'refreshComponent');
-        $this->emitTo('expenses.expenses-show', 'refreshComponent');
+        $this->modal_show = FALSE;
         $this->emitSelf('resetModal');
+        $this->emitTo('expenses.expense-index', 'refreshComponent');
+        $this->emitTo('expenses.expenses-show', 'refreshComponent');  
+
+        //NOTIFICATIONS!!
 
         //session()->flash('notify-saved'); with amount of new expense and href to go to it route('expenses.show', $expense->id)
         // return redirect()->route('expenses.show', $expense);
@@ -406,10 +412,8 @@ class ExpensesNewForm extends Component
 
     public function update()
     {
-        // $this->validate();
-        // $this->authorize('update', $this->expense);
-
-        // dd($this->expense_splits);
+        $this->validate();
+        $this->authorize('update', $this->expense);
 
         if(is_numeric($this->expense->project_id)){
             $project_id = $this->expense->project_id;
@@ -525,9 +529,10 @@ class ExpensesNewForm extends Component
 
         //emit and refresh so expenses-new-form removes/refreshes
         //coming from different components expenses-show, expenses-index....
-        $this->emitTo('expenses.expense-index', 'refreshComponent');
-        $this->emitTo('expenses.expenses-show', 'refreshComponent');
+        $this->modal_show = FALSE;
         $this->emitSelf('resetModal');
+        $this->emitTo('expenses.expense-index', 'refreshComponent');
+        $this->emitTo('expenses.expenses-show', 'refreshComponent');  
         
         //NOTIFICATIONS!
         //session()->flash('notify-saved'); "This expense was updated.. go back to results href with button)
