@@ -16,15 +16,48 @@
 
         {{-- LIST / using List as a table because of mobile layouts vs a table mobile layout --}}
         <x-lists.ul>
-            @foreach($weekly_hours_to_confirm as $week => $week_hours)
+            @foreach($weekly_hours_to_confirm as $name => $user_weeks)
+                {{-- @dd($user_weeks) --}}
                 <x-lists.search_li
-                {{-- , [$week_hours->first()->date->format('Y'), $week] --}}
-                    href="{{route('timesheets.create', $week_hours->first())}}"
                     {{-- wire:click="$emit('timesheetWeek')" --}}
-                    :line_title="'Week of ' . $week_hours->first()->date->startOfWeek()->toFormattedDateString()"
-                    :bubble_message="'Confirm Week'"
+                    :no_hover=true
+                    {{-- href="{{route('timesheets.show', $weekly_project_timesheets->first()->id)}}" --}}
+                    :line_title="$name"
+                    :bubble_message="'Team Member'"
+                    {{-- :class="'pointer-events-none'" --}}
                     >
                 </x-lists.search_li>
+
+                @foreach($user_weeks as $week => $user_week)
+                    {{-- @php
+                        $line_details = [
+                            1 => [
+                                'text' => $project_timesheet->hours,
+                                'icon' => 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'
+                                ],
+                            2 => [
+                                'text' => $project_timesheet->project->name,
+                                'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
+                                ],
+                            ];
+
+                        // $checkbox = [
+                        //     'wire_click' => "like($project_timesheet->id)",
+                        //     'id' => "$key",
+                        //     'name' => "project_timesheet",
+                        // ]
+                    @endphp --}}
+
+                    <x-lists.search_li
+                        {{-- wire:click="$emit('timesheetWeek')" --}}
+                        {{-- :line_details="$line_details" --}}
+                        href="{{route('timesheets.create', $user_week->first()->id)}}"	
+                        :line_title="$week . ' | ' . $user_week->sum('hours') . ' Hours'"
+                        :bubble_message="'Confirm'"
+                        :bubble_color="'yellow'"
+                        >
+                    </x-lists.search_li>
+                @endforeach
             @endforeach
         </x-lists.ul>
     </x-cards.wrapper>
@@ -66,6 +99,7 @@
                     :line_details="$line_details"
                     :line_title="'Week of ' . $week_hours->first()->date->startOfWeek()->toFormattedDateString()"
                     :bubble_message="'Confirmed Week'"
+                    :bubble_color="'green'"
                     href="{{route('timesheets.show', $week_hours->first()->id)}}"
                     >
                 </x-lists.search_li>

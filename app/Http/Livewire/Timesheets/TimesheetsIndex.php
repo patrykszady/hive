@@ -22,14 +22,41 @@ class TimesheetsIndex extends Component
     {
         $this->authorize('viewAny', Timesheet::class);
         
-        $weekly_hours_to_confirm = 
+        //01-04-2023 if user is Admin for user->vendor, show all, otherview if NOT Admin, only show User hours/timesheets
+        //group by USER and WEEK
+
+        if(auth()->user()->vendor->user_role){
+            $weekly_hours_to_confirm = 
+            Hour::
+                orderBy('date', 'DESC')
+                // ->where('user_id', auth()->user()->id)
+                ->whereNull('timesheet_id')
+                ->get()
+                ->groupBy(function($item) {
+                    return $item->user->first_name;
+                })
+                ->transform(function($item, $k) {
+                    return $item->groupBy(function($item) {
+                        return Carbon::parse($item->date)->startOfWeek()->toFormattedDateString();
+                    });
+                });
+        }else{
+            $weekly_hours_to_confirm = 
             Hour::
                 orderBy('date', 'DESC')
                 ->where('user_id', auth()->user()->id)
-                ->whereNull('timesheet_id')->get()
+                ->whereNull('timesheet_id')
+                ->get()
                 ->groupBy(function($item) {
-                    return Carbon::parse($item->date)->format('W');
+                    return $item->user->first_name;
+                })
+                ->transform(function($item, $k) {
+                    return $item->groupBy(function($item) {
+                        return Carbon::parse($item->date)->startOfWeek()->toFormattedDateString();
+                    });
                 });
+        }
+
 
         $confirmed_weekly_hours = 
             Timesheet::
