@@ -214,7 +214,6 @@ class TransactionController extends Controller
             foreach($result['removed'] as $new_transaction){
                 //make sure transaction_id does not exist yet.. if it does..update..
                 $transaction = $transactions->where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
-                
                 $transaction->deleted_at = now();
                 $transaction->save();
             }
@@ -258,7 +257,7 @@ class TransactionController extends Controller
 
         $transactions = collect($result['transactions']);
 
-        dd($transactions->where('transaction_id', '48LJ55K6Q8S7YoQRaD4YSqzMvVzeq5SqPbjN7'));
+        dd($transactions->where('transaction_id', '3J6RZZyw8Jh9oYN4pwJvizOqPdYkorTK584np'));
     }
 
     // public function plaid_transactions(Bank $bank, $data)

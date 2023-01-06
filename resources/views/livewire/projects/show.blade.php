@@ -96,7 +96,9 @@
 
 			<br>
 			
-			@livewire('expenses.expense-index', ['project' => $project->id, 'view' => 'projects.show'])
+			@if(!$project->expenses->isEmpty())
+				@livewire('expenses.expense-index', ['project' => $project->id, 'view' => 'projects.show'])
+			@endif
 		</div>
 
 		@can('update', $project)

@@ -104,8 +104,6 @@ class ExpenseIndex extends Component
             // ->take(100)
             // ->get();
 
-        // dd($expenses);
-
         // $transactions = Transaction::
         //     orderBy('transaction_date', 'DESC')
         //     ->whereBetween('transaction_date', [today()->subYear(1), today()])
@@ -179,11 +177,8 @@ class ExpenseIndex extends Component
             //     // }               
             // })
             
-            
-
         //calculate if expense is complete 
         // $expense->transactions->isNotEmpty() && $expense->project != '0' ? 'Complete' : 'Missing Info'
-
         $expenses->getCollection()->each(function ($expense, $key) use ($expenses){
                 // || isset($expense->paid_by)
                 if($expense->project_id != "0" && ($expense->transactions->isNotEmpty() || isset($expense->check_id))){
@@ -205,6 +200,8 @@ class ExpenseIndex extends Component
 
             $projects = Project::whereHas('expenses')->orderBy('created_at', 'DESC')->get();
             $distributions = Distribution::all();
+
+            //01-05-2023 where vendor is in result
             $vendors = Vendor::whereHas('expenses')->orderBy('business_name')->get();
         
         return view('livewire.expenses.index', [

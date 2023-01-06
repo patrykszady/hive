@@ -360,6 +360,6 @@
             {{ $expenses->links() }}
         </x-cards.footer>
     </x-cards.wrapper>
-
+    
     @livewire('expenses.expenses-new-form')
 </div>

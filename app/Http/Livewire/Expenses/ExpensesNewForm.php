@@ -101,7 +101,7 @@ class ExpensesNewForm extends Component
     public function mount()
     {   
         //11-10-21 or authorize UPDATE if update method
-        $this->authorize('create', Expense::class);
+        $this->authorize('viewAny', Expense::class);
 
         $this->vendors = Vendor::orderBy('business_name')->get(['id', 'business_name']);
         $this->projects = Project::orderBy('created_at', 'DESC')->get(['id', 'project_name']);
@@ -200,6 +200,7 @@ class ExpensesNewForm extends Component
 
     public function editExpense(Expense $expense)
     {
+        //if can edit expense... otherwise href to expense.show if can see that expense...
         $this->resetModal();
         $this->expense = $expense;  
         $this->amount_disabled = TRUE;      

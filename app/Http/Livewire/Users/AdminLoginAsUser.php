@@ -43,7 +43,7 @@ class AdminLoginAsUser extends Component
     {
         $this->authorize('admin_login_as_user', User::class);
 
-        $users = User::withoutGlobalScopes()->whereNotIn('id', [1])->get();
+        $users = User::withoutGlobalScopes()->orderBy('first_name', 'ASC')->whereNotIn('id', [1])->get();
 
         return view('livewire.users.admin-login-as-user', [
             'users' => $users,

@@ -43,11 +43,11 @@
             </x-nav.new-section-dropdown>
             @endcan
 
-            {{-- @can('create', App\Models\Expense::class)
+            @can('create', App\Models\Expense::class)
             <x-nav.section-dropdown href="{{route('expenses.find')}}" :active="request()->routeIs('expenses.find')">
                 Create Expense
             </x-nav.new-section-dropdown>
-            @endcan --}}
+            @endcan
 
             <x-nav.section-dropdown href="{{route('checks.index')}}" :active="request()->routeIs('checks.index')">
                 Checks
@@ -103,6 +103,7 @@
         </x-slot>
     </x-nav.section>
 
+    @can('create', App\Models\Bank::class)
     <x-nav.section :active="request()->routeIs('banks.*') || request()->routeIs('transactions.*') || request()->routeIs('distributions.*')">
         <x-slot name="name">
             Finance
@@ -130,6 +131,7 @@
             M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z
         </x-slot>
     </x-nav.section>
+    @endcan
 
     <x-nav.section :active="request()->routeIs('clients.*')">
         <x-slot name="name">
