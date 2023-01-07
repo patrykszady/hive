@@ -60,8 +60,8 @@ class ClientsForm extends Component
         $this->user = User::make();
 
         if(isset($this->client)){    
-            // $this->client = Client::find($this->client->add_type);        
-
+            $this->client = Client::find($this->client->add_type);        
+            $this->client->add_type = $client->id;
             $this->view_text = [
                 'card_title' => 'Update Client',
                 'button_text' => 'Update Client',
@@ -77,8 +77,6 @@ class ClientsForm extends Component
                 'form_submit' => 'store',             
             ];
         }
-
-        $this->client->type = 'client';
     }
 
     public function store()

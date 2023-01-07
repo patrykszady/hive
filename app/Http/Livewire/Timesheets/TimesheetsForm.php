@@ -68,10 +68,11 @@ class TimesheetsForm extends Component
 
     public function getUserHoursAmountProperty()
     { 
-        $total = 0;
-
-        // dd($this->user->hourly);
-        $total = $this->user->hours * $this->user->hourly;
+        if(!empty($this->user->hourly)){
+            $total = $this->user->hours * $this->user->hourly;
+        }else{
+            $total = 0;
+        }        
 
         $this->user->amount = $total;
         return $total;
@@ -132,7 +133,7 @@ class TimesheetsForm extends Component
 
     public function render()
     {
-        $weekly_days = $this->weekly_hours->groupBy(['date', 'project.project_name']);
+        $weekly_days = $this->weekly_hours->sortBy('date')->groupBy(['date', 'project.project_name']);
         $week_date = $this->week->startOfWeek()->toFormattedDateString();
 
         return view('livewire.timesheets.form', [

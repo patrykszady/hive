@@ -23,7 +23,9 @@
             <x-cards.body :class="'space-y-4 my-4'">
                 {{-- USER MODAL --}}
                 <x-forms.row
-                    wire:click="$emit('newMember', {{$client}})"
+                    {{--  --}}
+                    {{--  {{$client}} --}}
+                    wire:click="$emit('newMember', ['client', '{{$client->add_type}}'])"
                     errorName=""
                     name=""
                     text="User"
@@ -187,5 +189,5 @@
     </form>
 </div>
 
-{{-- USER MODAL --}}
-@livewire('users.users-form', ['add_type' => 'NEW_VENDOR'])
+{{-- USER FORM MODAL --}}
+@livewire('users.users-form')

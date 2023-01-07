@@ -63,7 +63,7 @@
 					<x-cards.body :class="'space-y-2 my-2'">
 						{{-- PROJECT HOUR AMOUNT --}}
 						<x-forms.row 
-							wire:model="hours.{{$index}}.amount" 
+							wire:model.debounce.500ms="hours.{{$index}}.amount" 
 							errorName="hours.{{$index}}.amount" 
 							name="hours.{{$index}}.amount"
 							text="Hours"

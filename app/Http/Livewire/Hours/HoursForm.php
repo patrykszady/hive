@@ -26,6 +26,36 @@ class HoursForm extends Component
         ];
     }
 
+    public function mount()
+    {  
+        $this->projects = Project::active()->orderBy('created_at', 'DESC')->get();
+
+        $this->view_text = [
+            'card_title' => 'Create Daily Hours',
+            'button_text' => 'Add Daily Hours',
+            'form_submit' => 'store',             
+        ];        
+    }
+    
+    public function updated($field)
+    {    
+        if(substr($field, 0, 5) == 'hours'){
+            $hours_key = preg_replace("/[^0-9]/", '', $field);
+ 
+            if($this->hours[$hours_key]['amount'] == NULL || $this->hours[$hours_key]['amount'] == 0){
+                // dd($this->hours[$hours_key]['amount']);
+                $this->hours[$hours_key]['amount'] = NULL;
+            }
+        }
+
+        $this->validateOnly($field);     
+    }
+
+    public function getHoursCountProperty()
+    {
+        return collect($this->hours)->where('amount', '!=', '')->sum('amount');
+    }
+
     public function getDays()
     {
         return new \DatePeriod(
@@ -68,23 +98,6 @@ class HoursForm extends Component
                 'form_submit' => 'update',             
             ];
         }
-    }
-
-    public function getHoursCountProperty()
-    {
-        return collect($this->hours)->where('amount', '!=', '')->sum('amount');
-    }
-
-    public function mount()
-    {  
-        //active only
-        $this->projects = Project::active()->orderBy('created_at', 'DESC')->get();
-
-        $this->view_text = [
-            'card_title' => 'Create Daily Hours',
-            'button_text' => 'Add Daily Hours',
-            'form_submit' => 'store',             
-        ];        
     }
 
     public function store()

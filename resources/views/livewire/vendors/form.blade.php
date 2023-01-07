@@ -116,10 +116,12 @@
 
                         {{-- @dd($vendor) --}}
                         {{-- USER MODAL --}}
+                        {{-- {{$vendor->add_type}} --}}
+                        {{-- @dd($vendor_add_type[1]) --}}
                         <x-forms.row
-                            wire:click="$emit('newMember', {{$vendor}})"
+                            wire:click="$emit('newMember', ['vendor', '{{$vendor_add_type}}'])"
                             errorName=""
-                            name="" 
+                            name=""
                             text="Owner"
                             type="button"
                             buttonText="{{isset($user->first_name) ? $user->full_name : 'Add Owner'}}"
@@ -278,4 +280,4 @@
 </div>
 
 {{-- USER MODAL --}}
-@livewire('users.users-form', ['add_type' => 'NEW_VENDOR'])
+@livewire('users.users-form')

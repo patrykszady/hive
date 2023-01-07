@@ -155,35 +155,34 @@ class UsersForm extends Component
     
     public function newMember($model)
     {
-        //->getTable()
+        // dd($model);
         $this->model = $model;
+        //$model[0] = type; (client, vendor)
+        //$model[1] = add_type; (NEW, or existing(numeric))
 
         //creating new Vendor or Client
-        if($this->model['type'] == 'client'){
+        if($this->model[0] == 'client'){
+            $this->model['type'] = $model[0];
+            $this->model['add_type'] = $model[1];
             //when creating new Client
-            if(isset($model['id'])){
-                $this->model['add_type'] = $model['id'];
-            }else{
-                $this->model['add_type'] = "NEW";
-            }
-        }elseif($this->model['type'] == 'vendor'){
+            // if(is_numeric($model[1])){
+            //     $this->model['add_type'] = $model['id'];
+            // }else{
+            //     $this->model['add_type'] = "NEW";
+            // }
+        }elseif($this->model[0] == 'vendor'){
             //when creating new Vendor
-            if(isset($model['id'])){
-                $this->model['add_type'] = $model['id'];                
-            }else{
-                $this->model['add_type'] = "NEW";
-                $this->user->role = 1;
-            }
+            $this->model['type'] = $model[0];
+            $this->model['add_type'] = $model[1];
+        //01-06-2023 adding Team Member to Vendor...
         }else{
             dd('in newMember else');
             abort(404);
         }        
-        // dd($this->model);
                 
         $this->modal_show = true;
 
         return view('livewire.users.form', [
-
         ]);
     }
 

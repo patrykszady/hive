@@ -216,19 +216,15 @@ class ExpensesNewForm extends Component
         }
 
         if($this->expense->splits()->exists()){
-            // dd($this->expense->splits);
             $this->split = TRUE;
             $this->splits = TRUE;
             $this->expense_splits = $this->expense->splits;
-            // dd($this->expense_splits);
 
             foreach($this->expense_splits as $split){
                 if($split->distribution){
                     $split->project_id = 'D:' . $split->distribution_id;
                 }
             }
-
-            // dd($this->expense_splits);
         }     
         
         if($this->expense->check){

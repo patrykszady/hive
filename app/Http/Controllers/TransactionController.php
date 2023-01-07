@@ -173,6 +173,22 @@ class TransactionController extends Controller
                     $transaction = $transactions->where('plaid_transaction_id', $new_transaction['transaction_id'])->first();
                 }
 
+                
+                //if database $transaction->check_number isset, make it null in case its 0000
+                // if(isset($transaction->check_number)){
+                //     $transaction->check_number = NULL;
+                // }
+                
+                if($transaction['check_id'] == NULL){
+                    // $transaction->check_number = $new_transaction['check_number'];
+                    $transaction->check_number = NULL;
+                    $transaction->save();
+
+                    if($new_transaction['check_number'] != NULL){
+                        $transaction->check_number = $new_transaction['check_number'];
+                    }
+                }
+
                 //dates
                 if($new_transaction['pending'] == TRUE){
                     $transaction->posted_date = NULL;
@@ -192,15 +208,6 @@ class TransactionController extends Controller
                 }else{
                     // $transaction->plaid_merchant_name = $new_transaction['name'];
                     $transaction->plaid_merchant_name = NULL;
-                }
-
-                //if database $transaction->check_number isset, make it null in case its 0000
-                // if(isset($transaction->check_number)){
-                //     $transaction->check_number = NULL;
-                // }
-                
-                if(isset($new_transaction['check_number'])){
-                    $transaction->check_number = $new_transaction['check_number'];
                 }
 
                 $transaction->amount = $new_transaction['amount'];

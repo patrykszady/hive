@@ -101,6 +101,8 @@ class VendorsForm extends Component
     {              
         if(isset($this->vendor)){
             $this->vendor = $this->vendor;
+            // $this->vendor_add_type = $vendor_id;
+            $this->vendor_add_type = 'NEW';
             $this->view_text = [
                 'card_title' => 'Update Vendor',
                 'button_text' => 'Update Vendor',
@@ -108,15 +110,13 @@ class VendorsForm extends Component
             ];
         }else{
             $this->vendor = Vendor::make();
-            $this->vendor->add_type = 'NEW';
+            $this->vendor_add_type = 'NEW';
             $this->view_text = [
                 'card_title' => 'Create Vendor',
                 'button_text' => 'Create Vendor',
                 'form_submit' => 'store',             
             ];
         }
-
-        $this->vendor->type = 'vendor';
     }
 
     public function userVendor(User $user)

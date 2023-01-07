@@ -85,7 +85,7 @@
                     is Member or admin confirming own timesheets? disabled --}}
                 @if($user->id == auth()->user()->id || $user->vendor->user_role == 'Member')
                     <x-forms.row 
-                        wire:model="user.hourly"
+                        wire:model.debounce.750ms="user.hourly"
                         errorName="user.hourly"
                         name="user.hourly" 
                         text="Hourly"
