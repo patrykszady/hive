@@ -17,7 +17,7 @@ class ClientsShow extends Component
 
     public function mount()
     {
-        $this->client->type = 'client';
+        $this->users = $this->client->users;
     }
 
     public function render()
@@ -25,7 +25,6 @@ class ClientsShow extends Component
         $this->authorize('view', $this->client);
 
         return view('livewire.clients.show', [
-            'users' => $this->client->users,
         ]);
     }
 }

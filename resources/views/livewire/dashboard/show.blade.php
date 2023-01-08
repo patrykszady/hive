@@ -71,18 +71,15 @@
         <x-cards.wrapper class="max-w-2xl">
             <x-cards.heading>
                 <x-slot name="left">
-                    {{-- attribute --}}
                     <h1>Team Members</h1>
                 </x-slot>
             
                 <x-slot name="right">
                     @can('create', App\Models\User::class)
-                        <x-cards.button wire:click="$emit('newMember', 'vendor', {{$user->vendor->id}})">
+                        <x-cards.button wire:click="$emit('newMember', ['vendor', '{{$vendor_add_type}}'])">
                             Add team member
                         </x-cards.button>
-                    @endcan        
-            
-                    @livewire('users.users-form')                
+                    @endcan      
                 </x-slot>
             </x-cards.heading>
             
@@ -114,4 +111,5 @@
             </x-lists.ul>
         </x-cards.wrapper>
     </div>
+    @livewire('users.users-form')  
 </div>

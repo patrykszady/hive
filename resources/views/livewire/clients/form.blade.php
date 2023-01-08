@@ -23,9 +23,7 @@
             <x-cards.body :class="'space-y-4 my-4'">
                 {{-- USER MODAL --}}
                 <x-forms.row
-                    {{--  --}}
-                    {{--  {{$client}} --}}
-                    wire:click="$emit('newMember', ['client', '{{$client->add_type}}'])"
+                    wire:click="$emit('newMember', ['client', '{{isset($client->id) ? $client->id : 'NEW'}}'])"
                     errorName=""
                     name=""
                     text="User"

@@ -114,9 +114,16 @@
 				<x-cards.body>
 					<x-lists.ul>
                         @foreach ($distribution_vendors as $distribution_vendor)
+                            {{-- @foreach($distribution_vendor as $distribution_vendor_expense)
+                                @dd($distribution_vendor_expense)
+                            @endforeach
+                             --}}
+
                             <x-lists.search_li
                                 :basic=true
                                 line_title="{!! $distribution_vendor->vendor->name !!}"
+
+                                {{-- emit ... expenses.show, where distribution = $distribution, where vendor = $vendor, where dates?  --}}
                                 href="{{route('vendors.show', $distribution_vendor->vendor->id)}}"
                                 :href_target="'blank'"							
                                 :line_data="money($distribution_vendor->sum)"

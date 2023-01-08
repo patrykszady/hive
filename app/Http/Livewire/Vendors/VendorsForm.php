@@ -14,11 +14,10 @@ class VendorsForm extends Component
     use AuthorizesRequests;
 
     public Vendor $vendor;
-    
+    public $user = NULL;
     public $vendors_found = NULL;
 
     public $address = NULL;
-    public $user = NULL;
     public $user_vendors = NULL;
     public $vendor_id = NULL;
     public $user_vendor_id = NULL;
@@ -39,6 +38,8 @@ class VendorsForm extends Component
             'vendor.zip_code' => 'required_unless:vendor.business_type,Retail|nullable|digits:5',
             'address' => 'nullable',
             'user' => 'nullable',
+            // 'user.hourly_rate' => 'nullable',
+            // 'user_role' => 'nullable',
             'vendors_found' => 'nullable',
             'vendor_id' => 'nullable',
             'user_vendor_id' => 'nullable',
@@ -94,15 +95,16 @@ class VendorsForm extends Component
             }
         }
 
-        $this->validateOnly($field);
+        // $this->validateOnly($field);
+        $this->validate();
     }
 
     public function mount()
     {              
         if(isset($this->vendor)){
             $this->vendor = $this->vendor;
-            // $this->vendor_add_type = $vendor_id;
-            $this->vendor_add_type = 'NEW';
+            $this->vendor_add_type = $vendor_id;
+            // $this->vendor_add_type = 'NEW';
             $this->view_text = [
                 'card_title' => 'Update Vendor',
                 'button_text' => 'Update Vendor',
@@ -119,11 +121,14 @@ class VendorsForm extends Component
         }
     }
 
-    public function userVendor(User $user)
+    //when Creating NEW Vendor
+    public function userVendor($user)
     {
-        $this->user_vendors = $user->vendors;
-        $this->user = $user;
-        $this->address = TRUE;
+        $this->user = User::findOrFail($user['id']);
+        // $this->user_hourly_rate = $user['hourly_rate'];
+        // $this->user_role = $user['role'];        
+        $this->user_vendors = $this->user->vendors;
+        $this->address = TRUE;        
     }
 
     public function store()
@@ -165,8 +170,8 @@ class VendorsForm extends Component
             // $user->vendors()->attach($vendor->id);
             $user->vendors()->attach(
                 $vendor->id, [
-                    'role_id' => 1, //default on Model table
-                    'hourly_rate' => 0, 
+                    'role_id' => $this->user_role, //default on Model table
+                    'hourly_rate' => $this->user_hourly_rate, 
                     'start_date' => today()->format('Y-m-d')
                 ]
             );

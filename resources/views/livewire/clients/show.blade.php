@@ -62,12 +62,10 @@
                     <x-slot name="right">
                         @can('create', App\Models\User::class)
                             {{-- trigger livewire component by clicking on button --}}
-                            <x-cards.button wire:click="$emit('newMember', {{$client}})">
+                            <x-cards.button wire:click="$emit('newMember', ['client', {{$client->id}}])">
                                 Add Client Member
                             </x-cards.button>
-                        @endcan        
-                
-                        @livewire('users.users-form')                
+                        @endcan                      
                     </x-slot>
                 </x-cards.heading>
                 
@@ -118,6 +116,8 @@
  
     </div>
      --}}
+
+@livewire('users.users-form')  
 </div>
 
 {{-- NEW PROJECT MODAL --}}

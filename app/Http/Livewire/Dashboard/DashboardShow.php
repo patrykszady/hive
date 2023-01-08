@@ -6,6 +6,12 @@ use Livewire\Component;
 
 class DashboardShow extends Component
 {
+    public function mount()
+    {
+        $this->user = auth()->user();
+        $this->vendor_add_type = $this->user->vendor->id;
+    }
+
     public function render()
     {
         $user = auth()->user();

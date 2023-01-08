@@ -1,5 +1,3 @@
-{{-- @dd($errors) --}}
-
 <x-modals.modal :class="'max-w-lg'">
     <form wire:submit.prevent="{{$view_text['form_submit']}}"> 
         <x-cards.heading>
@@ -20,7 +18,7 @@
     
         <x-cards.body :class="'space-y-4 my-4'">
             <x-forms.row 
-                wire:model.debounce.3000ms="user_cell" 
+                wire:model.debounce.1000ms="user_cell" 
                 errorName="user_cell" 
                 name="user_cell" 
                 text="User Cell Phone"
@@ -53,7 +51,7 @@
                 <hr>
 
                 <x-forms.row 
-                    wire:model.debounce.2000ms="user.first_name" 
+                    wire:model.debounce.1000ms="user.first_name" 
                     errorName="user.first_name" 
                     name="user.first_name" 
                     text="First Name"
@@ -62,7 +60,7 @@
                 </x-forms.row>
 
                 <x-forms.row 
-                    wire:model.debounce.2000ms="user.last_name" 
+                    wire:model.debounce.1000ms="user.last_name" 
                     errorName="user.last_name" 
                     name="user.last_name" 
                     text="Last Name"
@@ -71,7 +69,7 @@
                 </x-forms.row>
 
                 <x-forms.row 
-                    wire:model.debounce.2000ms="user.email" 
+                    wire:model.debounce.1000ms="user.email" 
                     errorName="user.email" 
                     name="user.email"
                     text="User Email"
@@ -99,7 +97,7 @@
                     name="user.role" 
                     text="User Role"
                     type="dropdown"
-                    :disabled="isset($model) ? $model['add_type'] == 'NEW' ? true : false : false"
+                    :disabled="isset($model) ? $model['id'] == 'NEW' ? true : false : false"
                     autofocus
                     >
 
@@ -109,22 +107,21 @@
                 </x-forms.row>
 
                 {{-- USER / VENDOR HOURLY PAY --}}
-                @if(isset($model))
-                    @if($model['add_type'] != 'NEW')
-                        <x-forms.row
-                            {{-- x-data="{ open: false }"                 
-                            x-show="open"  --}}
-                            wire:model.debounce.1000ms="user.hourly_rate" 
-                            errorName="user.hourly_rate" 
-                            name="user.hourly_rate" 
-                            text="User Hourly Pay"
-                            type="number"
-                            inputmode="numeric"
-                            placeholder="28"
-                            >    
-                        </x-forms.row>
+                <x-forms.row
+                    wire:model="user.hourly_rate" 
+                    errorName="user.hourly_rate" 
+                    name="user.hourly_rate" 
+                    text="User Hourly Pay"
+                    type="number"
+                    inputmode="numeric"
+                    placeholder="28"
+                    >    
+                </x-forms.row>
+                {{-- @if(isset($model))
+                    @if($model['id'] != 'NEW')
+                        
                     @endif
-                @endif
+                @endif --}}
             </div>
 
             {{-- <div 
@@ -165,6 +162,12 @@
                 class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Cancel
             </button>
+            
+            @if($errors->has('user_exists_on_model')) 
+                <x-slot name="bottom">
+                    <x-forms.error errorName="user_exists_on_model" />              
+                </x-slot>
+            @endif
 
             <button 
                 {{-- disabled="disabled" --}}

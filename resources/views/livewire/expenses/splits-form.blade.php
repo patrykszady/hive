@@ -147,8 +147,6 @@
                     <x-forms.error errorName="expense_splits_total_match" />              
                 </x-slot>
             @endif
-        </x-cards.footer> 
-
-
+        </x-cards.footer>
     </form>
 </x-modals.modal>

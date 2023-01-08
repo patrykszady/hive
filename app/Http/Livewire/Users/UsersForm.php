@@ -52,11 +52,10 @@ class UsersForm extends Component
                 }),
             'user.hourly_rate' => 
                 Rule::requiredIf(function(){
-                    if($this->model['add_type'] == 'NEW' && $this->model['type'] == 'vendor'){
+                    if($this->model['id'] == 'NEW' && $this->model['type'] == 'vendor'){
                         return false;
                     }elseif($this->model['type'] == 'client'){
                         return false;
-                        // return ($this->expense->reimbursment == 'Client' || $this->split == true);
                     }else{
                         return true;
                     }
@@ -71,7 +70,8 @@ class UsersForm extends Component
 
     public function updated($field) 
     {
-        $this->validate();
+        // $this->validate();
+        $this->validateOnly($field);
         // if($field == 'user.type'){
         //     $this->via_vendor = Vendor::make();
         //     $this->via_vendor->new = TRUE;
@@ -98,8 +98,6 @@ class UsersForm extends Component
         //         $this->user->type = NULL;
         //     }                     
         // }
-
-        // $this->validateOnly($field);
     }
     
     public function mount()
@@ -120,7 +118,6 @@ class UsersForm extends Component
         }
     }
 
-    //SAME AS ClientsForm::user_cell
     public function user_cell()
     {
         $this->user = User::make();
@@ -139,7 +136,7 @@ class UsersForm extends Component
         if($this->model['type'] == 'vendor'){
             $this->vendor_user_form = TRUE;
 
-            if($this->model['add_type'] == 'NEW'){
+            if($this->model['id'] == 'NEW'){
                 $this->user->role = 1; //Admin
             }
         }elseif($this->model['type'] == 'client'){
@@ -155,32 +152,23 @@ class UsersForm extends Component
     
     public function newMember($model)
     {
-        // dd($model);
-        $this->model = $model;
         //$model[0] = type; (client, vendor)
-        //$model[1] = add_type; (NEW, or existing(numeric))
+        //$model[1] = id; (NEW, or existing(numeric))
+        $this->model = $model;        
 
-        //creating new Vendor or Client
+        //creating new Vendor or Client or adding Team Member to existing Vendor or Client
         if($this->model[0] == 'client'){
             $this->model['type'] = $model[0];
-            $this->model['add_type'] = $model[1];
-            //when creating new Client
-            // if(is_numeric($model[1])){
-            //     $this->model['add_type'] = $model['id'];
-            // }else{
-            //     $this->model['add_type'] = "NEW";
-            // }
+            $this->model['id'] = $model[1];
         }elseif($this->model[0] == 'vendor'){
-            //when creating new Vendor
             $this->model['type'] = $model[0];
-            $this->model['add_type'] = $model[1];
-        //01-06-2023 adding Team Member to Vendor...
+            $this->model['id'] = $model[1];
         }else{
             dd('in newMember else');
             abort(404);
         }        
                 
-        $this->modal_show = true;
+        $this->modal_show = TRUE;
 
         return view('livewire.users.form', [
         ]);
@@ -205,8 +193,8 @@ class UsersForm extends Component
     public function store()
     {   
         $this->validate();
-    
-        //create new user
+
+        //create New User
         if(!$this->user->id){
             $user = User::create([
                 'first_name' => $this->user->first_name,
@@ -214,38 +202,51 @@ class UsersForm extends Component
                 'cell_phone' => $this->user->cell_phone,
                 'email' => $this->user->email
             ]);
-        }else{
-            //existing User
+
+        //existing User
+        }else{            
             $user = $this->user;
         }
 
+        //create Vendor
         if($this->vendor_user_form){
-            if($this->model['add_type'] == 'NEW'){
-                $this->emit('userVendor', $user->id);
+            //when creating new vendor.?
+            if($this->model['id'] == 'NEW'){
+                $this->emit('userVendor', $this->user);
             }else{
-                $user->vendors()->attach(
-                    $this->model['id'], [
-                        'role_id' => $user->role, 
-                        'hourly_rate' => $user->hourly_rate, 
-                        'start_date' => today()->format('Y-m-d')
-                    ]
-                );
-
-                return redirect(route('vendors.show', $this->model['id']));
+                $vendor = Vendor::findOrFail($this->model['id']);
+                if($vendor->users()->where('user_id', $user->id)->get()->isEmpty()){
+                    $user->vendors()->attach(
+                        $this->model['id'], [
+                            'role_id' => $this->user->role, 
+                            'hourly_rate' => $this->user->hourly_rate, 
+                            'start_date' => today()->format('Y-m-d')
+                        ]
+                    );
+    
+                    $this->modal_show = FALSE;    
+                    return redirect(route('vendors.show', $this->model['id']));
+                }else{
+                    $this->addError('user_exists_on_model', 'User already belongs to Vendor.');
+                }
             }
         }elseif($this->client_user_form){
-            if($this->model['add_type'] == 'NEW'){
+            if($this->model['id'] == 'NEW'){
                 $this->emit('userClient', $user->id);
             }else{
-                $user->clients()->attach($this->model['id']);
+                $client = Client::findOrFail($this->model['id']);
+                if($client->users()->where('user_id', $user->id)->get()->isEmpty()){
+                    $user->clients()->attach($this->model['id']);
 
-                return redirect(route('clients.show', $this->model['id']));
+                    $this->modal_show = FALSE;
+                    return redirect(route('clients.show', $this->model['id']));
+                }else{
+                    $this->addError('user_exists_on_model', 'User already belongs to Client.');
+                }               
             }
         }else{
             dd('in last else of store in UsersForm...log this error');
         }
-
-        $this->modal_show = false;
     }
 
     public function update()

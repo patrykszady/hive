@@ -30,7 +30,6 @@ class ClientsForm extends Component
             'client.city' => 'required|min:4',
             'client.state' => 'required|min:2|max:2',
             'client.zip_code' => 'required|digits:5',
-
             'user.id' => 'nullable',
             'client' => 'nullable',
             'address' => 'nullable',
@@ -40,28 +39,14 @@ class ClientsForm extends Component
 
     protected $messages = 
     [
-
     ];
-
-    public function userClient(User $user)
-    {
-        $this->user_clients = $user->clients;
-        $this->user = $user;
-        $this->address = TRUE;
-    }
-
-    public function updated($field) 
-    {
-        $this->validateOnly($field);
-    }
 
     public function mount()
     {  
         $this->user = User::make();
 
         if(isset($this->client)){    
-            $this->client = Client::find($this->client->add_type);        
-            $this->client->add_type = $client->id;
+            $this->client = Client::find($this->client->id);        
             $this->view_text = [
                 'card_title' => 'Update Client',
                 'button_text' => 'Update Client',
@@ -69,7 +54,6 @@ class ClientsForm extends Component
             ];
         }else{
             $this->client = Client::make();
-            $this->client->add_type = 'NEW';
 
             $this->view_text = [
                 'card_title' => 'Create Client',
@@ -77,6 +61,13 @@ class ClientsForm extends Component
                 'form_submit' => 'store',             
             ];
         }
+    }
+
+    public function userClient(User $user)
+    {
+        $this->user_clients = $user->clients;
+        $this->user = $user;
+        $this->address = TRUE;
     }
 
     public function store()

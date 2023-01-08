@@ -91,7 +91,7 @@
                         x-transition.duration.150ms
                         >
                         <x-forms.row 
-                            wire:model.debounce.250ms="vendor.business_type" 
+                            wire:model="vendor.business_type" 
                             errorName="vendor.business_type" 
                             name="vendor_id" 
                             text="Busienss Type"
@@ -145,23 +145,17 @@
                                                 @php
                                                     $line_details = [
                                                         1 => [
-                                                            'text' => $user_vendor_found->business_name,
-                                                            'icon' => 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z'
-                                    
+                                                            //'text' => $user_vendor_found->pivot->role_id == 1 ? 'Admin' : 'Member',
+                                                            'text' => 'Vendor User Role HERE',
+                                                            'icon' => 'M7 8a3 3 0 100-6 3 3 0 000 6zM14.5 9a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM1.615 16.428a1.224 1.224 0 01-.569-1.175 6.002 6.002 0 0111.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 017 18a9.953 9.953 0 01-5.385-1.572zM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 00-1.588-3.755 4.502 4.502 0 015.874 2.636.818.818 0 01-.36.98A7.465 7.465 0 0114.5 16z'
                                                             ],
                                                         2 => [
                                                             'text' => $user_vendor_found->address,
-                                                            'icon' => 'M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z'
-                                    
+                                                            'icon' => 'M4 16.5v-13h-.25a.75.75 0 010-1.5h12.5a.75.75 0 010 1.5H16v13h.25a.75.75 0 010 1.5h-3.5a.75.75 0 01-.75-.75v-2.5a.75.75 0 00-.75-.75h-2.5a.75.75 0 00-.75.75v2.5a.75.75 0 01-.75.75h-3.5a.75.75 0 010-1.5H4zm3-11a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zM7.5 9a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1zM11 5.5a.5.5 0 01.5-.5h1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-1a.5.5 0 01-.5-.5v-1zm.5 3.5a.5.5 0 00-.5.5v1a.5.5 0 00.5.5h1a.5.5 0 00.5-.5v-1a.5.5 0 00-.5-.5h-1z'
                                                             ],
-                                                        // 3 => [
-                                                        //     'text' => $user_vendor_found->project->project_name,
-                                                        //     'icon' => 'M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z'
-                                    
-                                                        //     ],
                                                         ];
-                                                @endphp
-                                    
+                                                @endphp  
+
                                                 <x-lists.search_li
                                                     {{-- href="{{route('vendors.show', $user_vendor_found->id)}}" --}}
                                                     :line_details="$line_details"
@@ -206,7 +200,7 @@
                         </x-forms.row>
 
                         <x-forms.row 
-                            wire:model="vendor.address_2" 
+                            wire:model.debounce.500ms="vendor.address_2" 
                             errorName="vendor.address_2" 
                             name="vendor.address_2" 
                             text=""

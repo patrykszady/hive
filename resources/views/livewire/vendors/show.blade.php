@@ -85,9 +85,7 @@
                         @can('create', App\Models\User::class)
                             <x-slot name="right">     
                                 @if($vendor->business_type == "Sub")                       
-                                
-                                {{-- $emit('newMember', 'vendor', {{$vendor->id}}) --}}
-                                    <x-cards.button wire:click="$emit('newMember', {{$vendor}})">
+                                    <x-cards.button wire:click="$emit('newMember',  ['vendor', '{{$vendor_add_type}}'])">
                                         Add Team Member
                                     </x-cards.button> 
                                 @endif

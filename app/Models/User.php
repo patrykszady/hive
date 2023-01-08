@@ -15,7 +15,6 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
-        'id',
         'first_name',
         'last_name',
         'cell_phone',
@@ -25,7 +24,9 @@ class User extends Authenticatable
         'primary_vendor_id',
         'remember_token',
         'created_at',
-        'updated_at'
+        'updated_at',
+        // 'hourly_rate',
+        // 'role',
     ];
 
     protected $hidden = [

@@ -16,7 +16,7 @@ class VendorsShow extends Component
     {
         $this->users = $this->vendor->users()->where('is_employed', 1)->get();
 
-        $this->vendor->type = 'vendor';
+        $this->vendor_add_type = $this->vendor->id;
     }
 
     // public function userVendor(User $user)
@@ -30,7 +30,6 @@ class VendorsShow extends Component
     public function render()
     {
         return view('livewire.vendors.show', [
-   
         ]);
     }
 }

@@ -77,6 +77,8 @@ class DistributionsShow extends Component
         
         $this->distribution->paid = $distribution_vendors->sum('sum');
 
+        // dd($distribution_vendors);
+        
         return view('livewire.distributions.show', [
             'distribution_vendors' => $distribution_vendors,
             'distribution_projects' => $distribution_projects,
