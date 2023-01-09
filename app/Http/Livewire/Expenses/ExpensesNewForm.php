@@ -313,6 +313,7 @@ class ExpensesNewForm extends Component
                     'check_number' => $this->check->check_number,
                     'date' => $this->expense->date,
                     'bank_account_id' => $this->check->bank_account_id,
+                    'amount' => $this->expense->amount,
                     //user_id if expense project = distribution
                     'user_id' => $dist_user,
                     'vendor_id' => $vendor_id,
@@ -439,6 +440,7 @@ class ExpensesNewForm extends Component
                     'check_number' => $this->check->check_number,
                     'date' => $this->expense->date,
                     'bank_account_id' => $this->check->bank_account_id,
+                    'amount' => $this->expense->amount,
                     //user_id
                     'vendor_id' => $this->expense->vendor_id,
                     'belongs_to_vendor_id' => auth()->user()->primary_vendor_id,

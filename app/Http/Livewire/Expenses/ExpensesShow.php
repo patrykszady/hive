@@ -23,6 +23,12 @@ class ExpensesShow extends Component
 
         $this->receipt = $this->expense->receipts()->latest()->first();
         $this->splits = $this->expense->splits()->with('project')->get();
+
+        if($this->expense->transactions->isEmpty()){
+            if(!is_null($this->expense->check)){
+                $this->expense->transactions = $this->expense->check->transactions;
+            }
+        }
     }
 
     public function render()

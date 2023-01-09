@@ -644,7 +644,7 @@ class TransactionController extends Controller
                 ->with('transactions')
                 ->with('receipts')
                 ->whereNull('deleted_at')
-                // ->doesntHave('splits')
+                // ->doesntHave('check')
                 ->where('belongs_to_vendor_id', $cliff_vendor->id)
                 ->whereNotNull('vendor_id')
                 //where transacitons->sum != $expense(item)->sum  \\ whereNull checked_at (transactions add up to expense)
@@ -666,7 +666,7 @@ class TransactionController extends Controller
                         whereIn('bank_account_id', $cliff_vendor_bank_account_ids)
                         ->whereNull('expense_id')
                         ->where('vendor_id', $expense->vendor_id)
-                        ->whereNull('check_number')
+                        ->where('check_number', NULL)
                         ->where('amount', 'like', '-%')
                         // ->where('amount', '<=', $transaction_amount_outstanding)
                         ->whereBetween('transaction_date', [$start_date, $end_date])
@@ -742,6 +742,7 @@ class TransactionController extends Controller
                 ->where('check_type', '!=', 'Cash')
                 ->orderBy('date', 'DESC')
                 ->where('date', '>', '2019-01-01')
+                // ->where('id', 2286)
                 ->get();
 
         foreach($checks as $check){
