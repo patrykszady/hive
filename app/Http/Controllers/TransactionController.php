@@ -644,7 +644,6 @@ class TransactionController extends Controller
                 ->with('transactions')
                 ->with('receipts')
                 ->whereNull('deleted_at')
-                // ->doesntHave('check')
                 ->where('belongs_to_vendor_id', $cliff_vendor->id)
                 ->whereNotNull('vendor_id')
                 //where transacitons->sum != $expense(item)->sum  \\ whereNull checked_at (transactions add up to expense)
@@ -658,6 +657,10 @@ class TransactionController extends Controller
 
                 //4-20-2021 transaction->amount cannot be more than expense->amount? 
                 $transaction_amount_outstanding = $expense->amount - $expense->transactions->sum('amount');
+
+                if($transaction_amount_outstanding == 0){
+                    continue;
+                }
 
                 //6/1/2021 is the amount negative or positive? combine into 1 .. 
                 if(substr($transaction_amount_outstanding,0,1) == '-'){
