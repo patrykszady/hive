@@ -4,6 +4,12 @@
     @include('layouts.head')
     {{-- 10/14/2021 meant to go in head but it doesnt render there.. --}}
     @livewireStyles
+
+    {{-- <script>
+        window.addEventListener('name-updated', event => {
+            alert('Name updated to: ' + event.detail.newName);
+        })
+    </script> --}}
     
     <body class="font-sans antialiased">
         <div
@@ -30,14 +36,11 @@
                     </button>
                 </div>
                 <main class="flex-1 relative z-0 overflow-y-auto focus:outline-none" tabindex="0">
-                    <div class="w-full mx-auto py-6">                            
-                            {{-- @include('partials.messages') --}}
+                    <div class="w-full mx-auto py-6">
                         {{ $slot }}
                     </div>
                 </main>
             </div>
         </div>
-        {{-- MOVED TO layouts.head --}}
-        {{-- @livewireScripts --}}
     </body>
 </html>

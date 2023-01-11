@@ -22,7 +22,7 @@ class ExpensesFind extends Component
     public $found = NULL;
     public $expense_form = NULL;
 
-    protected $listeners = ['newExpense'];
+    protected $listeners = ['newExpense', 'refreshComponent' => '$refresh'];
 
     protected function rules()
     {

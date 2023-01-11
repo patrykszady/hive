@@ -1,4 +1,8 @@
 {{-- form classes divide-y divide-gray-200 --}}
+{{-- <div x-data="{name_new: false}" @name-updated.window="name_new = false">
+    <!-- Modal with a Livewire name update form -->
+    <div>name_new is true</div>
+</div> --}}
 <div class="xl:relative max-w-xl lg:max-w-5xl sm:px-6 mx-auto">
     <form wire:submit.prevent="{{$view_text['form_submit']}}">
         <x-cards.wrapper class="max-w-2xl mx-auto">

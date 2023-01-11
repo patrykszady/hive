@@ -1,4 +1,20 @@
-<div wire:poll.5000ms>
+{{-- wire:poll.5000ms --}}
+<div>
+    <script>
+        window.addEventListener('name-updated', event => {
+            setTimeout(function(){
+                // console.log("Hello World");
+                alert('Name updated to: ' + event.detail.newName);
+            }, 2000);
+        })
+    </script>
+
+    {{-- <div x-data="{ open: false }" @name-updated.window="open = false">
+        <!-- Modal with a Livewire name update form -->
+        <div>
+            HEREEE
+        </div>
+    </div>     --}}
     <x-cards.wrapper class="{{$view == NULL ? 'max-w-xl px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-3xl lg:px-8 pb-5 mb-1' : ''}}">
         {{-- HEADING --}}
         <x-cards.heading>

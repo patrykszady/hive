@@ -3,6 +3,7 @@
     x-show="open" 
     x-transition.duration.250ms
     >
+
     <form wire:submit.prevent="{{$view_text['form_submit']}}">
         <x-cards.wrapper class="max-w-2xl mx-auto">
             {{-- HEADER --}}

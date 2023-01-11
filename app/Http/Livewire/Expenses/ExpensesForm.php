@@ -579,12 +579,15 @@ class ExpensesForm extends Component
                 'receipt_filename' => $filename,
                 'receipt_html' => $result,
             ]);
-            //1/3/2022 Laravel queue $receipt_file HTML... 
+            //1/3/2022 Laravel queue $receipt_file HTML... (microsoft azure form recognition)
         }
 
-        $this->new = NULL;
+        //"This expense was updated.. go back to results href with button)
+        //session()->flash('notify-saved'); 
+        session()->flash('success', 'Post successfully updated.');                
         $this->emit('newExpense', NULL, 'reset_form');
-        //session()->flash('notify-saved'); "This expense was updated.. go back to results href with button)
+        $this->emitTo('expenses.expenses-find', 'refreshComponent');
+        $this->new = NULL;
         // return redirect()->route('expenses.show', $this->expense);
     }
 
@@ -607,5 +610,5 @@ class ExpensesForm extends Component
             'employees' => $employees,
             'vendors' => $vendors
         ]);
-    } 
+    }
 }

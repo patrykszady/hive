@@ -410,6 +410,7 @@ class ExpensesNewForm extends Component
 
     public function update()
     {
+        // dd('in update');
         $this->validate();
         $this->authorize('update', $this->expense);
 
@@ -525,16 +526,18 @@ class ExpensesNewForm extends Component
             ]);
             //1/3/2022 Laravel queue $receipt_file HTML... 
         }
+        
+        $this->modal_show = FALSE;
 
         //emit and refresh so expenses-new-form removes/refreshes
         //coming from different components expenses-show, expenses-index....
-        $this->modal_show = FALSE;
         $this->emitSelf('resetModal');
         $this->emitTo('expenses.expense-index', 'refreshComponent');
-        $this->emitTo('expenses.expenses-show', 'refreshComponent');  
-        
+        $this->emitTo('expenses.expenses-show', 'refreshComponent');
+
         //NOTIFICATIONS!
         //session()->flash('notify-saved'); "This expense was updated.. go back to results href with button)
+        $this->dispatchBrowserEvent('name-updated', ['newName' => 'new name in']);
     }
 
     public function render()

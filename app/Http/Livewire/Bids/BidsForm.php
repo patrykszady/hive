@@ -118,13 +118,13 @@ class BidsForm extends Component
         }
 
         //depends on route coming from... either VendorsPayment or ProjectsShow
-        $this->modal_show = FALSE;  
+        //01-09-2023 why above? can we do this via session() ? why need to refreshComponent?
         if($route_name == 'vendors.payment'){
             $this->emit('updateProjectBids', $this->project->id);
         }elseif($route_name == 'projects.show'){
             $this->emitTo('projects.projects-show', 'refreshComponent');
         }else{
-            //throw error 404
+            dd('in else');
             abort(404);
         }
         
