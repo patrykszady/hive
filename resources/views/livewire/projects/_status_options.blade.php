@@ -1,0 +1,9 @@
+<option value="" readonly>Project Status</option>
+<option value="Estimate">Estimate</option>
+<option value="Awaiting Response">Response</option>
+<option value="Project Prep">Prep</option>
+<option value="Scheduled">Scheduled</option>
+<option value="Active">Active</option>
+<option value="Complete">Completed</option>
+<option value="Cancelled">Cancelled</option>
+<option value="VIEW ONLY">VIEW ONLY</option>

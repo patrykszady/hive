@@ -1,0 +1,653 @@
+Date,Bank,Vendor,Name,"Check Type","Check Number"
+2022-01-03,PSFCU,,"Cezary Raczka",Transfer,
+2022-01-03,Citibank,,"Patryk Szady",Transfer,
+2022-01-03,Citibank,,"Gregory Szady",Transfer,
+2022-01-07,Citibank,,"Patryk Szady",Transfer,
+2022-01-07,Citibank,,"Gregory Szady",Check,1889
+2022-01-07,Citibank,,"Gregory Szady",Transfer,
+2022-01-12,Citibank,"BM Insurance Agency",,Transfer,
+2022-01-14,Citibank,,"Gregory Szady",Transfer,
+2022-01-16,Citibank,,"Gregory Szady",Check,1896
+2022-01-16,PSFCU,,"Cezary Raczka",Transfer,
+2022-01-17,Citibank,"Faza Electric Services, Inc",,Check,1899
+2022-01-18,Citibank,"Faza Electric Services, Inc",,Check,1900
+2022-01-17,Citibank,"Vol Nat Heating, Inc",,Check,1898
+2022-01-17,Citibank,"TBD Pro Painting",,Check,1897
+2022-01-13,Citibank,"Granite One, Corp",,Check,1895
+2022-01-11,Citibank,"JW Green Dump, Inc",,Check,1892
+2022-01-14,Citibank,"Fresh Luuk",,Check,1894
+2022-01-18,Citibank,,"Patryk Szady",Transfer,
+2022-01-14,Citibank,"Top Quality Hardwood Flooring",,Check,1893
+2022-01-19,Citibank,"Juzba Construction",,Transfer,
+2022-01-20,Citibank,"RG Tile, Inc",,Check,1901
+2022-01-21,Citibank,,"Gregory Szady",Transfer,
+2022-01-23,Citibank,"Accomplished J Plumbing, Inc",,Check,1902
+2022-01-24,PSFCU,,"Cezary Raczka",Transfer,
+2022-01-24,Citibank,"Juzba Construction",,Transfer,
+2022-01-25,PSFCU,"JW Green Dump, Inc",,Check,1477
+2022-01-26,Citibank,,"Gregory Szady",Check,1903
+2022-01-28,Citibank,"RG Tile, Inc",,Check,1904
+2022-02-03,Citibank,,"Gregory Szady",Transfer,
+2022-02-04,Citibank,,"Patryk Szady",Transfer,
+2022-02-01,Citibank,,"Gregory Szady",Transfer,
+2022-02-07,Citibank,,"Gregory Szady",Check,1905
+2022-02-08,Citibank,"RG Tile, Inc",,Check,1891
+2022-02-09,Citibank,"Olszewski Quality Flooring",,Check,1906
+2022-02-09,Citibank,"Juzba Construction",,Transfer,
+2022-02-09,Citibank,,"Gregory Szady",Check,1907
+2022-02-10,Citibank,"Juzba Construction",,Transfer,
+2022-02-11,Citibank,,"Gregory Szady",Transfer,
+2022-02-13,Citibank,,"Gregory Szady",Check,1908
+2022-02-14,Citibank,,"Gregory Szady",Transfer,
+2022-02-15,Citibank,,"Patryk Szady",Transfer,
+2022-02-14,Citibank,,"Gregory Szady",Transfer,
+2022-02-15,Citibank,"JW Green Dump, Inc",,Check,1910
+2022-02-16,Citibank,,"Gregory Szady",Check,1913
+2022-02-17,Citibank,"Accomplished J Plumbing, Inc",,Check,1912
+2022-02-18,PSFCU,,"Cezary Raczka",Transfer,
+2022-02-18,Citibank,,"Gregory Szady",Transfer,
+2022-02-25,Citibank,,"Gregory Szady",Transfer,
+2022-02-26,Citibank,,"Gregory Szady",Check,1915
+2022-02-27,Citibank,"Faza Electric Services, Inc",,Check,1916
+2022-02-28,PSFCU,,"Cezary Raczka",Transfer,
+2022-02-28,PSFCU,"JW Green Dump, Inc",,Check,1479
+2022-03-02,Citibank,"Faza Electric Services, Inc",,Check,1917
+2022-02-09,Citibank,"Home Depot",,Transfer,
+2022-03-01,PSFCU,"Morenos Drywall, Inc",,Check,1478
+2022-03-04,Citibank,,"Patryk Szady",Transfer,
+2022-03-04,Citibank,,"Patryk Szady",Transfer,
+2022-03-04,Citibank,,"Patryk Szady",Transfer,
+2022-03-04,Citibank,,"Gregory Szady",Transfer,
+2022-03-07,Citibank,"Olszewski Quality Flooring",,Check,1918
+2022-03-07,Citibank,,"Gregory Szady",Check,1920
+2022-03-07,Citibank,,"Patryk Szady",Transfer,
+2022-03-08,Citibank,"TBD Pro Painting",,Check,1921
+2022-03-09,PSFCU,,"Cezary Raczka",Transfer,
+2022-03-10,Citibank,"RG Tile, Inc",,Check,1922
+2022-03-11,Citibank,,"Gregory Szady",Transfer,
+2022-03-14,Citibank,"Juzba Construction",,Transfer,
+2022-03-15,Citibank,"Mariusz Kot Construction, Inc",,Check,1923
+2022-03-17,Citibank,,"Gregory Szady",Transfer,
+2022-03-18,Citibank,,"Gregory Szady",Check,1924
+2022-03-18,Citibank,,"Gregory Szady",Transfer,
+2022-03-20,Citibank,,"Patryk Szady",Transfer,
+2022-03-21,PSFCU,,"Cezary Raczka",Transfer,
+2022-03-22,Citibank,"Accomplished J Plumbing, Inc",,Check,1926
+2022-03-22,Citibank,"JW Green Dump, Inc",,Check,1925
+2022-03-22,PSFCU,"Morenos Drywall, Inc",,Check,1480
+2022-03-22,Citibank,"Stan Palupski Construction, Inc",,Check,1927
+2022-03-22,PSFCU,"Janusz Dudek",,Check,1481
+2022-03-22,Citibank,,"Gregory Szady",Check,1928
+2022-03-23,Citibank,"Tomex Siding Construction, Inc",,Transfer,
+2022-03-25,Citibank,"TBD Pro Painting",,Check,1931
+2022-03-26,Citibank,,"Gregory Szady",Transfer,
+2022-03-24,Citibank,"Faza Electric Services, Inc",,Check,1932
+2022-03-29,Citibank,,"Patryk Szady",Transfer,
+2022-03-30,PSFCU,,"Cezary Raczka",Transfer,
+2022-03-31,Citibank,,"Gregory Szady",Check,1934
+2022-04-01,Citibank,,"Patryk Szady",Transfer,
+2022-04-03,Citibank,,"Gregory Szady",Transfer,
+2022-04-03,Citibank,,"Patryk Szady",Transfer,
+2022-04-03,Citibank,,"Gregory Szady",Check,1935
+2022-03-29,Citibank,"Top Quality Hardwood Flooring",,Check,1933
+2022-04-05,Citibank,"TBD Pro Painting",,Check,1936
+2022-04-07,Citibank,"Illinois Department of Revenue",,Transfer,
+2022-04-07,Citibank,,"Patryk Szady",Transfer,
+2022-04-08,Citibank,,"Gregory Szady",Transfer,
+2022-04-09,Citibank,,"Gregory Szady",Transfer,
+2022-04-11,Citibank,"GS Construction & Remodeling, Inc",,Transfer,
+2022-04-13,Citibank,,"Patryk Szady",Transfer,
+2022-04-18,Citibank,,"Gregory Szady",Transfer,
+2022-04-18,Citibank,,"Gregory Szady",Transfer,
+2022-04-17,Citibank,"Faza Electric Services, Inc",,Check,1939
+2022-04-18,Citibank,"Accomplished J Plumbing, Inc",,Check,1940
+2022-04-14,Citibank,"JW Green Dump, Inc",,Check,1966
+2022-04-19,Citibank,,"Gregory Szady",Transfer,
+2022-04-20,Citibank,,"Gregory Szady",Transfer,
+2022-04-21,Citibank,,"Patryk Szady",Transfer,
+2022-04-18,Citibank,"TBD Pro Painting",,Check,1968
+2022-04-20,Citibank,"RJK Engineering Service",,Check,1969
+2022-04-22,Citibank,"RG Tile, Inc",,Check,1971
+2022-04-23,Citibank,"Morenos Drywall, Inc",,Check,1972
+2022-04-26,Citibank,,"Patryk Szady",Transfer,
+2022-04-26,Citibank,,"Gregory Szady",Transfer,
+2022-04-29,Citibank,,"Gregory Szady",Transfer,
+2022-04-29,Citibank,"Faza Electric Services, Inc",,Check,1975
+2022-04-29,Citibank,,"Cezary Raczka",Transfer,
+2022-05-05,PSFCU,,"Cezary Raczka",Transfer,
+2022-05-05,PSFCU,"Morenos Drywall, Inc",,Check,1482
+2022-05-10,Citibank,,"Patryk Szady",Transfer,
+2022-04-29,Citibank,,"Gregory Szady",Check,1976
+2022-05-11,Citibank,,"Gregory Szady",Transfer,
+2022-05-16,Citibank,"Faza Electric Services, Inc",,Check,1979
+2022-05-11,Citibank,"Stan Palupski Construction, Inc",,Check,1978
+2022-05-13,Citibank,,"Gregory Szady",Check,1980
+2022-05-14,Citibank,"PA Glass, LLC",,Check,1981
+2022-05-16,Citibank,,"Gregory Szady",Transfer,
+2022-05-16,Citibank,,"Patryk Szady",Transfer,
+2022-05-19,Citibank,"Tomex Siding Construction, Inc",,Transfer,
+2022-05-20,Citibank,,"Patryk Szady",Transfer,
+2022-05-12,PSFCU,,"Cezary Raczka",Check,1484
+2022-05-23,Citibank,,"Gregory Szady",Transfer,
+2022-04-25,Citibank,"Jaroslaw Kupinski Construction",,Check,1970
+2022-05-23,Citibank,"Jaroslaw Kupinski Construction",,Check,1984
+2022-05-25,Citibank,"TBD Pro Painting",,Check,1985
+2022-05-27,Citibank,"TBD Pro Painting",,Check,1986
+2022-05-25,Citibank,"JW Green Dump, Inc",,Check,1988
+2022-05-25,Citibank,,"Gregory Szady",Transfer,
+2022-05-25,Citibank,"Faza Electric Services, Inc",,Check,1989
+2022-05-20,Citibank,,"Gregory Szady",Transfer,
+2022-05-25,Citibank,,"Patryk Szady",Transfer,
+2022-05-26,Citibank,"Accomplished J Plumbing, Inc",,Check,1990
+2022-06-01,Citibank,,"Gregory Szady",Transfer,
+2022-06-02,Citibank,,"Patryk Szady",Transfer,
+2022-05-19,PSFCU,,"Cezary Raczka",Check,1485
+2022-06-03,Citibank,,"Gregory Szady",Transfer,
+2022-06-03,Citibank,,"Gregory Szady",Check,1991
+2022-06-04,Citibank,,"Gregory Szady",Transfer,
+2022-06-08,Citibank,,"Gregory Szady",Transfer,
+2022-06-10,Citibank,,"Gregory Szady",Transfer,
+2022-06-14,Citibank,,"Gregory Szady",Transfer,
+2022-06-14,Citibank,,"Gregory Szady",Check,1992
+2022-06-17,Citibank,,"Patryk Szady",Transfer,
+2022-06-13,Citibank,,"Patryk Szady",Transfer,
+2022-06-13,Citibank,,"Patryk Szady",Transfer,
+2022-03-23,Citibank,"Tomex Siding Construction, Inc",,Transfer,
+2022-05-16,Citibank,,"Patryk Szady",Transfer,
+2022-05-03,Citibank,,"Patryk Szady",Transfer,
+2022-05-02,Citibank,,"Patryk Szady",Transfer,
+2022-04-20,Citibank,,"Patryk Szady",Transfer,
+2022-03-14,Citibank,,"Patryk Szady",Transfer,
+2022-03-08,Citibank,,"Patryk Szady",Transfer,
+2022-01-28,Citibank,,"Patryk Szady",Transfer,
+2022-06-21,Citibank,,"Gregory Szady",Transfer,
+2022-05-10,Citibank,,"Gregory Szady",Transfer,
+2022-02-24,Citibank,,"Gregory Szady",Transfer,
+2022-05-09,Citibank,,"Gregory Szady",Transfer,
+2022-05-02,Citibank,,"Gregory Szady",Transfer,
+2022-04-22,Citibank,,"Gregory Szady",Transfer,
+2022-03-15,Citibank,,"Gregory Szady",Transfer,
+2022-03-28,Citibank,,"Gregory Szady",Transfer,
+2022-03-18,Citibank,,"Gregory Szady",Transfer,
+2022-02-04,Citibank,,"Gregory Szady",Transfer,
+2022-01-28,Citibank,,"Gregory Szady",Transfer,
+2022-01-28,Citibank,,"Gregory Szady",Transfer,
+2022-01-26,Citibank,,"Gregory Szady",Transfer,
+2022-01-05,Citibank,"Marcel Page",,Transfer,
+2022-02-13,Citibank,"Faza Electric Services, Inc",,Check,1909
+2022-03-07,Citibank,"Vol Nat Heating, Inc",,Check,1919
+2022-02-16,Citibank,"Granite One, Corp",,Check,1911
+2022-02-24,Citibank,"RG Tile, Inc",,Check,1914
+2022-03-25,Citibank,"GRANITE TWO",,Check,1930
+2022-04-25,Citibank,"Morenos Drywall, Inc",,Check,1973
+2022-04-29,Citibank,"Olszewski Quality Flooring",,Check,1974
+2022-06-16,Citibank,"RG Tile, Inc",,Check,1993
+2022-04-26,Citibank,"JW Green Dump, Inc",,Check,1967
+2022-04-13,Citibank,"Top Quality Hardwood Flooring",,Check,1937
+2022-06-23,PSFCU,,"Cezary Raczka",Check,1486
+2022-06-24,Citibank,"Olszewski Quality Flooring",,Check,1996
+2022-06-27,Citibank,"RJK Engineering Service",,Check,1997
+2022-06-27,Citibank,,"Gregory Szady",Transfer,
+2022-01-11,Citibank,"Vol Nat Heating, Inc",,Check,1890
+2022-05-10,PSFCU,,"Gregory Szady",Transfer,
+2022-02-01,PSFCU,,"Gregory Szady",Transfer,
+2022-01-18,PSFCU,,"Gregory Szady",Transfer,
+2022-01-11,PSFCU,,"Gregory Szady",Transfer,
+2022-06-28,Citibank,,"Gregory Szady",Check,1998
+2022-05-16,Citibank,"RG Tile, Inc",,Check,1982
+2022-06-29,Citibank,,"Patryk Szady",Transfer,
+2022-07-05,PSFCU,,"Cezary Raczka",Transfer,
+2022-07-01,Citibank,"Faza Electric Services, Inc",,Check,1999
+2022-06-22,Citibank,"JW Green Dump, Inc",,Check,1995
+2022-07-01,Citibank,"Vol Nat Heating, Inc",,Check,1994
+2022-07-06,Citibank,,"Gregory Szady",Transfer,
+2022-07-06,Citibank,,"Patryk Szady",Transfer,
+2022-07-11,Citibank,,"Patryk Szady",Transfer,
+2022-07-11,Citibank,,"Gregory Szady",Transfer,
+2022-07-12,Citibank,,"Gregory Szady",Transfer,
+2022-07-13,Citibank,,"Patryk Szady",Transfer,
+2022-07-13,Citibank,,"Patryk Szady",Transfer,
+2022-07-14,Citibank,,"Cezary Raczka",Check,2675
+2022-07-14,Citibank,,"Gregory Szady",Check,2000
+2022-07-19,Citibank,"TBD Pro Painting",,Check,2001
+2022-07-19,Citibank,"JW Green Dump, Inc",,Check,2002
+2022-07-19,Citibank,,"Gregory Szady",Transfer,
+2022-07-22,Citibank,,"Patryk Szady",Transfer,
+2022-07-22,Citibank,,"Cezary Raczka",Check,2677
+2022-07-22,Citibank,"Accomplished J Plumbing, Inc",,Check,2005
+2022-07-21,Citibank,"RG Tile, Inc",,Transfer,
+2022-07-23,Citibank,,"Gregory Szady",Transfer,
+2022-07-27,Citibank,,"Patryk Szady",Transfer,
+2022-07-28,Citibank,,"Gregory Szady",Check,2006
+2022-07-30,Citibank,,"Patryk Szady",Transfer,
+2022-08-08,Citibank,"Faza Electric Services, Inc",,Check,2008
+2022-08-09,Citibank,,"Gregory Szady",Transfer,
+2022-08-09,Citibank,,"Patryk Szady",Transfer,
+2022-08-09,Citibank,,"Gregory Szady",Check,2009
+2022-08-10,Citibank,,"Gregory Szady",Transfer,
+2022-08-10,Citibank,"Morenos Drywall, Inc",,Check,2010
+2022-08-11,Citibank,,"Patryk Szady",Transfer,
+2022-08-12,Citibank,,"Gregory Szady",Transfer,
+2022-08-16,Citibank,,"Gregory Szady",Transfer,
+2022-08-17,Citibank,,"Gregory Szady",Transfer,
+2022-08-17,Citibank,,"Patryk Szady",Transfer,
+2022-08-18,Citibank,"Faza Electric Services, Inc",,Check,2011
+2022-08-18,Citibank,"Olszewski Quality Flooring",,Check,2012
+2022-08-19,Citibank,,"Gregory Szady",Transfer,
+2022-08-19,Citibank,,"Gregory Szady",Check,2013
+2022-08-21,Citibank,"Morenos Drywall, Inc",,Check,2014
+2022-08-20,Citibank,"Mariusz Kot Construction, Inc",,Check,2015
+2022-08-22,Citibank,,"Patryk Szady",Transfer,
+2022-08-25,Citibank,,"Gregory Szady",Transfer,
+2022-08-26,Citibank,,"Gregory Szady",Check,1942
+2022-08-28,Citibank,,"Gregory Szady",Check,1943
+2022-08-30,Citibank,,"Patryk Szady",Transfer,
+2022-09-02,Citibank,,"Gregory Szady",Transfer,
+2022-09-04,Citibank,,"Patryk Szady",Transfer,
+2022-09-06,Citibank,,"Gregory Szady",Transfer,
+2022-09-07,Citibank,"Vol Nat Heating, Inc",,Check,1946
+2022-09-08,Citibank,,"Gregory Szady",Check,1947
+2022-09-08,Citibank,"Faza Electric Services, Inc",,Check,1948
+2022-09-01,Citibank,"BM Insurance Agency",,Check,1945
+2022-09-12,Citibank,,"Gregory Szady",Transfer,
+2022-09-12,Citibank,,"Patryk Szady",Transfer,
+2022-09-14,Citibank,,"Gregory Szady",Transfer,
+2022-09-14,Citibank,"Olszewski Quality Flooring",,Check,1949
+2022-09-14,Citibank,"Stan Palupski Construction, Inc",,Check,1951
+2022-09-15,Citibank,"Accomplished J Plumbing, Inc",,Check,1952
+2022-09-15,Citibank,,"Gregory Szady",Transfer,
+2022-09-16,Citibank,,"Patryk Szady",Transfer,
+2022-09-15,"Citi Business",,"Patryk Szady",Transfer,
+2022-09-16,Citibank,,"Patryk Szady",Transfer,
+2022-09-18,Citibank,,"Gregory Szady",Transfer,
+2022-09-21,PSFCU,,"Cezary Raczka",Transfer,
+2022-09-16,Citibank,"Faza Electric Services, Inc",,Check,1953
+2022-09-25,Citibank,"Vol Nat Heating, Inc",,Check,1955
+2022-09-25,Citibank,"Granite One, Corp",,Check,1956
+2022-09-25,Citibank,"JW Green Dump, Inc",,Check,1957
+2022-09-25,Citibank,"Stan Palupski Construction, Inc",,Check,1958
+2022-09-27,Citibank,,"Patryk Szady",Transfer,
+2022-09-27,Citibank,,"Gregory Szady",Transfer,
+2022-09-29,Citibank,,"Patryk Szady",Transfer,
+2022-10-02,Citibank,,"Gregory Szady",Transfer,
+2022-10-02,Citibank,,"Gregory Szady",Transfer,
+2022-10-04,Citibank,,"Patryk Szady",Transfer,
+2022-10-05,Citibank,,"Patryk Szady",Transfer,
+2022-10-05,PSFCU,,"Cezary Raczka",Transfer,
+2022-10-05,Citibank,,"Patryk Szady",Transfer,
+2022-10-07,Citibank,"Accomplished J Plumbing, Inc",,Check,1960
+2022-10-08,Citibank,,"Patryk Szady",Transfer,
+2022-10-09,Citibank,,"Gregory Szady",Transfer,
+2022-10-10,Citibank,"Faza Electric Services, Inc",,Check,1961
+2022-10-13,PSFCU,,"Cezary Raczka",Transfer,
+2022-10-14,PSFCU,,"Gregory Szady",Transfer,
+2022-10-15,Citibank,,"Patryk Szady",Transfer,
+2022-10-16,Citibank,,"Gregory Szady",Transfer,
+2022-10-17,PSFCU,,"Cezary Raczka",Transfer,
+2022-10-17,Citibank,,"Gregory Szady",Check,1964
+2022-10-18,Citibank,,"Patryk Szady",Transfer,
+2022-10-03,Citibank,"RG Tile, Inc",,Check,1959
+2022-10-20,PSFCU,"RG Tile, Inc",,Check,1489
+2022-10-21,Citibank,,"Gregory Szady",Transfer,
+2022-10-23,Citibank,"Morenos Drywall, Inc",,Check,2017
+2022-10-23,Citibank,,"Gregory Szady",Check,2018
+2022-10-24,Citibank,"Faza Electric Services, Inc",,Check,2016
+2022-10-24,Citibank,"JW Green Dump, Inc",,Check,2021
+2022-10-24,Citibank,"Faza Electric Services, Inc",,Check,2022
+2022-10-25,Citibank,"TBD Pro Painting",,Check,2023
+2022-10-25,Citibank,,"Patryk Szady",Transfer,
+2022-10-27,Citibank,"Morenos Drywall, Inc",,Check,2025
+2022-10-27,Citibank,"RJK Engineering Service",,Check,2026
+2022-10-27,Citibank,"Accomplished J Plumbing, Inc",,Check,2027
+2022-10-28,Citibank,"Mariusz Kot Construction, Inc",,Check,2020
+2022-10-12,Citibank,"Village Of Hoffman Estates",,Check,1962
+2022-10-31,Citibank,,"Gregory Szady",Transfer,
+2022-10-25,Citibank,,"Gregory Szady",Transfer,
+2022-11-02,Citibank,,"Patryk Szady",Transfer,
+2022-11-02,PSFCU,,"Cezary Raczka",Transfer,
+2022-11-02,Citibank,,"Gregory Szady",Check,2030
+2022-11-03,Citibank,"Stan Palupski Construction, Inc",,Check,2031
+2022-11-03,Citibank,"JW Green Dump, Inc",,Check,2032
+2022-11-04,Citibank,,"Patryk Szady",Transfer,
+2022-11-04,Citibank,,"Gregory Szady",Transfer,
+2022-11-04,Citibank,,"Gregory Szady",Check,2034
+2022-10-27,Citibank,"Village Of Mount Prospect",,Check,2024
+2022-11-09,Citibank,,"Gregory Szady",Transfer,
+2022-11-10,Citibank,"Accomplished J Plumbing, Inc",,Check,2035
+2022-11-04,Citibank,"RG Tile, Inc",,Check,2033
+2022-11-10,Citibank,"RG Tile, Inc",,Check,2036
+2022-11-11,Citibank,,"Patryk Szady",Transfer,
+2022-11-12,Citibank,,"Gregory Szady",Transfer,
+2022-11-13,Citibank,,"Gregory Szady",Check,2037
+2022-11-16,Citibank,"Liberty Mutual",,Check,2038
+2022-11-17,PSFCU,"Olszewski Quality Flooring",,Check,1491
+2022-10-23,Citibank,"Olszewski Quality Flooring",,Check,2029
+2022-11-21,Citibank,,"Gregory Szady",Transfer,
+2022-11-21,PSFCU,,"Gregory Szady",Check,1493
+2022-11-21,PSFCU,,"Cezary Raczka",Transfer,
+2022-11-21,Citibank,"PA Glass, LLC",,Check,2040
+2022-11-21,Citibank,"Jaroslaw Kupinski Construction",,Check,2041
+2022-11-22,Citibank,,"Gregory Szady",Check,2042
+2022-11-26,Citibank,,"Gregory Szady",Transfer,
+2022-11-28,Citibank,,"Patryk Szady",Transfer,
+2022-11-21,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2022-11-21,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2022-12-01,PSFCU,"Morenos Drywall, Inc",,Check,1497
+2022-11-30,Citibank,"Accomplished J Plumbing, Inc",,Check,2043
+2022-12-01,Citibank,"TBD Pro Painting",,Check,2044
+2022-12-04,Citibank,"Faza Electric Services, Inc",,Check,2045
+2022-12-05,Citibank,,"Gregory Szady",Transfer,
+2022-12-05,Citibank,,"Gregory Szady",Check,2049
+2022-12-06,PSFCU,,"Cezary Raczka",Transfer,
+2022-12-07,Citibank,,"Patryk Szady",Transfer,
+2022-12-07,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2022-12-09,Citibank,,"Gregory Szady",Transfer,
+2022-12-05,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2022-12-09,PSFCU,"Janusz Dudek",,Check,1498
+2022-12-09,Citibank,"RG Tile, Inc",,Check,2052
+2022-12-06,Citibank,"Faza Electric Services, Inc",,Check,2050
+2022-12-06,Citibank,"Faza Electric Services, Inc",,Check,2051
+2022-12-06,Citibank,,"Gregory Szady",Transfer,
+2022-11-30,Citibank,,"Gregory Szady",Transfer,
+2022-09-16,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2022-11-21,Citibank,,"Gregory Szady",Transfer,
+2022-12-09,PSFCU,,"Cezary Raczka",Transfer,
+2022-11-23,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2022-12-10,Citibank,,"Patryk Szady",Transfer,
+2022-12-11,Citibank,,"Gregory Szady",Check,2054
+2022-11-28,PSFCU,"ZZ Remodeling, Corp",,Check,1494
+2022-12-13,Citibank,"Granite One, Corp",,Check,2055
+2022-12-13,Citibank,"Vol Nat Heating, Inc",,Check,2056
+2022-12-14,Citibank,,"Gregory Szady",Transfer,
+2022-12-15,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Check,2066
+2022-12-15,Citibank,"Accomplished J Plumbing, Inc",,Check,2057
+2022-12-16,Citibank,,"Gregory Szady",Transfer,
+2022-12-16,Citibank,,"Gregory Szady",Check,2058
+2022-12-14,Citibank,"RG Tile, Inc",,Check,2053
+2022-12-19,Citibank,"Vol Nat Heating, Inc",,Check,2059
+2022-12-20,Citibank,,"Gregory Szady",Transfer,
+2022-12-22,Citibank,"PA Glass, LLC",,Check,2061
+2022-12-22,Citibank,"Accomplished J Plumbing, Inc",,Check,2062
+2022-12-22,Citibank,,"Gregory Szady",Transfer,
+2022-12-22,Citibank,"JW Green Dump, Inc",,Check,2063
+2022-12-23,Citibank,,"Patryk Szady",Transfer,
+2022-12-16,Citibank,,"Patryk Szady",Transfer,
+2022-12-24,PSFCU,,"Cezary Raczka",Transfer,
+2022-12-31,PSFCU,,"Cezary Raczka",Transfer,
+2023-01-02,Citibank,,"Gregory Szady",Transfer,
+2022-12-31,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2022-12-13,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2022-12-02,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2022-12-23,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Check,2060
+2022-12-15,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-01-06,Citibank,,"Patryk Szady",Transfer,
+2023-01-06,Citibank,,"Gregory Szady",Transfer,
+2023-01-08,Citibank,,"Gregory Szady",Check,2064
+2023-01-06,Citibank,"Michael Almonte",,Transfer,
+2022-11-30,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2022-12-28,PSFCU,"Polish & Slavic FCU",,Transfer,
+2023-01-10,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-01-12,Citibank,,"Gregory Szady",Check,2065
+2023-01-14,Citibank,,"Gregory Szady",Transfer,
+2023-01-14,Citibank,,"Gregory Szady",Transfer,
+2023-01-14,Citibank,,"Gregory Szady",Check,2067
+2023-01-14,Citibank,"Olszewski Quality Flooring",,Check,2068
+2023-01-13,Citibank,,"Patryk Szady",Transfer,
+2023-01-16,Citibank,"Faza Electric Services, Inc",,Check,2069
+2023-01-24,Citibank,"Granite One, Corp",,Check,2077
+2023-01-18,Citibank,"Granite One, Corp",,Check,2071
+2023-01-18,PSFCU,"Tomex Siding Construction, Inc",,Transfer,
+2023-01-19,Citibank,"Fantastic Smiles","Patryk Szady",Check,2073
+2023-01-20,Citibank,,"Gregory Szady",Transfer,
+2023-01-17,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-01-23,Citibank,"Faza Electric Services, Inc",,Check,2074
+2023-01-28,Citibank,"JW Green Dump, Inc",,Check,2081
+2023-01-24,Citibank,,"Patryk Szady",Transfer,
+2023-01-24,Citibank,"Granite One, Corp",,Check,2078
+2023-01-24,Citibank,,"Gregory Szady",Check,2079
+2023-01-26,Citibank,,"Gregory Szady",Transfer,
+2023-01-26,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-01-29,Citibank,,"Patryk Szady",Transfer,
+2023-01-31,Citibank,"Vol Nat Heating, Inc",,Check,2083
+2023-01-31,Citibank,"Vol Nat Heating, Inc",,Check,2082
+2023-01-27,Citibank,,"Gregory Szady",Transfer,
+2023-02-01,PSFCU,"Morenos Drywall, Inc",,Check,1501
+2023-01-20,Citibank,"Mariusz Kot Construction, Inc",,Check,2072
+2023-01-24,Citibank,"Granite One, Corp",,Check,2078
+2023-01-28,Citibank,"JW Green Dump, Inc",,Check,2081
+2023-02-01,Citibank,,"Gregory Szady",Transfer,
+2023-02-03,Citibank,,"Gregory Szady",Transfer,
+2023-02-01,Citibank,,"Gregory Szady",Transfer,
+2023-01-31,PSFCU,"GS Construction & Remodeling, Inc",,Check,1502
+2023-02-06,Citibank,,"Patryk Szady",Transfer,
+2023-02-08,Citibank,"Accomplished J Plumbing, Inc",,Check,2088
+2023-02-08,Citibank,"Morenos Drywall, Inc",,Check,2086
+2023-02-08,Citibank,"Tomex Siding Construction, Inc",,Check,2087
+2023-02-08,Citibank,,"Gregory Szady",Check,2089
+2023-02-09,Citibank,"Morenos Drywall, Inc",,Check,2091
+2023-02-09,Citibank,,"Gregory Szady",Transfer,
+2023-02-10,Citibank,,"Gregory Szady",Transfer,
+2023-02-10,Citibank,,"Patryk Szady",Transfer,
+2023-02-13,Citibank,"TBD Pro Painting",,Check,2092
+2023-02-14,Citibank,,"Gregory Szady",Check,2093
+2023-02-16,Citibank,"Faza Electric Services, Inc",,Check,2095
+2023-02-17,Citibank,"GS Construction & Remodeling, Inc",,Transfer,
+2023-02-19,Citibank,,"Patryk Szady",Transfer,
+2023-02-15,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-01-23,PSFCU,"Polish & Slavic FCU",,Transfer,
+2023-01-17,PSFCU,"Polish & Slavic FCU",,Transfer,
+2023-01-17,PSFCU,"Polish & Slavic FCU",,Transfer,
+2023-02-16,Citibank,,"Gregory Szady",Transfer,
+2022-12-19,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2023-02-21,Citibank,,"Gregory Szady",Transfer,
+2023-02-22,Citibank,,"Gregory Szady",Transfer,
+2023-02-24,Citibank,,"Gregory Szady",Transfer,
+2023-02-25,Citibank,,"Patryk Szady",Transfer,
+2022-07-14,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-02-28,Citibank,,"Gregory Szady",Transfer,
+2023-03-01,Citibank,,"Gregory Szady",Transfer,
+2023-03-01,Citibank,,"Gregory Szady",Check,2102
+2023-03-01,Citibank,"Sereno's Insulation & Supply, Co.",,Check,2100
+2023-02-07,Citibank,"Faza Electric Services, Inc",,Check,2090
+2023-03-01,Citibank,"Faza Electric Services, Inc",,Check,2101
+2023-03-01,Citibank,"Jaroslaw Kupinski Construction",,Check,2098
+2023-03-01,Citibank,"Stan Palupski Construction, Inc",,Check,2097
+2023-02-17,Citibank,"RG Tile, Inc",,Check,2096
+2023-03-01,Citibank,"Morenos Drywall, Inc",,Transfer,
+2022-12-27,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2022-12-24,PSFCU,"GS Construction & Remodeling, Inc","Cezary Raczka",Transfer,
+2022-12-15,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2022-11-10,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-03-02,Citibank,"Fantastic Smiles","Patryk Szady",Check,2094
+2023-03-06,Citibank,"Accomplished J Plumbing, Inc",,Check,2103
+2023-03-06,Citibank,,"Patryk Szady",Transfer,
+2023-03-06,Citibank,"JW Green Dump, Inc",,Check,2105
+2023-03-07,Citibank,,"Gregory Szady",Transfer,
+2023-03-07,Citibank,,"Gregory Szady",Transfer,
+2023-03-07,Citibank,,"Gregory Szady",Transfer,
+2023-03-09,Citibank,"PA Glass, LLC",,Check,2106
+2023-03-09,Citibank,,"Gregory Szady",Check,2107
+2022-11-29,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-03-01,Citibank,"Morenos Drywall, Inc",,Transfer,
+2023-02-08,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2022-10-17,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2023-03-11,Citibank,,"Patryk Szady",Transfer,
+2023-03-11,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2022-05-02,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2022-07-25,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2023-03-15,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Check,2109
+2023-02-02,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Check,2085
+2023-02-06,Citibank,"Fantastic Smiles","Patryk Szady",Check,2084
+2023-03-16,Citibank,,"Gregory Szady",Transfer,
+2022-11-29,PSFCU,"GKW Construction, Inc",,Check,1495
+2022-12-17,PSFCU,"Fantastic Smiles","Patryk Szady",Check,1499
+2022-11-21,PSFCU,"Morenos Drywall, Inc",,Check,1492
+2022-11-02,PSFCU,"Janusz Dudek",,Check,1490
+2022-12-03,Citibank,"JW Green Dump, Inc",,Check,2048
+2022-11-16,Citibank,"Olszewski Quality Flooring",,Check,2039
+2023-03-17,Citibank,,"Patryk Szady",Transfer,
+2023-03-17,Citibank,"Accomplished J Plumbing, Inc",,Check,2110
+2023-03-17,Citibank,,"Gregory Szady",Check,2111
+2023-03-18,Citibank,,"Gregory Szady",Check,2112
+2023-03-18,Citibank,,"Gregory Szady",Transfer,
+2023-03-18,Citibank,"TBD Pro Painting",,Check,2115
+2023-03-21,Citibank,"Accomplished J Plumbing, Inc",,Check,2116
+2023-03-21,Citibank,,"Gregory Szady",Transfer,
+2023-03-21,Citibank,,"Gregory Szady",Check,2118
+2023-03-22,Citibank,"Granite One, Corp",,Check,2119
+2023-03-23,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-03-24,Citibank,"Morenos Drywall, Inc",,Check,2120
+2023-03-24,Citibank,"RG Tile, Inc",,Check,2117
+2023-03-24,Citibank,,"Gregory Szady",Transfer,
+2023-03-27,Citibank,,"Patryk Szady",Transfer,
+2023-03-26,Citibank,"Olszewski Quality Flooring",,Check,2114
+2023-02-28,Citibank,"Vol Nat Heating, Inc",,Check,2099
+2023-03-29,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2023-03-30,Citibank,,"Gregory Szady",Check,2122
+2023-03-30,Citibank,"Alpha Squad",,Check,2121
+2023-03-31,Citibank,,"Gregory Szady",Transfer,
+2023-04-03,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-04-05,Citibank,,"Patryk Szady",Transfer,
+2023-04-06,Citibank,,"Patryk Szady",Transfer,
+2023-04-06,Citibank,"PMG Carpentry Inc",,Check,2123
+2023-04-07,Citibank,,"Gregory Szady",Transfer,
+2023-04-11,Citibank,,"Gregory Szady",Check,2124
+2023-04-11,Citibank,,"Gregory Szady",Check,2126
+2023-04-11,Citibank,"Faza Electric Services, Inc",,Check,2125
+2023-04-15,Citibank,,"Gregory Szady",Transfer,
+2023-04-12,Citibank,,"Patryk Szady",Transfer,
+2023-04-16,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-04-19,Citibank,,"Patryk Szady",Transfer,
+2023-04-19,Citibank,,"Gregory Szady",Transfer,
+2023-04-20,Citibank,"Jaroslaw Kupinski Construction",,Check,2129
+2023-04-21,Citibank,"Olszewski Quality Flooring",,Check,2130
+2023-04-21,Citibank,"Accomplished J Plumbing, Inc",,Check,2131
+2023-04-21,Citibank,,"Gregory Szady",Check,2132
+2023-04-19,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-04-20,Citibank,"Olszewski Quality Flooring",,Check,2128
+2023-04-10,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-04-25,Citibank,,"Patryk Szady",Transfer,
+2023-04-26,Citibank,,"Gregory Szady",Transfer,
+2023-04-28,Citibank,"Morenos Drywall, Inc",,Check,2133
+2023-04-28,Citibank,,"Gregory Szady",Check,2134
+2023-04-29,Citibank,,"Gregory Szady",Transfer,
+2023-04-30,Citibank,"RJK Engineering Service",,Check,2135
+2023-05-03,Citibank,,"Patryk Szady",Transfer,
+2023-03-27,Citibank,"Village of Inverness",,Check,2108
+2023-05-01,Citibank,"Village of Inverness",,Check,2127
+2023-05-04,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2023-05-04,Citibank,"Sereno's Insulation & Supply, Co.",,Check,2138
+2023-05-04,Citibank,"Morenos Drywall, Inc",,Transfer,
+2023-05-06,Citibank,,"Gregory Szady",Check,2137
+2023-05-06,Citibank,,"Gregory Szady",Transfer,
+2023-05-08,Citibank,"Faza Electric Services, Inc",,Check,2139
+2023-05-11,Citibank,"Accomplished J Plumbing, Inc",,Check,2140
+2023-05-11,Citibank,,"Gregory Szady",Check,2216
+2023-05-12,Citibank,,"Patryk Szady",Transfer,
+2023-05-13,Citibank,,"Gregory Szady",Transfer,
+2023-05-13,Citibank,"Morenos Drywall, Inc",,Transfer,
+2023-05-17,PSFCU,"RG Tile, Inc",,Check,1503
+2023-05-18,Citibank,,"Gregory Szady",Check,2217
+2023-05-18,Citibank,"Faza Electric Services, Inc",,Check,2218
+2023-05-19,Citibank,,"Gregory Szady",Transfer,
+2023-05-20,Citibank,,"Patryk Szady",Transfer,
+2023-05-15,Citibank,"Morenos Drywall, Inc",,Transfer,
+2023-05-19,Citibank,,"Gregory Szady",Transfer,
+2023-05-25,Citibank,"Olszewski Quality Flooring",,Check,2221
+2023-05-25,Citibank,,"Gregory Szady",Check,2224
+2023-05-26,Citibank,"Faza Electric Services, Inc",,Check,2225
+2023-05-26,Citibank,"Jaroslaw Kupinski Construction",,Check,2227
+2023-05-28,Citibank,,"Gregory Szady",Transfer,
+2023-05-29,Citibank,"RG Tile, Inc",,Check,2226
+2023-05-29,Citibank,"TBD Pro Painting",,Check,2228
+2023-05-29,Citibank,,"Patryk Szady",Transfer,
+2023-05-31,Citibank,"Morenos Drywall, Inc",,Transfer,
+2023-06-01,Citibank,"Alpha Squad",,Check,2229
+2023-06-03,Citibank,"PMG Carpentry Inc",,Check,2230
+2023-06-04,Citibank,,"Gregory Szady",Transfer,
+2023-06-05,Citibank,,"Patryk Szady",Transfer,
+2023-06-05,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-06-06,Citibank,"Faza Electric Services, Inc",,Check,2232
+2023-06-06,Citibank,"Faza Electric Services, Inc",,Check,2233
+2023-06-06,Citibank,,"Gregory Szady",Check,2234
+2023-06-10,Citibank,,"Gregory Szady",Transfer,
+2023-06-11,Citibank,,"Patryk Szady",Transfer,
+2023-06-10,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-06-16,Citibank,"Tomex Siding Construction, Inc",,Transfer,
+2023-06-18,Citibank,"Morenos Drywall, Inc",,Transfer,
+2023-06-20,Citibank,"Faza Electric Services, Inc",,Check,2235
+2023-06-20,Citibank,,"Gregory Szady",Transfer,
+2023-06-21,Citibank,"PA Glass, LLC",,Check,2236
+2023-06-24,Citibank,,"Gregory Szady",Transfer,
+2023-06-25,Citibank,"PMG Carpentry Inc",,Check,2237
+2023-06-26,Citibank,"National Construction Rental",,Check,2239
+2023-06-26,Citibank,"TBD Pro Painting",,Check,2240
+2023-06-20,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2023-06-16,Citibank,"Tomex Siding Construction, Inc",,Transfer,
+2023-06-28,Citibank,,"Patryk Szady",Transfer,
+2023-06-28,Citibank,,"Gregory Szady",Check,2238
+2023-06-28,Citibank,"Olszewski Quality Flooring",,Check,2141
+2023-06-28,Citibank,"M Power Solution Company",,Check,2142
+2023-06-29,Citibank,"PMG Carpentry Inc",,Check,2143
+2023-06-30,Citibank,,"Gregory Szady",Transfer,
+2023-07-04,Citibank,"Faza Electric Services, Inc",,Check,2144
+2023-07-05,Citibank,,"Patryk Szady",Transfer,
+2023-07-06,Citibank,,"Gregory Szady",Check,2146
+2023-07-08,Citibank,,"Gregory Szady",Transfer,
+2023-07-08,Citibank,,"Patryk Szady",Transfer,
+2023-07-12,Citibank,"Vol Nat Heating, Inc",,Check,2147
+2023-07-13,Citibank,"Morenos Drywall, Inc",,Transfer,
+2023-07-13,Citibank,"RG Tile, Inc",,Check,2148
+2023-07-18,Citibank,"Accomplished J Plumbing, Inc",,Check,2149
+2023-07-18,Citibank,"Tomex Siding Construction, Inc",,Check,2150
+2023-07-19,Citibank,"Faza Electric Services, Inc",,Check,2151
+2023-07-18,Citibank,"GS Construction & Remodeling, Inc",,Transfer,
+2023-07-20,Citibank,"Stan Palupski Construction, Inc",,Check,2152
+2023-07-20,PSFCU,"Cezary Raczka",,Transfer,
+2023-07-21,Citibank,,"Gregory Szady",Transfer,
+2023-07-25,Citibank,"PA Glass, LLC",,Check,2154
+2023-07-25,Citibank,,"Patryk Szady",Transfer,
+2023-07-26,Citibank,"Alpha Squad",,Check,2153
+2023-07-26,Citibank,"Sereno's Insulation & Supply, Co.",,Check,2155
+2023-07-26,Citibank,"Morenos Drywall, Inc",,Transfer,
+2023-07-29,Citibank,,"Gregory Szady",Check,2156
+2023-07-29,Citibank,,"Gregory Szady",Transfer,
+2023-07-29,PSFCU,"Cezary Raczka",,Transfer,
+2023-07-29,Citibank,,"Gregory Szady",Check,2158
+2023-07-31,Citibank,"Olszewski Quality Flooring",,Check,2159
+2023-07-31,PSFCU,"Cezary Raczka",,Transfer,
+2023-08-02,Citibank,"Accomplished J Plumbing, Inc",,Check,2161
+2023-06-03,Citibank,"Accomplished J Plumbing, Inc",,Check,2231
+2023-08-02,Citibank,"Faza Electric Services, Inc",,Check,2162
+2023-08-02,Citibank,,"Patryk Szady",Transfer,
+2023-08-03,PSFCU,"Granite One, Corp",,Check,1506
+2023-08-03,Citibank,"Morenos Drywall, Inc",,Transfer,
+2023-08-04,Citibank,,"Gregory Szady",Transfer,
+2023-06-02,Citibank,"Janusz Dudek",,Check,1504
+2023-08-08,PSFCU,"Grzegorz Galus",,Check,1507
+2023-08-08,PSFCU,"Cezary Raczka",,Transfer,
+2023-07-26,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2022-07-21,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-08-03,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2023-08-10,PSFCU,"RG Tile, Inc",,Check,1509
+2023-08-10,Citibank,,"Patryk Szady",Transfer,
+2023-08-12,Citibank,,"Gregory Szady",Transfer,
+2023-08-14,PSFCU,"Cezary Raczka",,Transfer,
+2023-08-14,Citibank,,"Patryk Szady",Transfer,
+2023-08-15,Citibank,"Olszewski Quality Flooring",,Check,2165
+2023-08-15,Citibank,"Alpha Squad",,Check,2166
+2023-08-16,PSFCU,"Olszewski Quality Flooring",,Check,1511
+2023-08-14,PSFCU,"Janusz Dudek",,Check,1508
+2023-08-17,Citibank,,"Gregory Szady",Transfer,
+2023-08-19,Citibank,"GS Construction & Remodeling, Inc","Patryk Szady",Transfer,
+2023-07-14,Citibank,"GS Construction & Remodeling, Inc","Gregory Szady",Transfer,
+2023-08-22,Citibank,,"Gregory Szady",Check,2168
+2023-08-24,Citibank,,"Patryk Szady",Transfer,
+2023-09-05,Citibank,,"Patryk Szady",Transfer,
+2023-09-05,Citibank,,"Patryk Szady",Check,65489
+2023-09-05,Citibank,,"Patryk Szady",Transfer,
+2023-09-05,Citibank,,"Patryk Szady",Check,65487
+2023-09-05,Citibank,,"Patryk Szady",Check,9548
+2023-09-05,Citibank,,"Patryk Szady",Check,9548
+2023-09-07,Citibank,"Accomplished J Plumbing, Inc",,Check,95487
+2023-09-07,Citibank,"Accomplished J Plumbing, Inc",,Check,95487
