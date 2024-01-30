@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
-    //2024 refresh
     //TEST ONLY //FOR DEVELOPER EXECUTION ONLY
     //only needed for test purposes...transactions update from Plaid.com webhooks
     //For use when Plaid API isn't acting as expected and can always be executed manually...
